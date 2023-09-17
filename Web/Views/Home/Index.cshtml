@@ -1,0 +1,16 @@
+﻿@model IEnumerable<BookVM>
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<ul>
+    @foreach (var book in Model)
+    {
+        <li>@book.Title</li>
+        <a asp-action="EditBook" asp-route-id="@book.Id">Изменить</a>
+        <a asp-action="RemoveBook" asp-route-id="@book.Id">Удалить</a>
+    }
+</ul>
+
+<a asp-action="AddBook">Добавить книгу</a>

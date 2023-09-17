@@ -1,0 +1,14 @@
+﻿@model BookVM
+
+<h3>Страница удаления книги</h3>
+
+<form asp-action="RemoveBook" method="post">
+    <input type="hidden" asp-for="@Model.Id" />
+
+    <label>Название книги:</label>
+    <input type="text" asp-for="@Model.Title" />
+
+    <button>Удалить</button>
+</form>
+
+<a asp-action="Index">Вернуться к списку книг</a>
