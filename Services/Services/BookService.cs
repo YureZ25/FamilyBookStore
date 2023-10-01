@@ -16,6 +16,11 @@ namespace Services.Services
             _unitOfWork = unitOfWork;
         }
 
+        public async Task<IEnumerable<BookVM>> GetBooksByStoreAsync(int storeId, CancellationToken cancellationToken)
+        {
+            return await GetBooksAsync(cancellationToken);
+        }
+
         public async Task<IEnumerable<BookVM>> GetBooksAsync(CancellationToken cancellationToken)
         {
             var books = await _bookRepo.GetBooksAsync(cancellationToken);

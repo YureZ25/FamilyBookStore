@@ -1,0 +1,5 @@
+﻿<svg width="130" height="200" xmlns="http://www.w3.org/2000/svg" role="img">
+	<title>Book cover thumbnail</title>
+	<rect fill="#7f7f7f" id="canvas_background" height="100%" width="100%"/>
+	<text x="10%" y="30%" fill="#dee2e6" dy=".3em">Обложка Книги</text>
+</svg>

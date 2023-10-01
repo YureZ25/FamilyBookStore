@@ -9,6 +9,7 @@ namespace Services
         public static IServiceCollection AddServiceLayer(this IServiceCollection services)
         {
             services.AddScoped<IBookService, BookService>();
+            services.AddScoped<IStoreService, StoreService>();
 
             return services;
         }

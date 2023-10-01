@@ -1,0 +1,28 @@
+﻿@model BookVM
+
+@{
+    ViewData["Title"] = Model is null ? "Добавление книги" : "Изменение книги";
+}
+
+<form>
+    <div class="row g-3 w-75 mx-auto">
+        <input type="hidden" asp-for="@Model.Id" />
+
+        <div class="col">
+            <label for="titleInput" class="form-label">Название книги:</label>
+            <input type="text" asp-for="@Model.Title" class="form-control" id="titleInput" />
+        </div>
+
+        <div class="col-12 d-flex justify-content-around">
+            @if (Model is null)
+            {
+                <button type="submit" formmethod="post" asp-action="AddBook" class="btn btn-primary">Добавить</button>
+            }
+            else
+            {
+                <button type="submit" formmethod="post" asp-action="EditBook" class="btn btn-primary">Изменить</button>
+                <button type="submit" formmethod="post" asp-action="RemoveBook" class="btn btn-danger">Удалить</button>
+            }
+        </div>
+    </div>
+</form>

@@ -1,0 +1,27 @@
+﻿@model IEnumerable<BookVM>
+
+@{
+    ViewData["Title"] = "Список книг";
+}
+
+<table class="table table-hover">
+    <thead class="table-light">
+        <tr>
+            <th scope="col">Название</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var book in Model)
+        {
+            <tr navigate asp-action="Book" asp-route-id="@book.Id">
+                <td>
+                    @book.Title
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<button navigate asp-action="Book" class="btn btn-primary align-self-center">
+    Добавить книгу
+</button>

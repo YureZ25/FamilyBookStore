@@ -1,0 +1,19 @@
+﻿@model IEnumerable<BookVM>
+
+<table class="table table-hover">
+    <thead class="table-light">
+        <tr>
+            <th scope="col">Название</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var book in Model)
+        {
+            <tr>
+                <td>
+                    @book.Title
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

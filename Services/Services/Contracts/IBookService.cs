@@ -4,6 +4,7 @@ namespace Services.Services.Contracts
 {
     public interface IBookService
     {
+        Task<IEnumerable<BookVM>> GetBooksByStoreAsync(int storeId, CancellationToken cancellationToken);
         Task<IEnumerable<BookVM>> GetBooksAsync(CancellationToken cancellationToken);
         Task<BookVM> GetById(int id, CancellationToken cancellationToken);
         Task<BookVM> InsertAsync(BookVM bookVM, CancellationToken cancellationToken);

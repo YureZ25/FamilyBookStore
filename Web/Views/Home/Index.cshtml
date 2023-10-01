@@ -1,16 +1,28 @@
-﻿@model IEnumerable<BookVM>
+﻿@model IEnumerable<StoreVM>
 
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Мои хранилища";
 }
 
-<ul>
-    @foreach (var book in Model)
+<div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+    @foreach (var store in Model)
     {
-        <li>@book.Title</li>
-        <a asp-action="EditBook" asp-route-id="@book.Id">Изменить</a>
-        <a asp-action="RemoveBook" asp-route-id="@book.Id">Удалить</a>
+        <div class="col">
+            <div navigate asp-controller="Store" asp-action="StoreBookList" asp-route-id="@store.Id" class="card h-100 text-center">
+                <div class="card-body">
+                    <h5 class="card-title">@store.Name</h5>
+                </div>
+                <div class="row row-cols-3 gy-2 h-100">
+                    @foreach (var book in store.Books)
+                    {
+                        <div class="col">
+                            <div class="card">
+                                <img src="~/img/Thumbnails/BookThumbnail.svg" class="card-img-bottom">
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
     }
-</ul>
-
-<a asp-action="AddBook">Добавить книгу</a>
+</div>
