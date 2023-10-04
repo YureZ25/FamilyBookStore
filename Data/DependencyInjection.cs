@@ -18,6 +18,7 @@ namespace Data
 
             services.AddScoped<IBookRepo, BookRepo>();
             services.AddScoped<IAuthorRepo, AuthorRepo>();
+            services.AddScoped<IGenreRepo, GenreRepo>();
             services.AddScoped<IStoreRepo, StoreRepo>();
             services.AddScoped<IUserRepo, UserRepo>();
             services.AddScoped<IUserStore<User>, UserRepo>();

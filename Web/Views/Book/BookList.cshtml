@@ -8,6 +8,9 @@
     <thead class="table-light">
         <tr>
             <th scope="col">Название</th>
+            <th scope="col">Автор</th>
+            <th scope="col">Жанр</th>
+            <th scope="col">Текущее хранилище</th>
         </tr>
     </thead>
     <tbody>
@@ -16,6 +19,15 @@
             <tr navigate asp-action="Book" asp-route-id="@book.Id">
                 <td>
                     @book.Title
+                </td>
+                <td>
+                    @book.Author.FirstName @book.Author.LastName
+                </td>
+                <td>
+                    @book.Genre.Name
+                </td>
+                <td>
+                    @book.Store.Name
                 </td>
             </tr>
         }

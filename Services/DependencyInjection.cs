@@ -10,6 +10,8 @@ namespace Services
         {
             services.AddScoped<IBookService, BookService>();
             services.AddScoped<IStoreService, StoreService>();
+            services.AddScoped<IAuthorService, AuthorService>();
+            services.AddScoped<IGenreService, GenreService>();
 
             return services;
         }

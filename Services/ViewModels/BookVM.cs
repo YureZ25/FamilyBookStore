@@ -6,6 +6,10 @@ namespace Services.ViewModels
     {
         public int Id { get; set; }
         public string Title { get; set; }
+        public string Description { get; set; }
+        public AuthorVM Author { get; set; }
+        public GenreVM Genre { get; set; }
+        public StoreVM Store { get; set; }
     }
 
     internal static class BookMapper
@@ -16,6 +20,10 @@ namespace Services.ViewModels
             {
                 Id = book.Id,
                 Title = book.Title,
+                Description = book.Description,
+                Author = book.Author.Map(),
+                Genre = book.Genre.Map(),
+                Store = book.Store.Map()
             };
         }
 
@@ -25,6 +33,10 @@ namespace Services.ViewModels
             {
                 Id = bookVM.Id,
                 Title = bookVM.Title,
+                Description = bookVM.Description,
+                Author = bookVM.Author.Map(),
+                Genre = bookVM.Genre.Map(),
+                Store = bookVM.Store.Map(),
             };
         }
     }

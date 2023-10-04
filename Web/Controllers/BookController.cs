@@ -1,16 +1,21 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Services.Services.Contracts;
 using Services.ViewModels;
+using Web.PageViewModels;
 
 namespace Web.Controllers
 {
     public class BookController : Controller
     {
         private readonly IBookService _bookService;
+        private readonly IAuthorService _authorService;
+        private readonly IGenreService _genreService;
 
-        public BookController(IBookService bookService)
+        public BookController(IBookService bookService, IAuthorService authorService, IGenreService genreService)
         {
             _bookService = bookService;
+            _authorService = authorService;
+            _genreService = genreService;
         }
 
         [HttpGet]
@@ -26,9 +31,12 @@ namespace Web.Controllers
         {
             if (!id.HasValue) return View(null);
 
-            var bookVM = await _bookService.GetById(id.Value, cancellationToken);
-
-            return View(bookVM);
+            return View(new BookPageVM
+            {
+                Book = await _bookService.GetById(id.Value, cancellationToken),
+                Authors = await _authorService.GetAuthorsAsync(cancellationToken),
+                Genres = await _genreService.GetGenresAsync(cancellationToken),
+            });
         }
 
         [HttpPost]

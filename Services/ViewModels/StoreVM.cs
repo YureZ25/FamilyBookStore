@@ -19,7 +19,7 @@ namespace Services.ViewModels
                 Id = store.Id,
                 Name = store.Name,
                 Address = store.Address,
-                Books = store.Books.Select(b => b.Map()),
+                Books = store.Books?.Select(b => b.Map()),
             };
         }
 
@@ -30,7 +30,7 @@ namespace Services.ViewModels
                 Id = storeVM.Id,
                 Name = storeVM.Name,
                 Address = storeVM.Address,
-                Books = storeVM.Books.Select(b => b.Map()),
+                Books = storeVM.Books?.Select(b => b.Map()),
             };
         }
     }
