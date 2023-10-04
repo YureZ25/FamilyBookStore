@@ -8,6 +8,12 @@ builder.Services.AddServiceLayer();
 
 builder.Services.AddControllersWithViews();
 
+builder.Services
+    .AddIdentityCore<Data.Entities.User>(e =>
+    {
+        e.User.RequireUniqueEmail = true;
+    });
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

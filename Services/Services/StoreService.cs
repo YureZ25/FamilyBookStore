@@ -1,4 +1,7 @@
-﻿using Data.Repos.Contracts;
+﻿using Data.Entities;
+using Data.Repos.Contracts;
+using Microsoft.AspNetCore.Identity;
+using Services.Exeptions;
 using Services.Services.Contracts;
 using Services.ViewModels;
 
@@ -6,58 +9,30 @@ namespace Services.Services
 {
     internal class StoreService : IStoreService
     {
-        private readonly IBookRepo _bookRepo;
+        private readonly IStoreRepo _storeRepo;
+        private readonly UserManager<User> _userManager;
 
-        public StoreService(IBookRepo bookRepo)
+        public StoreService(IStoreRepo storeRepo, UserManager<User> userManager)
         {
-            _bookRepo = bookRepo;
+            _storeRepo = storeRepo;
+            _userManager = userManager;
         }
 
         public async Task<IEnumerable<StoreVM>> GetUserStoresOverviewAsync(int userId, CancellationToken cancellationToken)
         {
-            var books = await _bookRepo.GetBooksAsync(cancellationToken);
-            var bookVMs = books.Select(e => e.Map());
+            var user = await _userManager.FindByIdAsync(Convert.ToString(userId))
+                ?? throw new EntityNotFoundExeption("Пользователь", userId);
 
-            var stores = new StoreVM[]
+            var stores = await _storeRepo.GetStoresByUserIdAsync(user.Id, cancellationToken);
+
+            var storesVM = stores.Select(s =>
             {
-                new()
-                {
-                    Id = 0,
-                    Name = "Дом Питер",
-                    Books = bookVMs,
-                },
-                new()
-                {
-                    Id = 1,
-                    Name = "E-Book Юры",
-                    Books = bookVMs.Concat(bookVMs),
-                },
-                new()
-                {
-                    Id = 2,
-                    Name = "E-Book Тани",
-                    Books = bookVMs.Take(4),
-                },
-                new()
-                {
-                    Id = 3,
-                    Name = "Донецк Патриотческая",
-                    Books = bookVMs.Take(2),
-                },
-                new()
-                {
-                    Id = 4,
-                    Name = "Донецк Шмидта",
-                    Books = bookVMs,
-                },
-            };
+                var storeVM = s.Map();
+                storeVM.Books = storeVM.Books.Take(6);
+                return storeVM;
+            });
 
-            foreach (var store in stores)
-            {
-                store.Books = store.Books.Take(6);
-            }
-
-            return stores;
+            return storesVM;
         }
     }
 }

@@ -3,8 +3,10 @@ using Microsoft.Extensions.Configuration;
 
 namespace Data.Context
 {
-    internal class AdoNetDbContext
+    internal class AdoNetDbContext : IDisposable
     {
+        private bool _disposed;
+
         private readonly SqlConnection _connection;
         private readonly SqlTransaction _transaction;
 
@@ -35,6 +37,20 @@ namespace Data.Context
             }
             _transaction.Commit();
             return updated;
+        }
+
+        public void Dispose()
+        {
+            if (_disposed) return;
+
+            _transaction.Rollback();
+            _transaction.Dispose();
+
+            _connection.Close();
+            _connection.Dispose();
+
+            GC.SuppressFinalize(this);
+            _disposed = true;
         }
     }
 }
