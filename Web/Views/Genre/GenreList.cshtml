@@ -1,0 +1,27 @@
+﻿@model IEnumerable<GenreVM>
+
+@{
+    ViewData["Title"] = "Список жанров";
+}
+
+<table class="table table-hover">
+    <thead class="table-light">
+        <tr>
+            <th scope="col">Название</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var genre in Model)
+        {
+            <tr navigate asp-action="Genre" asp-route-id="@genre.Id">
+                <td>
+                    @genre.Name
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<button navigate asp-action="Genre" class="btn btn-primary align-self-center">
+    Добавить жанр
+</button>

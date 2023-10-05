@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using System.Data;
 
 namespace Data.Context
 {
@@ -43,10 +44,10 @@ namespace Data.Context
         {
             if (_disposed) return;
 
-            _transaction.Rollback();
+            if (_transaction.Connection != null) _transaction.Rollback();
             _transaction.Dispose();
 
-            _connection.Close();
+            if (_connection.State == ConnectionState.Open) _connection.Close();
             _connection.Dispose();
 
             GC.SuppressFinalize(this);

@@ -64,7 +64,7 @@ namespace Data.Repos
                     SET Name = @name 
                     WHERE Id = @id")
                 .WithParameter("id", genre.Id)
-                .WithParameter("firstName", genre.Name);
+                .WithParameter("name", genre.Name);
         }
 
         public void DeleteById(int id)

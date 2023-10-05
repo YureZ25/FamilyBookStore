@@ -34,8 +34,8 @@ namespace Data.Repos
                     FROM Books 
                     JOIN Authors ON Books.AuthorId = Authors.Id
                     JOIN Genres ON Books.GenreId = Genres.Id
-                    JOIN Book2Stores ON Books.Id = Book2Stores.BookId
-                    JOIN Stores ON Book2Stores.StoreId = Stores.Id");
+                    LEFT JOIN Book2Stores ON Books.Id = Book2Stores.BookId
+                    LEFT JOIN Stores ON Book2Stores.StoreId = Stores.Id");
 
             using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
 

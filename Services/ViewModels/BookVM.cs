@@ -23,7 +23,7 @@ namespace Services.ViewModels
                 Description = book.Description,
                 Author = book.Author.Map(),
                 Genre = book.Genre.Map(),
-                Store = book.Store.Map()
+                Store = book.Store?.Map()
             };
         }
 
@@ -34,9 +34,11 @@ namespace Services.ViewModels
                 Id = bookVM.Id,
                 Title = bookVM.Title,
                 Description = bookVM.Description,
+                AuthorId = bookVM.Author.Id,
                 Author = bookVM.Author.Map(),
+                GenreId = bookVM.Genre.Id,
                 Genre = bookVM.Genre.Map(),
-                Store = bookVM.Store.Map(),
+                Store = bookVM.Store?.Map(),
             };
         }
     }

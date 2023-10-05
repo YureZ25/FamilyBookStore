@@ -1,20 +1,20 @@
 ﻿@model BookPageVM
 
 @{
-    ViewData["Title"] = Model.Book is null ? "Добавление книги" : "Изменение книги";
+    ViewData["Title"] = Model?.Book is null ? "Добавление книги" : "Изменение книги";
 }
 
 <form>
     <div class="row g-3 w-75 mx-auto">
-        <input type="hidden" asp-for="@Model.Book.Id" />
+        <input type="hidden" asp-for="Book.Id" />
 
         <div class="col-6">
             <label for="titleInput" class="form-label">Название книги:</label>
-            <input type="text" asp-for="@Model.Book.Title" class="form-control" id="titleInput" />
+            <input type="text" asp-for="Book.Title" class="form-control" id="titleInput" />
         </div>
         <div class="col-6">
             <label for="descriptionInput" class="form-label">Описание книги:</label>
-            <input type="text" asp-for="@Model.Book.Description" class="form-control" id="descriptionInput" />
+            <input type="text" asp-for="Book.Description" class="form-control" id="descriptionInput" />
         </div>
         <div class="col-6">
             <label for="authorInput" class="form-label">Автор</label>
@@ -36,7 +36,7 @@
         </div>
 
         <div class="col-12 d-flex justify-content-around">
-            @if (Model is null)
+            @if (Model?.Book is null)
             {
                 <button type="submit" formmethod="post" asp-action="AddBook" class="btn btn-primary">Добавить</button>
             }

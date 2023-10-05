@@ -29,18 +29,21 @@ namespace Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Book(int? id, CancellationToken cancellationToken)
         {
-            if (!id.HasValue) return View(null);
-
-            return View(new BookPageVM
+            var model = new BookPageVM
             {
-                Book = await _bookService.GetById(id.Value, cancellationToken),
                 Authors = await _authorService.GetAuthorsAsync(cancellationToken),
                 Genres = await _genreService.GetGenresAsync(cancellationToken),
-            });
+            };
+
+            if (!id.HasValue) return View(model);
+
+            model.Book = await _bookService.GetByIdAsync(id.Value, cancellationToken);
+
+            return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddBook([FromForm] BookVM bookVM, CancellationToken cancellationToken)
+        public async Task<IActionResult> AddBook([FromForm(Name = nameof(BookPageVM.Book))] BookVM bookVM, CancellationToken cancellationToken)
         {
             bookVM = await _bookService.InsertAsync(bookVM, cancellationToken);
 
@@ -48,7 +51,7 @@ namespace Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditBook([FromForm] BookVM bookVM, CancellationToken cancellationToken)
+        public async Task<IActionResult> EditBook([FromForm(Name = nameof(BookPageVM.Book))] BookVM bookVM, CancellationToken cancellationToken)
         {
             bookVM = await _bookService.UpdateAsync(bookVM, cancellationToken);
 
@@ -56,7 +59,7 @@ namespace Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> RemoveBook([FromForm] BookVM bookVM, CancellationToken cancellationToken)
+        public async Task<IActionResult> RemoveBook([FromForm(Name = nameof(BookPageVM.Book))] BookVM bookVM, CancellationToken cancellationToken)
         {
             bookVM = await _bookService.DeleteByIdAsync(bookVM.Id, cancellationToken);
 

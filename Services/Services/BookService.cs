@@ -28,7 +28,7 @@ namespace Services.Services
             return books.Select(e => e.Map());
         }
 
-        public async Task<BookVM> GetById(int id, CancellationToken cancellationToken)
+        public async Task<BookVM> GetByIdAsync(int id, CancellationToken cancellationToken)
         {
             var book = await _bookRepo.GetByIdAsync(id, cancellationToken);
 
@@ -59,7 +59,7 @@ namespace Services.Services
 
         public async Task<BookVM> DeleteByIdAsync(int id, CancellationToken cancellationToken)
         {
-            var book = await GetById(id, cancellationToken);
+            var book = await GetByIdAsync(id, cancellationToken);
 
             _bookRepo.DeleteById(book.Id);
 
