@@ -19,8 +19,7 @@ namespace Data
                 {
                     var sql = await File.ReadAllTextAsync(filePath);
 
-                    context.CreateCommand()
-                        .WithText(sql);
+                    context.CreateCommand().WithText(sql);
                 }
             }
 

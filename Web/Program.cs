@@ -11,7 +11,7 @@ builder.Services.AddControllersWithViews();
 builder.Services
     .AddIdentityCore<Data.Entities.User>(e =>
     {
-        e.User.RequireUniqueEmail = true;
+        e.Password.RequireUppercase = false;
     });
 
 var app = builder.Build();

@@ -68,52 +68,37 @@ namespace Data.Repos
             return Task.FromResult(Convert.ToString(user.Id));
         }
 
-        public async Task<string> GetUserNameAsync(User user, CancellationToken cancellationToken)
+        public Task<string> GetUserNameAsync(User user, CancellationToken cancellationToken)
         {
-            var foundUser = await FindByIdAsync(user.Id, cancellationToken);
-
-            return foundUser?.UserName;
+            return Task.FromResult(user.UserName);
         }
 
-        public async Task<string> GetNormalizedUserNameAsync(User user, CancellationToken cancellationToken)
+        public Task<string> GetNormalizedUserNameAsync(User user, CancellationToken cancellationToken)
         {
-            var foundUser = await FindByIdAsync(user.Id, cancellationToken);
-
-            return foundUser?.NormalizedUserName;
+            return Task.FromResult(user.NormalizedUserName);
         }
 
-        public async Task<string> GetPasswordHashAsync(User user, CancellationToken cancellationToken)
+        public Task<string> GetPasswordHashAsync(User user, CancellationToken cancellationToken)
         {
-            var foundUser = await FindByIdAsync(user.Id, cancellationToken);
-
-            return foundUser?.PasswordHash;
+            return Task.FromResult(user.PasswordHash);
         }
 
-        public async Task SetUserNameAsync(User user, string userName, CancellationToken cancellationToken)
+        public Task SetUserNameAsync(User user, string userName, CancellationToken cancellationToken)
         {
-            var foundUser = await FindByIdAsync(user.Id, cancellationToken);
-
-            foundUser.UserName = userName;
-
-            await UpdateAsync(foundUser, cancellationToken);
+            user.UserName = userName;
+            return Task.CompletedTask;
         }
 
-        public async Task SetNormalizedUserNameAsync(User user, string normalizedName, CancellationToken cancellationToken)
+        public Task SetNormalizedUserNameAsync(User user, string normalizedName, CancellationToken cancellationToken)
         {
-            var foundUser = await FindByIdAsync(user.Id, cancellationToken);
-
-            foundUser.NormalizedUserName = normalizedName;
-
-            await UpdateAsync(foundUser, cancellationToken);
+            user.NormalizedUserName = normalizedName;
+            return Task.CompletedTask;
         }
 
-        public async Task SetPasswordHashAsync(User user, string passwordHash, CancellationToken cancellationToken)
+        public Task SetPasswordHashAsync(User user, string passwordHash, CancellationToken cancellationToken)
         {
-            var foundUser = await FindByIdAsync(user.Id, cancellationToken);
-
-            foundUser.PasswordHash = passwordHash;
-
-            await UpdateAsync(foundUser, cancellationToken);
+            user.PasswordHash = passwordHash;
+            return Task.CompletedTask;
         }
 
         public async Task<IdentityResult> CreateAsync(User user, CancellationToken cancellationToken)
@@ -127,7 +112,7 @@ namespace Data.Repos
                 .WithParameter("normalizedUserName", user.NormalizedUserName)
                 .WithParameter("passwordHash", user.PasswordHash);
 
-            await cmd.ExecuteNonQueryAsync(cancellationToken);
+            await _dbContext.SaveChangesAsync(cancellationToken);
 
             return IdentityResult.Success;
         }
@@ -143,7 +128,7 @@ namespace Data.Repos
                 .WithParameter("normalizedUserName", user.NormalizedUserName)
                 .WithParameter("passwordHash", user.PasswordHash);
 
-            await cmd.ExecuteNonQueryAsync(cancellationToken);
+            await _dbContext.SaveChangesAsync(cancellationToken);
 
             return IdentityResult.Success;
         }
@@ -154,7 +139,7 @@ namespace Data.Repos
                 .WithText("DELETE Users WHERE Id = @id")
                 .WithParameter("id", user.Id);
 
-            await cmd.ExecuteNonQueryAsync(cancellationToken);
+            await _dbContext.SaveChangesAsync(cancellationToken);
 
             return IdentityResult.Success;
         }
