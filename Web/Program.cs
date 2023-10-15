@@ -28,9 +28,10 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
 app.UseAuthorization();
 
 app.MapDefaultControllerRoute();
+
+await app.RunMigrateDbStartupTaskAsync(app.Environment);
 
 app.Run();

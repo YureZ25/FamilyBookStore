@@ -1,11 +1,5 @@
-use [master];
-
-if not exists (select * from master.sys.databases where name = 'adonet-fbs')
-begin
-	create database [adonet-fbs];
-end
-
-go
+--use [master];
+--create database [adonet-fbs];
 
 use [adonet-fbs];
 
@@ -109,22 +103,3 @@ begin
 	ON Book2Stores(BookId);
 end
 
-merge Genres as target
-using (values
-('Классическая проза'),
-('Современная проза'),
-('Поэзия'),
-('Фольклор'),
-('Фантастика'),
-('Фантастика'),
-('Фэнтези'),
-('Манга'),
-('Комикс'),
-('Ранобэ'),
-('Детектив'),
-('Приключения'),
-('Философия'),
-('IT')) as source(Name)
-on target.Name = source.Name
-when not matched 
-then insert (Name) values (source.Name);
