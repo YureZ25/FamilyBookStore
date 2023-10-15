@@ -103,7 +103,7 @@ namespace Data.Repos
 
         public async Task<IdentityResult> CreateAsync(User user, CancellationToken cancellationToken)
         {
-            var cmd = _dbContext.CreateCommand()
+            _dbContext.CreateCommand(user)
                 .WithText(@"INSERT INTO Users (UserName, NormalizedUserName, PasswordHash)
                     VALUES (@userName, @normalizedUserName, @passwordHash);
                     SET @id = SCOPE_IDENTITY();")
@@ -119,7 +119,7 @@ namespace Data.Repos
 
         public async Task<IdentityResult> UpdateAsync(User user, CancellationToken cancellationToken)
         {
-            var cmd = _dbContext.CreateCommand()
+            _dbContext.CreateCommand(user)
                 .WithText(@"UPDATE Users
                     SET UserName = @userName, NormalizedUserName = @normalizedUserName, PasswordHash = @passwordHash
                     WHERE Id = @id")

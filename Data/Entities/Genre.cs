@@ -5,6 +5,7 @@ namespace Data.Entities
 {
     public class Genre : ICommonEntity
     {
+        [Key]
         public int Id { get; set; }
 
         [StringLength(1024)]

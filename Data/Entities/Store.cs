@@ -1,9 +1,11 @@
 ﻿using Data.Entities.Contracts;
+using System.ComponentModel.DataAnnotations;
 
 namespace Data.Entities
 {
     public class Store : ICommonEntity
     {
+        [Key]
         public int Id { get; set; }
 
         public string Name { get; set; }

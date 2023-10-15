@@ -50,7 +50,7 @@ namespace Data.Repos
 
         public void Insert(Author author)
         {
-            _dbContext.CreateCommand()
+            _dbContext.CreateCommand(author)
                 .WithText(@"INSERT INTO Authors (FirstName, LastName) 
                     VALUES (@firstName, @lastName); 
                     SET @id = SCOPE_IDENTITY();")
@@ -61,7 +61,7 @@ namespace Data.Repos
 
         public void Update(Author author)
         {
-            _dbContext.CreateCommand()
+            _dbContext.CreateCommand(author)
                 .WithText(@"UPDATE Authors 
                     SET FirstName = @firstName, LastName = @lastName 
                     WHERE Id = @id")

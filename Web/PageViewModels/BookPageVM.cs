@@ -7,5 +7,6 @@ namespace Web.PageViewModels
         public BookVM Book { get; set; }
         public IEnumerable<AuthorVM> Authors { get; set; }
         public IEnumerable<GenreVM> Genres { get; set; }
+        public IEnumerable<StoreVM> Stores { get; set; }
     }
 }

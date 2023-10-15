@@ -49,7 +49,7 @@ namespace Data.Repos
 
         public void Insert(Genre genre)
         {
-            _dbContext.CreateCommand()
+            _dbContext.CreateCommand(genre)
                 .WithText(@"INSERT INTO Genres (Name) 
                     VALUES (@name); 
                     SET @id = SCOPE_IDENTITY();")
@@ -59,7 +59,7 @@ namespace Data.Repos
 
         public void Update(Genre genre)
         {
-            _dbContext.CreateCommand()
+            _dbContext.CreateCommand(genre)
                 .WithText(@"UPDATE Genres 
                     SET Name = @name 
                     WHERE Id = @id")

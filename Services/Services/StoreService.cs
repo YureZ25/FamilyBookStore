@@ -1,4 +1,5 @@
-﻿using Data.Entities;
+﻿using Data.Context.Contracts;
+using Data.Entities;
 using Data.Repos.Contracts;
 using Microsoft.AspNetCore.Identity;
 using Services.Exeptions;
@@ -10,11 +11,13 @@ namespace Services.Services
     internal class StoreService : IStoreService
     {
         private readonly IStoreRepo _storeRepo;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<User> _userManager;
 
-        public StoreService(IStoreRepo storeRepo, UserManager<User> userManager)
+        public StoreService(IStoreRepo storeRepo, IUnitOfWork unitOfWork, UserManager<User> userManager)
         {
             _storeRepo = storeRepo;
+            _unitOfWork = unitOfWork;
             _userManager = userManager;
         }
 
@@ -33,6 +36,53 @@ namespace Services.Services
             });
 
             return storesVM;
+        }
+
+        public async Task<IEnumerable<StoreVM>> GetStoresAsync(CancellationToken cancellationToken)
+        {
+            var stores = await _storeRepo.GetStoresAsync(cancellationToken);
+
+            return stores.Select(s => s.Map());
+        }
+
+        public async Task<StoreVM> GetByIdAsync(int id, CancellationToken cancellationToken)
+        {
+            var store = await _storeRepo.GetByIdAsync(id, cancellationToken);
+
+            return store.Map();
+        }
+
+        public async Task<StoreVM> InsertAsync(StoreVM storeVM, CancellationToken cancellationToken)
+        {
+            var store = storeVM.Map();
+
+            _storeRepo.Insert(store);
+
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            return store.Map();
+        }
+
+        public async Task<StoreVM> UpdateAsync(StoreVM storeVM, CancellationToken cancellationToken)
+        {
+            var store = storeVM.Map();
+
+            _storeRepo.Update(store);
+
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            return store.Map();
+        }
+
+        public async Task<StoreVM> DeleteByIdAsync(int id, CancellationToken cancellationToken)
+        {
+            var store = await GetByIdAsync(id, cancellationToken);
+
+            _storeRepo.DeleteById(store.Id);
+
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            return store;
         }
     }
 }

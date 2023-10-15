@@ -82,7 +82,7 @@ namespace Data.Repos
 
         public void Insert(Book book)
         {
-            _dbContext.CreateCommand()
+            _dbContext.CreateCommand(book)
                 .WithText(@"INSERT INTO Books (Title, Description, AuthorId, GenreId) 
                     VALUES (@title, @description, @authorId, @genreId); 
                     SET @id = SCOPE_IDENTITY();")
@@ -95,7 +95,7 @@ namespace Data.Repos
 
         public void Update(Book book)
         {
-            _dbContext.CreateCommand()
+            _dbContext.CreateCommand(book)
                 .WithText(@"UPDATE Books 
                     SET Title = @title, Description = @description, AuthorId = @authorId, GenreId = @genreId 
                     WHERE Id = @id")

@@ -32,10 +32,10 @@ namespace Data.Repos
                         Books.GenreId, 
                         Genres.Name AS GenreName
                     FROM Stores
-                    JOIN Book2Stores ON Stores.Id = Book2Stores.StoreId
-                    JOIN Books ON Book2Stores.BookId = Books.Id
-                    JOIN Authors ON Books.AuthorId = Authors.Id
-                    JOIN Genres ON Books.GenreId = Genres.Id
+                    LEFT JOIN Book2Stores ON Stores.Id = Book2Stores.StoreId
+                    LEFT JOIN Books ON Book2Stores.BookId = Books.Id
+                    LEFT JOIN Authors ON Books.AuthorId = Authors.Id
+                    LEFT JOIN Genres ON Books.GenreId = Genres.Id
                     ORDER BY Stores.Id");
 
             using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
@@ -119,10 +119,10 @@ namespace Data.Repos
                         Books.GenreId, 
                         Genres.Name AS GenreName
                     FROM Stores
-                    JOIN Book2Stores ON Stores.Id = Book2Stores.StoreId
-                    JOIN Books ON Book2Stores.BookId = Books.Id
-                    JOIN Authors ON Books.AuthorId = Authors.Id
-                    JOIN Genres ON Books.GenreId = Genres.Id
+                    LEFT JOIN Book2Stores ON Stores.Id = Book2Stores.StoreId
+                    LEFT JOIN Books ON Book2Stores.BookId = Books.Id
+                    LEFT JOIN Authors ON Books.AuthorId = Authors.Id
+                    LEFT JOIN Genres ON Books.GenreId = Genres.Id
                     WHERE Stores.Id = @id
                     ORDER BY Stores.Id")
                 .WithParameter("id", id);
@@ -139,7 +139,7 @@ namespace Data.Repos
 
         public void Insert(Store store)
         {
-            _dbContext.CreateCommand()
+            _dbContext.CreateCommand(store)
                 .WithText(@"INSERT INTO Stores (Name, Address) 
                     VALUES (@name, @address); 
                     SET @id = SCOPE_IDENTITY()")
@@ -150,7 +150,7 @@ namespace Data.Repos
 
         public void Update(Store store)
         {
-            _dbContext.CreateCommand()
+            _dbContext.CreateCommand(store)
                 .WithText(@"UPDATE Stores 
                     SET Name = @name, Address = @address 
                     WHERE Id = @id")
@@ -174,6 +174,8 @@ namespace Data.Repos
                 Name = reader.GetString(nameof(Store.Name)),
                 Address = reader.GetString(nameof(Store.Address)),
             };
+
+            if (reader.IsDBNull(nameof(Book2Stores.BookId))) return store;
 
             var book = new Book
             {

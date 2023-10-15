@@ -10,12 +10,18 @@ namespace Web.Controllers
         private readonly IBookService _bookService;
         private readonly IAuthorService _authorService;
         private readonly IGenreService _genreService;
+        private readonly IStoreService _storeService;
 
-        public BookController(IBookService bookService, IAuthorService authorService, IGenreService genreService)
+        public BookController(
+            IBookService bookService, 
+            IAuthorService authorService, 
+            IGenreService genreService,
+            IStoreService storeService)
         {
             _bookService = bookService;
             _authorService = authorService;
             _genreService = genreService;
+            _storeService = storeService;
         }
 
         [HttpGet]
@@ -33,6 +39,7 @@ namespace Web.Controllers
             {
                 Authors = await _authorService.GetAuthorsAsync(cancellationToken),
                 Genres = await _genreService.GetGenresAsync(cancellationToken),
+                Stores = await _storeService.GetStoresAsync(cancellationToken),
             };
 
             if (!id.HasValue) return View(model);

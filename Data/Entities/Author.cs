@@ -5,6 +5,7 @@ namespace Data.Entities
 {
     public class Author : ICommonEntity
     {
+        [Key]
         public int Id { get; set; }
 
         [StringLength(1024)]

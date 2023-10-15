@@ -1,0 +1,32 @@
+﻿@model StorePageVM
+
+@{
+    ViewData["Title"] = Model?.Store is null ? "Добавление хранилища" : "Изменение хранилища";
+}
+
+<form>
+    <div class="row g-3 w-75 mx-auto">
+        <input type="hidden" asp-for="Store.Id" />
+
+        <div class="col">
+            <label for="nameInput" class="form-label">Название:</label>
+            <input asp-for="Store.Name" class="form-control" id="nameInput" />
+        </div>
+        <div class="col">
+            <label for="addressInput" class="form-label">Адрес:</label>
+            <input asp-for="Store.Address" class="form-control" id="addressInput" />
+        </div>
+
+        <div class="col-12 d-flex justify-content-around">
+            @if (Model?.Store is null)
+            {
+                <button type="submit" formmethod="post" asp-action="AddStore" class="btn btn-primary">Добавить</button>
+            }
+            else
+            {
+                <button type="submit" formmethod="post" asp-action="EditStore" class="btn btn-primary">Изменить</button>
+                <button type="submit" formmethod="post" asp-action="RemoveStore" class="btn btn-danger">Удалить</button>
+            }
+        </div>
+    </div>
+</form>
