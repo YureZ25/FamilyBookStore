@@ -15,7 +15,7 @@ namespace Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
-            var stores = await _storeService.GetUserStoresOverviewAsync(7, cancellationToken);
+            var stores = await _storeService.GetUserStoresOverviewAsync(1, cancellationToken);
 
             return View(stores);
         }

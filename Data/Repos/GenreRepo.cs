@@ -53,8 +53,8 @@ namespace Data.Repos
                 .WithText(@"INSERT INTO Genres (Name) 
                     VALUES (@name); 
                     SET @id = SCOPE_IDENTITY();")
-                .WithParameter("id", genre.Id, ParameterDirection.Output)
-                .WithParameter("name", genre.Name);
+                .WithParameter(e => e.Id, ParameterDirection.Output)
+                .WithParameter(e => e.Name);
         }
 
         public void Update(Genre genre)
@@ -63,8 +63,8 @@ namespace Data.Repos
                 .WithText(@"UPDATE Genres 
                     SET Name = @name 
                     WHERE Id = @id")
-                .WithParameter("id", genre.Id)
-                .WithParameter("name", genre.Name);
+                .WithParameter(e => e.Id)
+                .WithParameter(e => e.Name);
         }
 
         public void DeleteById(int id)

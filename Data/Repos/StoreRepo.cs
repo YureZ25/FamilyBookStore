@@ -143,9 +143,9 @@ namespace Data.Repos
                 .WithText(@"INSERT INTO Stores (Name, Address) 
                     VALUES (@name, @address); 
                     SET @id = SCOPE_IDENTITY()")
-                .WithParameter("id", store.Id, ParameterDirection.Output)
-                .WithParameter("name", store.Name)
-                .WithParameter("address", store.Address);
+                .WithParameter(e => e.Id, ParameterDirection.Output)
+                .WithParameter(e => e.Name)
+                .WithParameter(e => e.Address);
         }
 
         public void Update(Store store)
@@ -154,9 +154,9 @@ namespace Data.Repos
                 .WithText(@"UPDATE Stores 
                     SET Name = @name, Address = @address 
                     WHERE Id = @id")
-                .WithParameter("id", store.Id)
-                .WithParameter("name", store.Name)
-                .WithParameter("address", store.Address);
+                .WithParameter(e => e.Id)
+                .WithParameter(e => e.Name)
+                .WithParameter(e => e.Address);
         }
 
         public void DeleteById(int id)

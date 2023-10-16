@@ -1,8 +1,8 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using Data.Context.Contracts;
+using Data.Entities.Contracts;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
-using System.ComponentModel.DataAnnotations;
 using System.Data;
-using System.Reflection;
 
 namespace Data.Context
 {
@@ -13,7 +13,7 @@ namespace Data.Context
         private readonly SqlConnection _connection;
         private readonly SqlTransaction _transaction;
 
-        public Dictionary<SqlCommand, object> Commands { get; private set; } = new Dictionary<SqlCommand, object>();
+        public Dictionary<ICommandBuilder, IEntity> Commands { get; private set; } = new();
 
         public AdoNetDbContext(IConfiguration configuration)
         {
@@ -23,45 +23,46 @@ namespace Data.Context
             _transaction = _connection.BeginTransaction();
         }
 
-        public SqlCommand CreateCommand(object target = null)
+        public SqlCommand CreateCommand()
         {
             var command = _connection.CreateCommand();
             command.Transaction = _transaction;
-            Commands.Add(command, target);
+            Commands.Add(new AdoNetCommandBuilder<IEntity>(command, null), null);
             return command;
+        }
+
+        public AdoNetCommandBuilder<T> CreateCommand<T>(T target)
+            where T : class, IEntity
+        {
+            var command = _connection.CreateCommand();
+            command.Transaction = _transaction;
+
+            var builder = new AdoNetCommandBuilder<T>(command, target);
+
+            Commands.Add(builder, target);
+
+            return builder;
         }
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
         {
             int updated = 0;
-            foreach (var (command, target) in Commands)
+            foreach (var (commandBuilder, target) in Commands)
             {
-                updated += await command.ExecuteNonQueryAsync(cancellationToken);
+                updated += await commandBuilder.Command.ExecuteNonQueryAsync(cancellationToken);
 
-                SetKeyProperty(command, target);
+                if (target is null) continue;
+
+                commandBuilder.ApplyEntityUpdates(target);
+
+                foreach (var otherCommandBuilder in Commands.Keys.Where(e => e.EntityType == commandBuilder.EntityType))
+                {
+                    otherCommandBuilder.ApplyParametersUpdates(target);
+                }
             }
             _transaction.Commit();
             Commands.Clear();
             return updated;
-        }
-
-        private void SetKeyProperty(SqlCommand command, object target)
-        {
-            if (target == null) return;
-
-            var keyProp = target.GetType().GetProperties()
-                .SingleOrDefault(e => e.GetCustomAttribute<KeyAttribute>() != null);
-
-            if (keyProp == null) return;
-
-            var keyParam = command.Parameters
-                .Cast<SqlParameter>()
-                .Where(p => p.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
-                .FirstOrDefault(p => p.ParameterName.Equals(keyProp.Name, StringComparison.InvariantCultureIgnoreCase));
-
-            if (keyParam == null) throw new ApplicationException($"Output param for property {keyProp} was not found. Param must have same name as prop.");
-
-            keyProp.SetValue(target, keyParam.Value);
         }
 
         public void Dispose()

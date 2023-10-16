@@ -107,10 +107,10 @@ namespace Data.Repos
                 .WithText(@"INSERT INTO Users (UserName, NormalizedUserName, PasswordHash)
                     VALUES (@userName, @normalizedUserName, @passwordHash);
                     SET @id = SCOPE_IDENTITY();")
-                .WithParameter("id", user.Id, ParameterDirection.Output)
-                .WithParameter("userName", user.UserName)
-                .WithParameter("normalizedUserName", user.NormalizedUserName)
-                .WithParameter("passwordHash", user.PasswordHash);
+                .WithParameter(e => e.Id, ParameterDirection.Output)
+                .WithParameter(e => e.UserName)
+                .WithParameter(e => e.NormalizedUserName)
+                .WithParameter(e => e.PasswordHash);
 
             await _dbContext.SaveChangesAsync(cancellationToken);
 
@@ -123,10 +123,10 @@ namespace Data.Repos
                 .WithText(@"UPDATE Users
                     SET UserName = @userName, NormalizedUserName = @normalizedUserName, PasswordHash = @passwordHash
                     WHERE Id = @id")
-                .WithParameter("id", user.Id)
-                .WithParameter("userName", user.UserName)
-                .WithParameter("normalizedUserName", user.NormalizedUserName)
-                .WithParameter("passwordHash", user.PasswordHash);
+                .WithParameter(e => e.Id)
+                .WithParameter(e => e.UserName)
+                .WithParameter(e => e.NormalizedUserName)
+                .WithParameter(e => e.PasswordHash);
 
             await _dbContext.SaveChangesAsync(cancellationToken);
 

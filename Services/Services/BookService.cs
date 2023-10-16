@@ -41,7 +41,9 @@ namespace Services.Services
 
             _bookRepo.Insert(book);
 
-            var inserted = await _unitOfWork.SaveChangesAsync(cancellationToken);
+            _bookRepo.AttachToStore(book);
+
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return book.Map();
         }
@@ -52,7 +54,17 @@ namespace Services.Services
 
             _bookRepo.Update(book);
 
-            var updated = await _unitOfWork.SaveChangesAsync(cancellationToken);
+            if (book.Store != null)
+            {
+                book = await _bookRepo.GetByIdAsync(book.Id, cancellationToken);
+                if (book.Store.Id != bookVM.Store.Id)
+                {
+                    _bookRepo.DetachFromStore(book);
+                    _bookRepo.AttachToStore(book);
+                }
+            }
+
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return book.Map();
         }
@@ -63,7 +75,7 @@ namespace Services.Services
 
             _bookRepo.DeleteById(book.Id);
 
-            var deleted = await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return book;
         }

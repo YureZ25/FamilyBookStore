@@ -54,9 +54,9 @@ namespace Data.Repos
                 .WithText(@"INSERT INTO Authors (FirstName, LastName) 
                     VALUES (@firstName, @lastName); 
                     SET @id = SCOPE_IDENTITY();")
-                .WithParameter("id", author.Id, ParameterDirection.Output)
-                .WithParameter("firstName", author.FirstName)
-                .WithParameter("lastName", author.LastName);
+                .WithParameter(e => e.Id, ParameterDirection.Output)
+                .WithParameter(e => e.FirstName)
+                .WithParameter(e => e.LastName);
         }
 
         public void Update(Author author)
@@ -65,9 +65,9 @@ namespace Data.Repos
                 .WithText(@"UPDATE Authors 
                     SET FirstName = @firstName, LastName = @lastName 
                     WHERE Id = @id")
-                .WithParameter("id", author.Id)
-                .WithParameter("firstName", author.FirstName)
-                .WithParameter("lastName", author.LastName);
+                .WithParameter(e => e.Id)
+                .WithParameter(e => e.FirstName)
+                .WithParameter(e => e.LastName);
         }
 
         public void DeleteById(int id)

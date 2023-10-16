@@ -80,17 +80,35 @@ namespace Data.Repos
             return null;
         }
 
+        public void AttachToStore(Book book)
+        {
+            _dbContext.CreateCommand(book)
+                .WithText(@"INSERT INTO Book2Stores (BookId, StoreId)
+                    VALUES (@bookId, @storeId);")
+                .WithParameter(e => e.Id, "bookId", ParameterDirection.InputOutput)
+                .WithParameter(e => e.Store.Id, "storeId");
+        }
+
+        public void DetachFromStore(Book book)
+        {
+            _dbContext.CreateCommand(book)
+                .WithText(@"DELETE Book2Stores
+                    WHERE BookId = @bookId AND StoreId = @storeId")
+                .WithParameter(e => e.Id, "bookId")
+                .WithParameter(e => e.Store.Id, "storeId");
+        }
+
         public void Insert(Book book)
         {
             _dbContext.CreateCommand(book)
                 .WithText(@"INSERT INTO Books (Title, Description, AuthorId, GenreId) 
                     VALUES (@title, @description, @authorId, @genreId); 
                     SET @id = SCOPE_IDENTITY();")
-                .WithParameter("id", book.Id, ParameterDirection.Output)
-                .WithParameter("title", book.Title)
-                .WithParameter("description", book.Description)
-                .WithParameter("authorId", book.AuthorId)
-                .WithParameter("genreId", book.GenreId);
+                .WithParameter(e => e.Id, ParameterDirection.Output)
+                .WithParameter(e => e.Title)
+                .WithParameter(e => e.Description)
+                .WithParameter(e => e.AuthorId)
+                .WithParameter(e => e.GenreId);
         }
 
         public void Update(Book book)
@@ -99,11 +117,11 @@ namespace Data.Repos
                 .WithText(@"UPDATE Books 
                     SET Title = @title, Description = @description, AuthorId = @authorId, GenreId = @genreId 
                     WHERE Id = @id")
-                .WithParameter("id", book.Id)
-                .WithParameter("title", book.Title)
-                .WithParameter("description", book.Description)
-                .WithParameter("authorId", book.AuthorId)
-                .WithParameter("genreId", book.GenreId);
+                .WithParameter(e => e.Id)
+                .WithParameter(e => e.Title)
+                .WithParameter(e => e.Description)
+                .WithParameter(e => e.AuthorId)
+                .WithParameter(e => e.GenreId);
         }
 
         public void DeleteById(int id)
@@ -115,7 +133,7 @@ namespace Data.Repos
 
         private static Book Map(DbDataReader reader)
         {
-            return new Book
+            var book = new Book
             {
                 Id = reader.GetInt32(nameof(Book.Id)),
                 Title = reader.GetString(nameof(Book.Title)),
@@ -133,13 +151,18 @@ namespace Data.Repos
                     Id = reader.GetInt32(nameof(Book.GenreId)),
                     Name = reader.GetString(nameof(Genre.Name)),
                 },
-                Store = new Store
-                {
-                    Id = reader.GetInt32(nameof(Book2Stores.StoreId)),
-                    Name = reader.GetString("StoreName"),
-                    Address = reader.GetString(nameof(Store.Address)),
-                },
             };
+
+            if (reader.IsDBNull(nameof(Book2Stores.StoreId))) return book;
+
+            book.Store = new Store
+            {
+                Id = reader.GetInt32(nameof(Book2Stores.StoreId)),
+                Name = reader.GetString("StoreName"),
+                Address = reader.GetString(nameof(Store.Address)),
+            };
+
+            return book;
         }
     }
 }
