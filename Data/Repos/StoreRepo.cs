@@ -170,30 +170,30 @@ namespace Data.Repos
         {
             var store = new Store
             {
-                Id = reader.GetInt32(nameof(Store.Id)),
-                Name = reader.GetString(nameof(Store.Name)),
-                Address = reader.GetString(nameof(Store.Address)),
+                Id = reader.MapInt32(nameof(Store.Id)),
+                Name = reader.MapString(nameof(Store.Name)),
+                Address = reader.MapString(nameof(Store.Address)),
             };
 
             if (reader.IsDBNull(nameof(Book2Stores.BookId))) return store;
 
             var book = new Book
             {
-                Id = reader.GetInt32(nameof(Book2Stores.BookId)),
-                Title = reader.GetString(nameof(Book.Title)),
-                Description = reader.GetString(nameof(Book.Description)),
-                AuthorId = reader.GetInt32(nameof(Book.AuthorId)),
+                Id = reader.MapInt32(nameof(Book2Stores.BookId)),
+                Title = reader.MapString(nameof(Book.Title)),
+                Description = reader.MapString(nameof(Book.Description)),
+                AuthorId = reader.MapInt32(nameof(Book.AuthorId)),
                 Author = new Author
                 {
-                    Id = reader.GetInt32(nameof(Book.AuthorId)),
-                    FirstName = reader.GetString(nameof(Author.FirstName)),
-                    LastName = reader.GetString(nameof(Author.LastName)),
+                    Id = reader.MapInt32(nameof(Book.AuthorId)),
+                    FirstName = reader.MapString(nameof(Author.FirstName)),
+                    LastName = reader.MapString(nameof(Author.LastName)),
                 },
-                GenreId = reader.GetInt32(nameof(Book.GenreId)),
+                GenreId = reader.MapInt32(nameof(Book.GenreId)),
                 Genre = new Genre
                 {
-                    Id = reader.GetInt32(nameof(Book.GenreId)),
-                    Name = reader.GetString("GenreName"),
+                    Id = reader.MapInt32(nameof(Book.GenreId)),
+                    Name = reader.MapString("GenreName"),
                 },
                 Store = store,
             };

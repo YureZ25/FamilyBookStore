@@ -154,10 +154,10 @@ namespace Data.Repos
         {
             return new User
             {
-                Id = reader.GetInt32(nameof(User.Id)),
-                UserName = reader.GetString(nameof(User.UserName)),
-                NormalizedUserName = reader.GetString(nameof(User.NormalizedUserName)),
-                PasswordHash = reader.GetString(nameof(User.PasswordHash)),
+                Id = reader.MapInt32(nameof(User.Id)),
+                UserName = reader.MapString(nameof(User.UserName)),
+                NormalizedUserName = reader.MapString(nameof(User.NormalizedUserName)),
+                PasswordHash = reader.MapString(nameof(User.PasswordHash)),
             };
         }
     }

@@ -4,7 +4,6 @@ using Data.Extensions;
 using Data.Repos.Contracts;
 using System.Data;
 using System.Data.Common;
-using System.Text;
 
 namespace Data.Repos
 {
@@ -81,9 +80,9 @@ namespace Data.Repos
         {
             return new Author
             {
-                Id = reader.GetInt32(nameof(Author.Id)),
-                FirstName = reader.GetString(nameof(Author.FirstName)),
-                LastName = reader.GetString(nameof(Author.LastName)),
+                Id = reader.MapInt32(nameof(Author.Id)),
+                FirstName = reader.MapString(nameof(Author.FirstName)),
+                LastName = reader.MapString(nameof(Author.LastName)),
             };
         }
     }

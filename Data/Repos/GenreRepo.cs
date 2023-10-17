@@ -78,8 +78,8 @@ namespace Data.Repos
         {
             return new Genre
             {
-                Id = reader.GetInt32(nameof(Genre.Id)),
-                Name = reader.GetString(nameof(Genre.Name)),
+                Id = reader.MapInt32(nameof(Genre.Id)),
+                Name = reader.MapString(nameof(Genre.Name)),
             };
         }
     }

@@ -37,12 +37,12 @@ namespace Data.Context
 
         public AdoNetCommandBuilder<TEntity> WithParameter<TProp>(Expression<Func<TEntity, TProp>> targetProperty, string explicitName, ParameterDirection direction = ParameterDirection.Input)
         {
-            if (targetProperty.Body is not MemberExpression memberExpression)
+            if (targetProperty.Body is not MemberExpression propExpression)
             {
                 throw new ApplicationException("Expression must access member of entity type");
             }
 
-            var memberName = explicitName ?? memberExpression.Member.Name;
+            var memberName = explicitName ?? propExpression.Member.Name;
 
             var sqlParameter = new SqlParameter
             {
@@ -56,7 +56,10 @@ namespace Data.Context
             var paramExpr = Expression.Parameter(typeof(SqlParameter), "p");
             var paramValueExpr = Expression.Property(paramExpr, nameof(SqlParameter.Value));
 
-            var assignPropToParamExpr = Expression.Assign(paramValueExpr, Expression.Convert(memberExpression, typeof(object)));
+            var propObjectExp = Expression.Convert(propExpression, typeof(object));
+            var checkedPropExpr = Expression.Condition(Expression.NotEqual(propObjectExp, Expression.Constant(null)), propObjectExp, Expression.Constant(DBNull.Value, typeof(object)));
+
+            var assignPropToParamExpr = Expression.Assign(paramValueExpr, checkedPropExpr);
             var assignPropToParam = Expression.Lambda<Action<SqlParameter, TEntity>>(assignPropToParamExpr, paramExpr, entityParam).Compile();
 
             assignPropToParam(sqlParameter, _entity);
@@ -70,7 +73,7 @@ namespace Data.Context
 
             if (direction is ParameterDirection.Input) return this;
 
-            var assignParamToPropExpr = Expression.Assign(memberExpression, Expression.Convert(paramValueExpr, memberExpression.Type));
+            var assignParamToPropExpr = Expression.Assign(propExpression, Expression.Convert(paramValueExpr, propExpression.Type));
             var assignParamToProp = Expression.Lambda<Action<TEntity, SqlParameter>>(assignParamToPropExpr, entityParam, paramExpr).Compile();
 
             adoNetParameter.AssignParamToProp = assignParamToProp;

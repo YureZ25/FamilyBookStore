@@ -71,13 +71,15 @@ namespace Services.Services
 
         public async Task<BookVM> DeleteByIdAsync(int id, CancellationToken cancellationToken)
         {
-            var book = await GetByIdAsync(id, cancellationToken);
+            var book = await _bookRepo.GetByIdAsync(id, cancellationToken);
+
+            _bookRepo.DetachFromStore(book);
 
             _bookRepo.DeleteById(book.Id);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            return book;
+            return book.Map();
         }
     }
 }
