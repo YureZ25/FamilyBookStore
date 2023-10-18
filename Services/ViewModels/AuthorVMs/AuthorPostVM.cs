@@ -1,12 +1,10 @@
-﻿using Data.Entities.Contracts;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace Data.Entities
+namespace Services.ViewModels.AuthorVMs
 {
-    public class Author : ICommonEntity
+    public class AuthorPostVM
     {
-        [Key]
-        public int Id { get; set; }
+        public int? Id { get; set; }
 
         [Required]
         [StringLength(1024)]

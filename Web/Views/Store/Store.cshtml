@@ -1,24 +1,26 @@
 ﻿@model StorePageVM
 
 @{
-    ViewData["Title"] = Model?.Store is null ? "Добавление хранилища" : "Изменение хранилища";
+    ViewData["Title"] = Model?.StoreGet is null ? "Добавление хранилища" : "Изменение хранилища";
 }
 
 <form>
     <div class="row g-3 w-75 mx-auto">
-        <input type="hidden" asp-for="Store.Id" />
+        <input type="hidden" asp-for="StoreGet.Id" value="@Model.StoreGet?.Id" />
 
         <div class="col">
-            <label for="nameInput" class="form-label">Название:</label>
-            <input asp-for="Store.Name" class="form-control" id="nameInput" />
+            <label asp-for="StorePost.Name" class="form-label">Название:</label>
+            <input asp-for="StorePost.Name" value="@Model.StoreGet?.Name" class="form-control" />
+            <span asp-validation-for="StorePost.Name" class="text-danger"></span>
         </div>
         <div class="col">
-            <label for="addressInput" class="form-label">Адрес:</label>
-            <input asp-for="Store.Address" class="form-control" id="addressInput" />
+            <label asp-for="StorePost.Address" class="form-label">Адрес:</label>
+            <input asp-for="StorePost.Address" value="@Model.StoreGet?.Address" class="form-control" />
+            <span asp-validation-for="StorePost.Address" class="text-danger"></span>
         </div>
 
         <div class="col-12 d-flex justify-content-around">
-            @if (Model?.Store is null)
+            @if (Model?.StoreGet is null)
             {
                 <button type="submit" formmethod="post" asp-action="AddStore" class="btn btn-primary">Добавить</button>
             }

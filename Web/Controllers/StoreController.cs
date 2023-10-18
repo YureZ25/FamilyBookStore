@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Services.Services.Contracts;
-using Services.ViewModels;
+using Services.ViewModels.StoreVMs;
 using Web.PageViewModels;
 
 namespace Web.Controllers
@@ -39,30 +39,40 @@ namespace Web.Controllers
 
             return View(new StorePageVM
             {
-                Store = await _storeService.GetByIdAsync(id.Value, cancellationToken),
+                StoreGet = await _storeService.GetByIdAsync(id.Value, cancellationToken),
             });
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddStore([FromForm(Name = nameof(StorePageVM.Store))] StoreVM storeVM, CancellationToken cancellationToken)
+        public async Task<IActionResult> AddStore([FromForm(Name = nameof(StorePageVM.StorePost))] StorePostVM storeVM, CancellationToken cancellationToken)
         {
-            storeVM = await _storeService.InsertAsync(storeVM, cancellationToken);
+            if (!ModelState.IsValid)
+            {
+                return RedirectToAction(nameof(Store), new { storeVM.Id });
+            }
+
+            await _storeService.InsertAsync(storeVM, cancellationToken);
 
             return RedirectToAction(nameof(StoreList));
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditStore([FromForm(Name = nameof(StorePageVM.Store))] StoreVM storeVM, CancellationToken cancellationToken)
+        public async Task<IActionResult> EditStore([FromForm(Name = nameof(StorePageVM.StorePost))] StorePostVM storeVM, CancellationToken cancellationToken)
         {
-            storeVM = await _storeService.UpdateAsync(storeVM, cancellationToken);
+            if (!ModelState.IsValid)
+            {
+                return RedirectToAction(nameof(Store), new { storeVM.Id });
+            }
+
+            await _storeService.UpdateAsync(storeVM, cancellationToken);
 
             return RedirectToAction(nameof(StoreList));
         }
 
         [HttpPost]
-        public async Task<IActionResult> RemoveStore([FromForm(Name = nameof(StorePageVM.Store))] StoreVM storeVM, CancellationToken cancellationToken)
+        public async Task<IActionResult> RemoveStore([FromForm(Name = nameof(StorePageVM.StorePost))] StorePostVM storeVM, CancellationToken cancellationToken)
         {
-            storeVM = await _storeService.DeleteByIdAsync(storeVM.Id, cancellationToken);
+            await _storeService.DeleteByIdAsync(storeVM.Id ?? 0, cancellationToken);
 
             return RedirectToAction(nameof(StoreList));
         }

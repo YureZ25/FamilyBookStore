@@ -1,51 +1,80 @@
 ﻿@model BookPageVM
 
 @{
-    ViewData["Title"] = Model?.Book is null ? "Добавление книги" : "Изменение книги";
+    ViewData["Title"] = Model?.BookGet is null ? "Добавление книги" : "Изменение книги";
 }
 
 <form>
     <div class="row g-3 w-75 mx-auto">
-        <input type="hidden" asp-for="Book.Id" />
+        <input type="hidden" asp-for="BookPost.Id" value="@Model.BookGet?.Id" />
 
         <div class="col-6">
-            <label for="titleInput" class="form-label">Название книги:</label>
-            <input type="text" asp-for="Book.Title" class="form-control" id="titleInput" />
+            <label asp-for="BookPost.Title" class="form-label">Название книги:</label>
+            <input type="text" asp-for="BookPost.Title" value="@Model.BookGet?.Title" class="form-control" />
+            <span asp-validation-for="BookPost.Title" class="text-danger"></span>
         </div>
         <div class="col-6">
-            <label for="descriptionInput" class="form-label">Описание книги:</label>
-            <input type="text" asp-for="Book.Description" class="form-control" id="descriptionInput" />
+            <label asp-for="BookPost.Description" class="form-label">Описание книги:</label>
+            <input type="text" asp-for="BookPost.Description" value="@Model.BookGet?.Description" class="form-control" />
+            <span asp-validation-for="BookPost.Description" class="text-danger"></span>
         </div>
         <div class="col-6">
-            <label for="authorInput" class="form-label">Автор</label>
-            <select asp-for="Book.Author.Id" class="form-select" id="authorInput">
+            <label asp-for="BookPost.AuthorId" class="form-label">Автор</label>
+            <select asp-for="BookPost.AuthorId" class="form-select">
+                <option value="">Выбарите автора</option>
                 @foreach (var author in Model.Authors)
                 {
-                    <option value="@author.Id">@author.FirstName @author.LastName</option>
+                    if(author.Id == Model.BookGet?.Author.Id)
+                    {
+                        <option selected value="@author.Id">@author.FirstName @author.LastName</option>
+                    }
+                    else
+                    {
+                        <option value="@author.Id">@author.FirstName @author.LastName</option>
+                    }
                 }
             </select>
+            <span asp-validation-for="BookPost.AuthorId" class="text-danger"></span>
         </div>
         <div class="col-6">
-            <label for="genreInput" class="form-label">Жанр</label>
-            <select asp-for="Book.Genre.Id" class="form-select" id="genreInput">
+            <label asp-for="BookPost.GenreId" class="form-label">Жанр</label>
+            <select asp-for="BookPost.GenreId" class="form-select">
+                <option value="">Выбарите жанр</option>
                 @foreach (var genre in Model.Genres)
                 {
-                    <option value="@genre.Id">@genre.Name</option>
+                    if (genre.Id == Model.BookGet?.Genre.Id)
+                    {
+                        <option selected value="@genre.Id">@genre.Name</option>
+                    }
+                    else
+                    {
+                        <option value="@genre.Id">@genre.Name</option>
+                    }
                 }
             </select>
+            <span asp-validation-for="BookPost.GenreId" class="text-danger"></span>
         </div>
         <div class="col-6">
-            <label for="storeInput" class="form-label">Хранилище</label>
-            <select asp-for="Book.Store.Id" class="form-select" id="storeInput">
+            <label asp-for="BookPost.StoreId" class="form-label">Хранилище</label>
+            <select asp-for="BookPost.StoreId" class="form-select">
+                <option value="">Выбарите хранилище</option>
                 @foreach (var store in Model.Stores)
                 {
-                    <option value="@store.Id">@store.Name</option>
+                    if (store.Id == Model.BookGet?.Store.Id)
+                    {
+                        <option selected value="@store.Id">@store.Name</option>
+                    }
+                    else
+                    {
+                        <option value="@store.Id">@store.Name</option>
+                    }
                 }
             </select>
+            <span asp-validation-for="BookPost.StoreId" class="text-danger"></span>
         </div>
 
         <div class="col-12 d-flex justify-content-around">
-            @if (Model?.Book is null)
+            @if (Model?.BookGet is null)
             {
                 <button type="submit" formmethod="post" asp-action="AddBook" class="btn btn-primary">Добавить</button>
             }

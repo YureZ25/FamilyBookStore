@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Services.Services.Contracts;
-using Services.ViewModels;
+using Services.ViewModels.GenreVMs;
 using Web.PageViewModels;
 
 namespace Web.Controllers
@@ -29,30 +29,40 @@ namespace Web.Controllers
 
             return View(new GenrePageVM
             {
-                Genre = await _genreService.GetByIdAsync(id.Value, cancellationToken),
+                GenreGet = await _genreService.GetByIdAsync(id.Value, cancellationToken),
             });
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddGenre([FromForm(Name = nameof(GenrePageVM.Genre))] GenreVM genreVM, CancellationToken cancellationToken)
+        public async Task<IActionResult> AddGenre([FromForm(Name = nameof(GenrePageVM.GenrePost))] GenrePostVM genreVM, CancellationToken cancellationToken)
         {
-            genreVM = await _genreService.InsertAsync(genreVM, cancellationToken);
+            if (!ModelState.IsValid)
+            {
+                return RedirectToAction(nameof(Genre), new { id = genreVM.Id });
+            }
+
+            await _genreService.InsertAsync(genreVM, cancellationToken);
 
             return RedirectToAction(nameof(GenreList));
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditGenre([FromForm(Name = nameof(GenrePageVM.Genre))] GenreVM genreVM, CancellationToken cancellationToken)
+        public async Task<IActionResult> EditGenre([FromForm(Name = nameof(GenrePageVM.GenrePost))] GenrePostVM genreVM, CancellationToken cancellationToken)
         {
-            genreVM = await _genreService.UpdateAsync(genreVM, cancellationToken);
+            if (!ModelState.IsValid)
+            {
+                return RedirectToAction(nameof(Genre), new { id = genreVM.Id });
+            }
+
+            await _genreService.UpdateAsync(genreVM, cancellationToken);
 
             return RedirectToAction(nameof(GenreList));
         }
 
         [HttpPost]
-        public async Task<IActionResult> RemoveGenre([FromForm(Name = nameof(GenrePageVM.Genre))] GenreVM genreVM, CancellationToken cancellationToken)
+        public async Task<IActionResult> RemoveGenre([FromForm(Name = nameof(GenrePageVM.GenrePost))] GenrePostVM genreVM, CancellationToken cancellationToken)
         {
-            genreVM = await _genreService.DeleteByIdAsync(genreVM.Id, cancellationToken);
+            await _genreService.DeleteByIdAsync(genreVM.Id ?? 0, cancellationToken);
 
             return RedirectToAction(nameof(GenreList));
         }

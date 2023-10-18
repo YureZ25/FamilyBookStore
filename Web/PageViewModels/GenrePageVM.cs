@@ -1,9 +1,10 @@
-﻿using Services.ViewModels;
+﻿using Services.ViewModels.GenreVMs;
 
 namespace Web.PageViewModels
 {
     public class GenrePageVM
     {
-        public GenreVM Genre { get; set; }
+        public GenreGetVM GenreGet { get; set; }
+        public GenrePostVM GenrePost { get; set; }
     }
 }

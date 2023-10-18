@@ -1,13 +1,13 @@
-﻿using Services.ViewModels;
+﻿using Services.ViewModels.AuthorVMs;
 
 namespace Services.Services.Contracts
 {
     public interface IAuthorService
     {
-        Task<IEnumerable<AuthorVM>> GetAuthorsAsync(CancellationToken cancellationToken);
-        Task<AuthorVM> GetByIdAsync(int id, CancellationToken cancellationToken);
-        Task<AuthorVM> InsertAsync(AuthorVM authorVM, CancellationToken cancellationToken);
-        Task<AuthorVM> UpdateAsync(AuthorVM authorVM, CancellationToken cancellationToken);
-        Task<AuthorVM> DeleteByIdAsync(int id, CancellationToken cancellationToken);
+        Task<IEnumerable<AuthorGetVM>> GetAuthorsAsync(CancellationToken cancellationToken);
+        Task<AuthorGetVM> GetByIdAsync(int id, CancellationToken cancellationToken);
+        Task<AuthorGetVM> InsertAsync(AuthorPostVM authorVM, CancellationToken cancellationToken);
+        Task<AuthorGetVM> UpdateAsync(AuthorPostVM authorVM, CancellationToken cancellationToken);
+        Task<AuthorGetVM> DeleteByIdAsync(int id, CancellationToken cancellationToken);
     }
 }

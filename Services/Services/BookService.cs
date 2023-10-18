@@ -1,7 +1,7 @@
 ﻿using Data.Context.Contracts;
 using Data.Repos.Contracts;
 using Services.Services.Contracts;
-using Services.ViewModels;
+using Services.ViewModels.BookVMs;
 
 namespace Services.Services
 {
@@ -16,26 +16,26 @@ namespace Services.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IEnumerable<BookVM>> GetBooksByStoreAsync(int storeId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<BookGetVM>> GetBooksByStoreAsync(int storeId, CancellationToken cancellationToken)
         {
             return await GetBooksAsync(cancellationToken);
         }
 
-        public async Task<IEnumerable<BookVM>> GetBooksAsync(CancellationToken cancellationToken)
+        public async Task<IEnumerable<BookGetVM>> GetBooksAsync(CancellationToken cancellationToken)
         {
             var books = await _bookRepo.GetBooksAsync(cancellationToken);
 
             return books.Select(e => e.Map());
         }
 
-        public async Task<BookVM> GetByIdAsync(int id, CancellationToken cancellationToken)
+        public async Task<BookGetVM> GetByIdAsync(int id, CancellationToken cancellationToken)
         {
             var book = await _bookRepo.GetByIdAsync(id, cancellationToken);
 
             return book.Map();
         }
 
-        public async Task<BookVM> InsertAsync(BookVM bookVM, CancellationToken cancellationToken)
+        public async Task<BookGetVM> InsertAsync(BookPostVM bookVM, CancellationToken cancellationToken)
         {
             var book = bookVM.Map();
 
@@ -48,7 +48,7 @@ namespace Services.Services
             return book.Map();
         }
 
-        public async Task<BookVM> UpdateAsync(BookVM bookVM, CancellationToken cancellationToken)
+        public async Task<BookGetVM> UpdateAsync(BookPostVM bookVM, CancellationToken cancellationToken)
         {
             var book = bookVM.Map();
 
@@ -57,7 +57,7 @@ namespace Services.Services
             if (book.Store != null)
             {
                 book = await _bookRepo.GetByIdAsync(book.Id, cancellationToken);
-                if (book.Store.Id != bookVM.Store.Id)
+                if (book.Store.Id != bookVM.StoreId)
                 {
                     _bookRepo.DetachFromStore(book);
                     _bookRepo.AttachToStore(book);
@@ -69,7 +69,7 @@ namespace Services.Services
             return book.Map();
         }
 
-        public async Task<BookVM> DeleteByIdAsync(int id, CancellationToken cancellationToken)
+        public async Task<BookGetVM> DeleteByIdAsync(int id, CancellationToken cancellationToken)
         {
             var book = await _bookRepo.GetByIdAsync(id, cancellationToken);
 

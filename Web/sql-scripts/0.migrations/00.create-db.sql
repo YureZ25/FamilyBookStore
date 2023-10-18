@@ -30,7 +30,7 @@ begin
 	create table Genres
 	(
 		Id int identity(1,1) primary key,
-		Name nvarchar(1024) not null
+		Name nvarchar(128) not null
 	);
 end
 
@@ -39,7 +39,7 @@ begin
 	create table Stores
 	(
 		Id int identity(1,1) primary key,
-		Name nvarchar(1024) not null,
+		Name nvarchar(128) not null,
 		Address nvarchar(1024)
 	);
 end

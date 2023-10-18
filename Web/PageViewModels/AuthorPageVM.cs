@@ -1,9 +1,10 @@
-﻿using Services.ViewModels;
+﻿using Services.ViewModels.AuthorVMs;
 
 namespace Web.PageViewModels
 {
     public class AuthorPageVM
     {
-        public AuthorVM Author { get; set; }
+        public AuthorGetVM AuthorGet { get; set; }
+        public AuthorPostVM AuthorPost { get; set; }
     }
 }

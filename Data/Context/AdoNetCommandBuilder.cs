@@ -12,7 +12,7 @@ namespace Data.Context
         private readonly SqlCommand _command;
         private readonly TEntity _entity;
 
-        private List<AdoNetParameter> _parameters = new();
+        private readonly List<AdoNetParameter> _parameters = new();
 
         public AdoNetCommandBuilder(SqlCommand sqlCommand, TEntity entity)
         {

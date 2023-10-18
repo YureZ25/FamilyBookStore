@@ -1,9 +1,11 @@
 ﻿using Services.ViewModels;
+using Services.ViewModels.StoreVMs;
 
 namespace Web.PageViewModels
 {
     public class StorePageVM
     {
-        public StoreVM Store { get; set; }
+        public StoreGetVM StoreGet { get; set; }
+        public StorePostVM StorePost { get; set; }
     }
 }

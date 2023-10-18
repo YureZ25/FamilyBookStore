@@ -1,7 +1,7 @@
 ﻿using Data.Context.Contracts;
 using Data.Repos.Contracts;
 using Services.Services.Contracts;
-using Services.ViewModels;
+using Services.ViewModels.AuthorVMs;
 
 namespace Services.Services
 {
@@ -16,21 +16,21 @@ namespace Services.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IEnumerable<AuthorVM>> GetAuthorsAsync(CancellationToken cancellationToken)
+        public async Task<IEnumerable<AuthorGetVM>> GetAuthorsAsync(CancellationToken cancellationToken)
         {
             var authors = await _authorRepo.GetAuthorsAsync(cancellationToken);
 
             return authors.Select(e => e.Map());
         }
 
-        public async Task<AuthorVM> GetByIdAsync(int id, CancellationToken cancellationToken)
+        public async Task<AuthorGetVM> GetByIdAsync(int id, CancellationToken cancellationToken)
         {
             var author = await _authorRepo.GetByIdAsync(id, cancellationToken);
 
             return author.Map();
         }
 
-        public async Task<AuthorVM> InsertAsync(AuthorVM authorVM, CancellationToken cancellationToken)
+        public async Task<AuthorGetVM> InsertAsync(AuthorPostVM authorVM, CancellationToken cancellationToken)
         {
             var author = authorVM.Map();
 
@@ -41,7 +41,7 @@ namespace Services.Services
             return author.Map();
         }
 
-        public async Task<AuthorVM> UpdateAsync(AuthorVM authorVM, CancellationToken cancellationToken)
+        public async Task<AuthorGetVM> UpdateAsync(AuthorPostVM authorVM, CancellationToken cancellationToken)
         {
             var author = authorVM.Map();
 
@@ -52,15 +52,15 @@ namespace Services.Services
             return author.Map();
         }
 
-        public async Task<AuthorVM> DeleteByIdAsync(int id, CancellationToken cancellationToken)
+        public async Task<AuthorGetVM> DeleteByIdAsync(int id, CancellationToken cancellationToken)
         {
-            var author = await GetByIdAsync(id, cancellationToken);
+            var author = await _authorRepo.GetByIdAsync(id, cancellationToken);
 
             _authorRepo.DeleteById(author.Id);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            return author;
+            return author.Map();
         }
     }
 }

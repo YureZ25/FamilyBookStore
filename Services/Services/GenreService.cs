@@ -2,6 +2,7 @@
 using Data.Repos.Contracts;
 using Services.Services.Contracts;
 using Services.ViewModels;
+using Services.ViewModels.GenreVMs;
 
 namespace Services.Services
 {
@@ -16,21 +17,21 @@ namespace Services.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IEnumerable<GenreVM>> GetGenresAsync(CancellationToken cancellationToken)
+        public async Task<IEnumerable<GenreGetVM>> GetGenresAsync(CancellationToken cancellationToken)
         {
             var genres = await _genreRepo.GetGenresAsync(cancellationToken);
 
             return genres.Select(e => e.Map());
         }
 
-        public async Task<GenreVM> GetByIdAsync(int id, CancellationToken cancellationToken)
+        public async Task<GenreGetVM> GetByIdAsync(int id, CancellationToken cancellationToken)
         {
             var genre = await _genreRepo.GetByIdAsync(id, cancellationToken);
 
             return genre.Map();
         }
 
-        public async Task<GenreVM> InsertAsync(GenreVM genreVM, CancellationToken cancellationToken)
+        public async Task<GenreGetVM> InsertAsync(GenrePostVM genreVM, CancellationToken cancellationToken)
         {
             var genre = genreVM.Map();
 
@@ -41,7 +42,7 @@ namespace Services.Services
             return genre.Map();
         }
 
-        public async Task<GenreVM> UpdateAsync(GenreVM genreVM, CancellationToken cancellationToken)
+        public async Task<GenreGetVM> UpdateAsync(GenrePostVM genreVM, CancellationToken cancellationToken)
         {
             var genre = genreVM.Map();
 
@@ -52,15 +53,15 @@ namespace Services.Services
             return genre.Map();
         }
 
-        public async Task<GenreVM> DeleteByIdAsync(int id, CancellationToken cancellationToken)
+        public async Task<GenreGetVM> DeleteByIdAsync(int id, CancellationToken cancellationToken)
         {
-            var genre = await GetByIdAsync(id, cancellationToken);
+            var genre = await _genreRepo.GetByIdAsync(id, cancellationToken);
 
             _genreRepo.DeleteById(genre.Id);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            return genre;
+            return genre.Map();
         }
     }
 }

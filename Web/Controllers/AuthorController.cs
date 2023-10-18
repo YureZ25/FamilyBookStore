@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Services.Services.Contracts;
-using Services.ViewModels;
+using Services.ViewModels.AuthorVMs;
 using Web.PageViewModels;
 
 namespace Web.Controllers
@@ -29,30 +29,40 @@ namespace Web.Controllers
 
             return View(new AuthorPageVM
             {
-                Author = await _authorService.GetByIdAsync(id.Value, cancellationToken)
+                AuthorGet = await _authorService.GetByIdAsync(id.Value, cancellationToken)
             });
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddAuthor([FromForm(Name = nameof(AuthorPageVM.Author))] AuthorVM authorVM, CancellationToken cancellationToken)
+        public async Task<IActionResult> AddAuthor([FromForm(Name = nameof(AuthorPageVM.AuthorPost))] AuthorPostVM authorVM, CancellationToken cancellationToken)
         {
-            authorVM = await _authorService.InsertAsync(authorVM, cancellationToken);
+            if (!ModelState.IsValid)
+            {
+                return RedirectToAction(nameof(Author));
+            }
+
+            await _authorService.InsertAsync(authorVM, cancellationToken);
 
             return RedirectToAction(nameof(AuthorList));
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditAuthor([FromForm(Name = nameof(AuthorPageVM.Author))] AuthorVM authorVM, CancellationToken cancellationToken)
+        public async Task<IActionResult> EditAuthor([FromForm(Name = nameof(AuthorPageVM.AuthorPost))] AuthorPostVM authorVM, CancellationToken cancellationToken)
         {
-            authorVM = await _authorService.UpdateAsync(authorVM, cancellationToken);
+            if (!ModelState.IsValid)
+            {
+                return RedirectToAction(nameof(Author), new { authorVM.Id });
+            }
+
+            await _authorService.UpdateAsync(authorVM, cancellationToken);
 
             return RedirectToAction(nameof(AuthorList));
         }
 
         [HttpPost]
-        public async Task<IActionResult> RemoveAuthor([FromForm(Name = nameof(AuthorPageVM.Author))] AuthorVM authorVM, CancellationToken cancellationToken)
+        public async Task<IActionResult> RemoveAuthor([FromForm(Name = nameof(AuthorPageVM.AuthorPost))] AuthorPostVM authorVM, CancellationToken cancellationToken)
         {
-            authorVM = await _authorService.DeleteByIdAsync(authorVM.Id, cancellationToken);
+            await _authorService.DeleteByIdAsync(authorVM.Id ?? 0, cancellationToken);
 
             return RedirectToAction(nameof(AuthorList));
         }

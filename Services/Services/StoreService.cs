@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Services.Exeptions;
 using Services.Services.Contracts;
 using Services.ViewModels;
+using Services.ViewModels.StoreVMs;
 
 namespace Services.Services
 {
@@ -21,7 +22,7 @@ namespace Services.Services
             _userManager = userManager;
         }
 
-        public async Task<IEnumerable<StoreVM>> GetUserStoresOverviewAsync(int userId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<StoreGetVM>> GetUserStoresOverviewAsync(int userId, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByIdAsync(Convert.ToString(userId))
                 ?? throw new EntityNotFoundExeption("Пользователь", userId);
@@ -38,21 +39,21 @@ namespace Services.Services
             return storesVM;
         }
 
-        public async Task<IEnumerable<StoreVM>> GetStoresAsync(CancellationToken cancellationToken)
+        public async Task<IEnumerable<StoreGetVM>> GetStoresAsync(CancellationToken cancellationToken)
         {
             var stores = await _storeRepo.GetStoresAsync(cancellationToken);
 
             return stores.Select(s => s.Map());
         }
 
-        public async Task<StoreVM> GetByIdAsync(int id, CancellationToken cancellationToken)
+        public async Task<StoreGetVM> GetByIdAsync(int id, CancellationToken cancellationToken)
         {
             var store = await _storeRepo.GetByIdAsync(id, cancellationToken);
 
             return store.Map();
         }
 
-        public async Task<StoreVM> InsertAsync(StoreVM storeVM, CancellationToken cancellationToken)
+        public async Task<StoreGetVM> InsertAsync(StorePostVM storeVM, CancellationToken cancellationToken)
         {
             var store = storeVM.Map();
 
@@ -63,7 +64,7 @@ namespace Services.Services
             return store.Map();
         }
 
-        public async Task<StoreVM> UpdateAsync(StoreVM storeVM, CancellationToken cancellationToken)
+        public async Task<StoreGetVM> UpdateAsync(StorePostVM storeVM, CancellationToken cancellationToken)
         {
             var store = storeVM.Map();
 
@@ -74,15 +75,15 @@ namespace Services.Services
             return store.Map();
         }
 
-        public async Task<StoreVM> DeleteByIdAsync(int id, CancellationToken cancellationToken)
+        public async Task<StoreGetVM> DeleteByIdAsync(int id, CancellationToken cancellationToken)
         {
-            var store = await GetByIdAsync(id, cancellationToken);
+            var store = await _storeRepo.GetByIdAsync(id, cancellationToken);
 
             _storeRepo.DeleteById(store.Id);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            return store;
+            return store.Map();
         }
     }
 }

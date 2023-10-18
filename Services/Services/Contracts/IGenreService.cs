@@ -1,13 +1,13 @@
-﻿using Services.ViewModels;
+﻿using Services.ViewModels.GenreVMs;
 
 namespace Services.Services.Contracts
 {
     public interface IGenreService
     {
-        Task<IEnumerable<GenreVM>> GetGenresAsync(CancellationToken cancellationToken);
-        Task<GenreVM> GetByIdAsync(int id, CancellationToken cancellationToken);
-        Task<GenreVM> InsertAsync(GenreVM genreVM, CancellationToken cancellationToken);
-        Task<GenreVM> UpdateAsync(GenreVM genreVM, CancellationToken cancellationToken);
-        Task<GenreVM> DeleteByIdAsync(int id, CancellationToken cancellationToken);
+        Task<IEnumerable<GenreGetVM>> GetGenresAsync(CancellationToken cancellationToken);
+        Task<GenreGetVM> GetByIdAsync(int id, CancellationToken cancellationToken);
+        Task<GenreGetVM> InsertAsync(GenrePostVM genreVM, CancellationToken cancellationToken);
+        Task<GenreGetVM> UpdateAsync(GenrePostVM genreVM, CancellationToken cancellationToken);
+        Task<GenreGetVM> DeleteByIdAsync(int id, CancellationToken cancellationToken);
     }
 }
