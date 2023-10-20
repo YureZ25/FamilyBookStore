@@ -1,26 +1,28 @@
 ﻿@model AuthorPageVM
 
 @{
-    ViewData["Title"] = Model?.AuthorGet is null ? "Добавление автора" : "Изменение автора";
+    var isEdit = Model?.AuthorGet?.Id is > 0;
+
+    ViewData["Title"] = !isEdit ? "Добавление автора" : "Изменение автора";
 }
 
-<form asp-controller="Author">
+<form>
     <div class="row g-3 w-75 mx-auto">
         <input type="hidden" asp-for="AuthorPost.Id" value="@Model.AuthorGet?.Id" />
 
-        <div class="col-6">
-            <label asp-for="AuthorPost.FirstName" class="form-label">Имя:</label>
-            <input asp-for="AuthorPost.FirstName" value="@Model.AuthorGet?.FirstName" class="form-control" />
-            <span asp-validation-for="AuthorPost.FirstName" class="text-danger"></span>
-        </div>
         <div class="col-6">
             <label asp-for="AuthorPost.LastName" class="form-label">Фамилия:</label>
             <input asp-for="AuthorPost.LastName" value="@Model.AuthorGet?.LastName" class="form-control" />
             <span asp-validation-for="AuthorPost.LastName" class="text-danger"></span>
         </div>
+        <div class="col-6">
+            <label asp-for="AuthorPost.FirstName" class="form-label">Имя:</label>
+            <input asp-for="AuthorPost.FirstName" value="@Model.AuthorGet?.FirstName" class="form-control" />
+            <span asp-validation-for="AuthorPost.FirstName" class="text-danger"></span>
+        </div>
 
         <div class="col-12 d-flex justify-content-around">
-            @if (Model?.AuthorGet is null)
+            @if (!isEdit)
             {
                 <button type="submit" formmethod="post" asp-action="AddAuthor" class="btn btn-primary">Добавить</button>
             }

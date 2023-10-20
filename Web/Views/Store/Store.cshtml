@@ -1,12 +1,14 @@
 ﻿@model StorePageVM
 
 @{
-    ViewData["Title"] = Model?.StoreGet is null ? "Добавление хранилища" : "Изменение хранилища";
+    var isEdit = Model?.StoreGet?.Id is > 0;
+
+    ViewData["Title"] = !isEdit ? "Добавление хранилища" : "Изменение хранилища";
 }
 
 <form>
     <div class="row g-3 w-75 mx-auto">
-        <input type="hidden" asp-for="StoreGet.Id" value="@Model.StoreGet?.Id" />
+        <input type="hidden" asp-for="StorePost.Id" value="@Model.StoreGet?.Id" />
 
         <div class="col">
             <label asp-for="StorePost.Name" class="form-label">Название:</label>
@@ -20,7 +22,7 @@
         </div>
 
         <div class="col-12 d-flex justify-content-around">
-            @if (Model?.StoreGet is null)
+            @if (!isEdit)
             {
                 <button type="submit" formmethod="post" asp-action="AddStore" class="btn btn-primary">Добавить</button>
             }

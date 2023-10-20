@@ -1,7 +1,9 @@
 ﻿@model GenrePageVM
 
 @{
-    ViewData["Title"] = Model?.GenreGet is null ? "Добавление жанра" : "Изменение жанра";
+    var isEdit = Model?.GenreGet?.Id is > 0;
+
+    ViewData["Title"] = !isEdit ? "Добавление жанра" : "Изменение жанра";
 }
 
 <form>
@@ -15,7 +17,7 @@
         </div>
 
         <div class="col-12 d-flex justify-content-around">
-            @if (Model?.GenreGet is null)
+            @if (!isEdit)
             {
                 <button type="submit" formmethod="post" asp-action="AddGenre" class="btn btn-primary">Добавить</button>
             }

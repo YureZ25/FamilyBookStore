@@ -4,22 +4,22 @@
     ViewData["Title"] = "Список авторов";
 }
 
-<table class="table table-hover">
+<table class="table table-hover table-bordered">
     <thead class="table-light">
         <tr>
-            <th scope="col">Имя</th>
             <th scope="col">Фамилия</th>
+            <th scope="col">Имя</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var author in Model)
+        @foreach (var author in Model.OrderBy(e => e.LastName).ThenBy(e => e.FirstName))
         {
             <tr navigate asp-action="Author" asp-route-id="@author.Id">
                 <td>
-                    @author.FirstName
+                    @author.LastName
                 </td>
                 <td>
-                    @author.LastName
+                    @author.FirstName
                 </td>
             </tr>
         }

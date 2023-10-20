@@ -27,10 +27,7 @@ namespace Web.Controllers
         {
             if (!id.HasValue) return View(new GenrePageVM());
 
-            return View(new GenrePageVM
-            {
-                GenreGet = await _genreService.GetByIdAsync(id.Value, cancellationToken),
-            });
+            return View(new GenrePageVM(await _genreService.GetByIdAsync(id.Value, cancellationToken)));
         }
 
         [HttpPost]
@@ -38,7 +35,7 @@ namespace Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Genre), new { id = genreVM.Id });
+                return View(nameof(Genre), new GenrePageVM(genreVM));
             }
 
             await _genreService.InsertAsync(genreVM, cancellationToken);
@@ -51,7 +48,7 @@ namespace Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Genre), new { id = genreVM.Id });
+                return View(nameof(Genre), new GenrePageVM(genreVM));
             }
 
             await _genreService.UpdateAsync(genreVM, cancellationToken);

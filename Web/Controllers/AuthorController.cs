@@ -27,10 +27,7 @@ namespace Web.Controllers
         {
             if (!id.HasValue) return View(new AuthorPageVM());
 
-            return View(new AuthorPageVM
-            {
-                AuthorGet = await _authorService.GetByIdAsync(id.Value, cancellationToken)
-            });
+            return View(new AuthorPageVM(await _authorService.GetByIdAsync(id.Value, cancellationToken)));
         }
 
         [HttpPost]
@@ -38,7 +35,7 @@ namespace Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Author));
+                return View(nameof(Author), new AuthorPageVM(authorVM));
             }
 
             await _authorService.InsertAsync(authorVM, cancellationToken);
@@ -51,7 +48,7 @@ namespace Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Author), new { authorVM.Id });
+                return View(nameof(Author), new AuthorPageVM(authorVM));
             }
 
             await _authorService.UpdateAsync(authorVM, cancellationToken);

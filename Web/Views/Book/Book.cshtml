@@ -1,7 +1,9 @@
 ﻿@model BookPageVM
 
 @{
-    ViewData["Title"] = Model?.BookGet is null ? "Добавление книги" : "Изменение книги";
+    var isEdit = Model?.BookGet?.Id is > 0;
+
+    ViewData["Title"] = !isEdit ? "Добавление книги" : "Изменение книги";
 }
 
 <form>
@@ -24,7 +26,7 @@
                 <option value="">Выбарите автора</option>
                 @foreach (var author in Model.Authors)
                 {
-                    if(author.Id == Model.BookGet?.Author.Id)
+                    if(author.Id == Model.BookGet?.Author?.Id)
                     {
                         <option selected value="@author.Id">@author.FirstName @author.LastName</option>
                     }
@@ -42,7 +44,7 @@
                 <option value="">Выбарите жанр</option>
                 @foreach (var genre in Model.Genres)
                 {
-                    if (genre.Id == Model.BookGet?.Genre.Id)
+                    if (genre.Id == Model.BookGet?.Genre?.Id)
                     {
                         <option selected value="@genre.Id">@genre.Name</option>
                     }
@@ -60,7 +62,7 @@
                 <option value="">Выбарите хранилище</option>
                 @foreach (var store in Model.Stores)
                 {
-                    if (store.Id == Model.BookGet?.Store.Id)
+                    if (store.Id == Model.BookGet?.Store?.Id)
                     {
                         <option selected value="@store.Id">@store.Name</option>
                     }
@@ -74,7 +76,7 @@
         </div>
 
         <div class="col-12 d-flex justify-content-around">
-            @if (Model?.BookGet is null)
+            @if (!isEdit)
             {
                 <button type="submit" formmethod="post" asp-action="AddBook" class="btn btn-primary">Добавить</button>
             }

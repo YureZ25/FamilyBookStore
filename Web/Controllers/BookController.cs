@@ -35,12 +35,10 @@ namespace Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Book(int? id, CancellationToken cancellationToken)
         {
-            var model = new BookPageVM
-            {
-                Authors = await _authorService.GetAuthorsAsync(cancellationToken),
-                Genres = await _genreService.GetGenresAsync(cancellationToken),
-                Stores = await _storeService.GetStoresAsync(cancellationToken),
-            };
+            var model = new BookPageVM(
+                    await _authorService.GetAuthorsAsync(cancellationToken),
+                    await _genreService.GetGenresAsync(cancellationToken),
+                    await _storeService.GetStoresAsync(cancellationToken));
 
             if (!id.HasValue) return View(model);
 
@@ -54,7 +52,13 @@ namespace Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Book));
+                return View(
+                    nameof(Book),
+                    new BookPageVM(
+                        bookVM,
+                        await _authorService.GetAuthorsAsync(cancellationToken),
+                        await _genreService.GetGenresAsync(cancellationToken),
+                        await _storeService.GetStoresAsync(cancellationToken)));
             }
 
             await _bookService.InsertAsync(bookVM, cancellationToken);
@@ -67,7 +71,13 @@ namespace Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Book), new { bookVM.Id });
+                return View(
+                    nameof(Book),
+                    new BookPageVM(
+                        bookVM,
+                        await _authorService.GetAuthorsAsync(cancellationToken),
+                        await _genreService.GetGenresAsync(cancellationToken),
+                        await _storeService.GetStoresAsync(cancellationToken)));
             }
 
             await _bookService.UpdateAsync(bookVM, cancellationToken);

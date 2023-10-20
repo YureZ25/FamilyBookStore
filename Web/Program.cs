@@ -6,7 +6,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDataLayer();
 builder.Services.AddServiceLayer();
 
-builder.Services.AddControllersWithViews();
+builder.Services
+    .AddControllersWithViews()
+    .AddMvcOptions(opt =>
+    {
+        opt.MaxModelValidationErrors = 20;
+        opt.ModelBindingMessageProvider.SetValueMustNotBeNullAccessor(_ => "Поле обязательно для заполнения");
+    });
 
 builder.Services
     .AddIdentityCore<Data.Entities.User>(e =>

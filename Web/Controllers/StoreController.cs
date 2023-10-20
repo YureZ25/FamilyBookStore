@@ -37,10 +37,7 @@ namespace Web.Controllers
         {
             if (!id.HasValue) return View(new StorePageVM());
 
-            return View(new StorePageVM
-            {
-                StoreGet = await _storeService.GetByIdAsync(id.Value, cancellationToken),
-            });
+            return View(new StorePageVM(await _storeService.GetByIdAsync(id.Value, cancellationToken)));
         }
 
         [HttpPost]
@@ -48,7 +45,7 @@ namespace Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Store), new { storeVM.Id });
+                return View(nameof(Store), new StorePageVM(storeVM));
             }
 
             await _storeService.InsertAsync(storeVM, cancellationToken);
@@ -61,7 +58,7 @@ namespace Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Store), new { storeVM.Id });
+                return View(nameof(Store), new StorePageVM(storeVM));
             }
 
             await _storeService.UpdateAsync(storeVM, cancellationToken);
