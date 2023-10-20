@@ -6,6 +6,7 @@ namespace Data.Repos.Contracts
     {
         Task<IEnumerable<Book>> GetBooksAsync(CancellationToken cancellationToken);
         Task<Book> GetByIdAsync(int id, CancellationToken cancellationToken);
+        Task<bool> AttachedToStore(int bookId, int storeId, CancellationToken cancellationToken);
         void AttachToStore(Book book);
         void DetachFromStore(Book book);
         void Insert(Book book);

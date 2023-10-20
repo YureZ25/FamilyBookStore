@@ -18,7 +18,7 @@ namespace Data.Repos
 
         public async Task<IEnumerable<Book>> GetBooksAsync(CancellationToken cancellationToken)
         {
-            var cmd = _dbContext.CreateCommand()
+            var cmd = _dbContext.CreateQuery()
                 .WithText(@"SELECT 
                         Books.Id, 
                         Books.Title, 
@@ -49,7 +49,7 @@ namespace Data.Repos
 
         public async Task<Book> GetByIdAsync(int id, CancellationToken cancellationToken)
         {
-            var cmd = _dbContext.CreateCommand()
+            var cmd = _dbContext.CreateQuery()
                 .WithText(@"SELECT 
                         Books.Id, 
                         Books.Title, 
@@ -80,6 +80,17 @@ namespace Data.Repos
             return null;
         }
 
+        public async Task<bool> AttachedToStore(int bookId, int storeId, CancellationToken cancellationToken)
+        {
+            var cmd = _dbContext.CreateQuery()
+                .WithText(@"SELECT COUNT(*) FROM Book2Stores
+                    WHERE BookId = @bookId AND StoreId = @storeId")
+                .WithParameter(nameof(bookId), bookId)
+                .WithParameter(nameof(storeId), storeId);
+
+            return await cmd.ExecuteScalarAsync(cancellationToken) is > 0;
+        }
+
         public void AttachToStore(Book book)
         {
             _dbContext.CreateCommand(book)
@@ -93,9 +104,8 @@ namespace Data.Repos
         {
             _dbContext.CreateCommand(book)
                 .WithText(@"DELETE Book2Stores
-                    WHERE BookId = @bookId AND StoreId = @storeId")
-                .WithParameter(e => e.Id, "bookId")
-                .WithParameter(e => e.Store.Id, "storeId");
+                    WHERE BookId = @bookId")
+                .WithParameter(e => e.Id, "bookId");
         }
 
         public void Insert(Book book)

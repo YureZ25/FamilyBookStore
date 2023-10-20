@@ -18,7 +18,7 @@ namespace Data.Repos
 
         public async Task<IEnumerable<Genre>> GetGenresAsync(CancellationToken cancellationToken)
         {
-            var cmd = _dbContext.CreateCommand()
+            var cmd = _dbContext.CreateQuery()
                 .WithText("SELECT * FROM Genres");
 
             using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
@@ -33,7 +33,7 @@ namespace Data.Repos
 
         public async Task<Genre> GetByIdAsync(int id, CancellationToken cancellationToken)
         {
-            var cmd = _dbContext.CreateCommand()
+            var cmd = _dbContext.CreateQuery()
                 .WithText("SELECT * FROM Genres WHERE Id = @id")
                 .WithParameter("id", id);
 

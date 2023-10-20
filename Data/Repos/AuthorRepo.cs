@@ -18,7 +18,7 @@ namespace Data.Repos
 
         public async Task<IEnumerable<Author>> GetAuthorsAsync(CancellationToken cancellationToken)
         {
-            var cmd = _dbContext.CreateCommand()
+            var cmd = _dbContext.CreateQuery()
                 .WithText("SELECT * FROM Authors");
 
             using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
@@ -33,7 +33,7 @@ namespace Data.Repos
 
         public async Task<Author> GetByIdAsync(int id, CancellationToken cancellationToken)
         {
-            var cmd = _dbContext.CreateCommand()
+            var cmd = _dbContext.CreateQuery()
                 .WithText("SELECT * FROM Authors WHERE Id = @id")
                 .WithParameter("id", id);
 

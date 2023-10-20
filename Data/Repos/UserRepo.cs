@@ -24,7 +24,7 @@ namespace Data.Repos
 
         public async Task<User> FindByIdAsync(int userId, CancellationToken cancellationToken)
         {
-            var cmd = _dbContext.CreateCommand()
+            var cmd = _dbContext.CreateQuery()
                 .WithText("SELECT * FROM Users WHERE Id = @id")
                 .WithParameter("id", userId);
 
@@ -40,7 +40,7 @@ namespace Data.Repos
 
         public async Task<User> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
         {
-            var cmd = _dbContext.CreateCommand()
+            var cmd = _dbContext.CreateQuery()
                 .WithText("SELECT * FROM Users WHERE NormalizedUserName = @normalizedUserName")
                 .WithParameter("normalizedUserName", normalizedUserName);
 
@@ -56,7 +56,7 @@ namespace Data.Repos
 
         public async Task<bool> HasPasswordAsync(User user, CancellationToken cancellationToken)
         {
-            var cmd = _dbContext.CreateCommand()
+            var cmd = _dbContext.CreateQuery()
                 .WithText("SELECT IIF(PasswordHash IS NOT NULL, 1, 0) FROM Users WHERE Id = @id")
                 .WithParameter("id", user.Id);
 

@@ -54,14 +54,10 @@ namespace Services.Services
 
             _bookRepo.Update(book);
 
-            if (book.Store != null)
+            if (book.Store != null && !await _bookRepo.AttachedToStore(book.Id, book.Store.Id, cancellationToken))
             {
-                book = await _bookRepo.GetByIdAsync(book.Id, cancellationToken);
-                if (book.Store.Id != bookVM.StoreId)
-                {
-                    _bookRepo.DetachFromStore(book);
-                    _bookRepo.AttachToStore(book);
-                }
+                _bookRepo.DetachFromStore(book);
+                _bookRepo.AttachToStore(book);
             }
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);

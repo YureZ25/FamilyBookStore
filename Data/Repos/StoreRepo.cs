@@ -18,7 +18,7 @@ namespace Data.Repos
 
         public async Task<IEnumerable<Store>> GetStoresAsync(CancellationToken cancellationToken)
         {
-            var cmd = _dbContext.CreateCommand()
+            var cmd = _dbContext.CreateQuery()
                 .WithText(@"SELECT 
                         Stores.Id, 
                         Stores.Name, 
@@ -60,7 +60,7 @@ namespace Data.Repos
 
         public async Task<IEnumerable<Store>> GetStoresByUserIdAsync(int userId, CancellationToken cancellationToken)
         {
-            var cmd = _dbContext.CreateCommand()
+            var cmd = _dbContext.CreateQuery()
                 .WithText(@"SELECT 
                         Stores.Id, 
                         Stores.Name, 
@@ -105,7 +105,7 @@ namespace Data.Repos
 
         public async Task<Store> GetByIdAsync(int id, CancellationToken cancellationToken)
         {
-            var cmd = _dbContext.CreateCommand()
+            var cmd = _dbContext.CreateQuery()
                 .WithText(@"SELECT 
                         Stores.Id, 
                         Stores.Name, 

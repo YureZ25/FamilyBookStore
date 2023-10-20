@@ -23,6 +23,13 @@ namespace Data.Context
             _transaction = _connection.BeginTransaction();
         }
 
+        public SqlCommand CreateQuery()
+        {
+            var command = _connection.CreateCommand();
+            command.Transaction = _transaction;
+            return command;
+        }
+
         public SqlCommand CreateCommand()
         {
             var command = _connection.CreateCommand();
@@ -30,6 +37,15 @@ namespace Data.Context
             Commands.Add(new AdoNetCommandBuilder<IEntity>(command, null), null);
             return command;
         }
+
+        // TODO: Make AdoNetQueryBuilder ??
+        //public AdoNetCommandBuilder<T> CreateQuery<T>()
+        //    where T : class, IEntity
+        //{
+        //    var command = _connection.CreateCommand();
+        //    var builder = new AdoNetCommandBuilder<T>(command, null);
+        //    return builder;
+        //}
 
         public AdoNetCommandBuilder<T> CreateCommand<T>(T target)
             where T : class, IEntity
@@ -49,6 +65,8 @@ namespace Data.Context
             int updated = 0;
             foreach (var (commandBuilder, target) in Commands)
             {
+                Commands.Remove(commandBuilder);
+
                 updated += await commandBuilder.Command.ExecuteNonQueryAsync(cancellationToken);
 
                 if (target is null) continue;
