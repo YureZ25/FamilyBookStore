@@ -6,12 +6,12 @@ namespace Services.ViewModels.AuthorVMs
     {
         public int? Id { get; set; }
 
-        [Required]
         [StringLength(1024)]
+        [Required(ErrorMessage = "Поле 'Имя' обязательно для заполнения")]
         public string FirstName { get; set; }
 
-        [Required]
         [StringLength(1024)]
+        [Required(ErrorMessage = "Поле 'Фамилия' обязательно для заполнения")]
         public string LastName { get; set; }
     }
 }

@@ -6,8 +6,8 @@ namespace Services.ViewModels.StoreVMs
     {
         public int? Id { get; set; }
 
-        [Required]
         [StringLength(128)]
+        [Required(ErrorMessage = "Поле 'Название' обязательно для заполнения")]
         public string Name { get; set; }
 
         [StringLength(1024)]

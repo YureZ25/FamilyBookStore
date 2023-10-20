@@ -6,10 +6,10 @@ namespace Services.ViewModels.UserVMs
     {
         public int? Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Поле 'Никнейм' обязательно для заполнения")]
         public string UserName { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Поле 'Пароль' обязательно для заполнения")]
         public string Password { get; set; }
     }
 }

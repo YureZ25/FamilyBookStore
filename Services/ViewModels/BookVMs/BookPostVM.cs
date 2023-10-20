@@ -6,8 +6,8 @@ namespace Services.ViewModels.BookVMs
     {
         public int? Id { get; set; }
 
-        [Required]
         [StringLength(1024)]
+        [Required(ErrorMessage = "Поле 'Название' обязательно для заполнения")]
         public string Title { get; set; }
 
         public string Description { get; set; }
