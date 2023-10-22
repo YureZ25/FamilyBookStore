@@ -1,0 +1,30 @@
+﻿@model LoginPageVM
+
+@{
+    ViewData["Title"] = "Вход в систему";
+}
+
+<form>
+    <div class="row w-50 mx-auto g-3">
+        <div class="col-12">
+            <div class="form-floating">
+                <input asp-for="LoginPost.UserName" class="form-control" placeholder="Никнейм" />
+                <label asp-for="LoginPost.UserName" class="form-label">Никнейм</label>
+                <span asp-validation-for="LoginPost.UserName" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="form-floating">
+                <input asp-for="LoginPost.Password" class="form-control" placeholder="Пароль" />
+                <label asp-for="LoginPost.Password" class="form-label">Пароль</label>
+                <span asp-validation-for="LoginPost.Password" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-12 d-flex justify-content-center">
+            <button asp-action="Login" type="submit" formmethod="post" class="btn btn-primary">Войти</button>
+        </div>
+        <div class="col-12 d-flex justify-content-center">
+            <a asp-action="Register">Зарегистрироваться</a>
+        </div>
+    </div>
+</form>

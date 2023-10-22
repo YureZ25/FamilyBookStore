@@ -1,0 +1,27 @@
+﻿@model RegisterPageVM
+
+@{
+    ViewData["Title"] = "Регистрация пользователя";
+}
+
+<form>
+    <div class="row w-50 mx-auto g-3">
+        <div class="col-12">
+            <div class="form-floating">
+                <input asp-for="RegisterPost.UserName" class="form-control" placeholder="Никнейм" />
+                <label asp-for="RegisterPost.UserName" class="form-label">Никнейм</label>
+                <span asp-validation-for="RegisterPost.UserName" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="form-floating">
+                <input asp-for="RegisterPost.Password" class="form-control" placeholder="Пароль" />
+                <label asp-for="RegisterPost.Password" class="form-label">Пароль</label>
+                <span asp-validation-for="RegisterPost.Password" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-12 d-flex justify-content-center">
+            <button asp-action="Register" type="submit" formmethod="post" class="btn btn-primary">Зарегистрироваться</button>
+        </div>
+    </div>
+</form>
