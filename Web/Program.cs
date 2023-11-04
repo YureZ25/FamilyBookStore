@@ -7,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDataLayer();
 builder.Services.AddServiceLayer();
 
+builder.Services.AddHttpContextAccessor();
 builder.Services
     .AddControllersWithViews()
     .AddMvcOptions(opt =>
@@ -43,6 +44,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapDefaultControllerRoute();

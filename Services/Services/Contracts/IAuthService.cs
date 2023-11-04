@@ -5,7 +5,8 @@ namespace Services.Services.Contracts
 {
     public interface IAuthService
     {
-        Task<ResultVM> Login(LoginPostVM loginVM, CancellationToken cancellationToken);
-        Task<ResultVM> Register(RegisterPostVM registerVM, CancellationToken cancellationToken);
+        Task<ResultVM> Login(LoginPostVM loginVM);
+        Task<ResultVM> Register(RegisterPostVM registerVM);
+        Task Logout();
     }
 }

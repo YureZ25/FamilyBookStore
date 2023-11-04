@@ -28,7 +28,7 @@ namespace Web.Controllers
                 return View(new LoginPageVM(loginVM));
             }
 
-            return Result(await _authService.Login(loginVM, cancellationToken),
+            return Result(await _authService.Login(loginVM),
                 () => RedirectToAction(nameof(HomeController.Index), "Home"),
                 () => View(new LoginPageVM(loginVM)));
         }
@@ -40,8 +40,10 @@ namespace Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult Logout(LogoutPostVM logoutVM)
+        public async Task<IActionResult> Logout(LogoutPostVM logoutVM)
         {
+            await _authService.Logout();
+
             return RedirectToAction(nameof(Login));
         }
 
@@ -59,7 +61,7 @@ namespace Web.Controllers
                 return View(new RegisterPageVM(registerVM));
             }
 
-            return Result(await _authService.Register(registerVM, cancellationToken),
+            return Result(await _authService.Register(registerVM),
                 () => RedirectToAction(nameof(Login)),
                 () => View(new RegisterPageVM(registerVM)));
         }
