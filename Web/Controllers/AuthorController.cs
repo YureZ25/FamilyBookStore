@@ -5,7 +5,7 @@ using Web.PageViewModels;
 
 namespace Web.Controllers
 {
-    public class AuthorController : Controller
+    public class AuthorController : BaseController
     {
         private readonly IAuthorService _authorService;
 

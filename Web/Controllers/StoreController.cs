@@ -5,7 +5,7 @@ using Web.PageViewModels;
 
 namespace Web.Controllers
 {
-    public class StoreController : Controller
+    public class StoreController : BaseController
     {
         private readonly IBookService _bookService;
         private readonly IStoreService _storeService;

@@ -5,7 +5,7 @@ using Web.PageViewModels;
 
 namespace Web.Controllers
 {
-    public class BookController : Controller
+    public class BookController : BaseController
     {
         private readonly IBookService _bookService;
         private readonly IAuthorService _authorService;

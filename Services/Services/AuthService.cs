@@ -1,6 +1,7 @@
 ﻿using Data.Entities;
 using Microsoft.AspNetCore.Identity;
 using Services.Services.Contracts;
+using Services.ViewModels;
 using Services.ViewModels.AuthVMs;
 
 namespace Services.Services
@@ -14,27 +15,32 @@ namespace Services.Services
             _userManager = userManager;
         }
 
-        public async Task<bool> Login(LoginPostVM loginVM, CancellationToken cancellationToken)
+        public async Task<ResultVM> Login(LoginPostVM loginVM, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByNameAsync(loginVM.UserName);
             if (user is null)
             {
-                return false;
+                return new("LoginPost.UserName", "Пользователь с таким никнеймом не найден");
             }
 
-            return await _userManager.CheckPasswordAsync(user, loginVM.Password);
+            if (!await _userManager.CheckPasswordAsync(user, loginVM.Password))
+            {
+                return new("LoginPost.Password", "Неправильный пароль");
+            }
+
+            return new();
         }
 
-        public async Task<bool> Register(RegisterPostVM registerVM, CancellationToken cancellationToken)
+        public async Task<ResultVM> Register(RegisterPostVM registerVM, CancellationToken cancellationToken)
         {
             var user = new User
             {
                 UserName = registerVM.UserName,
             };
 
-            var res = await _userManager.CreateAsync(user, registerVM.Password);
+            var createResult = await _userManager.CreateAsync(user, registerVM.Password);
 
-            return res.Succeeded;
+            return createResult.ToResultVM();
         }
     }
 }

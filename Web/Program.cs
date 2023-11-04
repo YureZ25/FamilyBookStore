@@ -1,4 +1,5 @@
 using Data;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,14 @@ builder.Services
     {
         opt.MaxModelValidationErrors = 20;
         opt.ModelBindingMessageProvider.SetValueMustNotBeNullAccessor(_ => "Поле обязательно для заполнения");
+    });
+
+builder.Services
+    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(o =>
+    {
+        o.LoginPath = "/Auth/Login";
+        o.LogoutPath = "/Auth/Logout";
     });
 
 builder.Services

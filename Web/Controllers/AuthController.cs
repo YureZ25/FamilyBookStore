@@ -5,7 +5,7 @@ using Web.PageViewModels;
 
 namespace Web.Controllers
 {
-    public class AuthController : Controller
+    public class AuthController : BaseController
     {
         private readonly IAuthService _authService;
 
@@ -20,6 +20,7 @@ namespace Web.Controllers
             return View(new LoginPageVM());
         }
 
+        [HttpPost]
         public async Task<IActionResult> Login([FromForm(Name = nameof(LoginPageVM.LoginPost))] LoginPostVM loginVM, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
@@ -27,16 +28,19 @@ namespace Web.Controllers
                 return View(new LoginPageVM(loginVM));
             }
 
-            if (!await _authService.Login(loginVM, cancellationToken))
-            {
-                return View(new LoginPageVM(loginVM));
-            }
+            return Result(await _authService.Login(loginVM, cancellationToken),
+                () => RedirectToAction(nameof(HomeController.Index), "Home"),
+                () => View(new LoginPageVM(loginVM)));
+        }
 
-            return RedirectToAction(nameof(HomeController.Index), "Home");
+        [HttpGet]
+        public IActionResult Logout()
+        {
+            return View();
         }
 
         [HttpPost]
-        public IActionResult Logout()
+        public IActionResult Logout(LogoutPostVM logoutVM)
         {
             return RedirectToAction(nameof(Login));
         }
@@ -55,12 +59,9 @@ namespace Web.Controllers
                 return View(new RegisterPageVM(registerVM));
             }
 
-            if (!await _authService.Register(registerVM, cancellationToken))
-            {
-                return View(new RegisterPageVM(registerVM));
-            }
-
-            return RedirectToAction(nameof(Login));
+            return Result(await _authService.Register(registerVM, cancellationToken),
+                () => RedirectToAction(nameof(Login)),
+                () => View(new RegisterPageVM(registerVM)));
         }
     }
 }
