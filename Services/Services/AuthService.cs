@@ -9,7 +9,7 @@ using System.Security.Claims;
 
 namespace Services.Services
 {
-    internal class AuthService : IAuthService
+    internal class AuthService : IAuthService, IUserClaimsPrincipalFactory<User>
     {
         private readonly UserManager<User> _userManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -33,7 +33,7 @@ namespace Services.Services
                 return new("LoginPost.Password", "Неправильный пароль");
             }
 
-            var principal = CreatePrincipal(user);
+            var principal = await CreateAsync(user);
 
             await _httpContextAccessor.HttpContext.SignInAsync(principal);
 
@@ -57,18 +57,20 @@ namespace Services.Services
             await _httpContextAccessor.HttpContext.SignOutAsync();
         }
 
-        private ClaimsPrincipal CreatePrincipal(User user)
+        public Task<ClaimsPrincipal> CreateAsync(User user)
         {
             var claims = new Claim[]
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.NameIdentifier, "pwd"),
+                new Claim(ClaimTypes.AuthenticationMethod, "pwd"),
             };
 
             var identity = new ClaimsIdentity(claims, "BasicAuth");
 
-            return new ClaimsPrincipal(identity);
+            var principal = new ClaimsPrincipal(identity);
+
+            return Task.FromResult(principal);
         }
     }
 }

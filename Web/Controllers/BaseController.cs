@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Services.ViewModels;
 
 namespace Web.Controllers
 {
+    [Authorize]
     public abstract class BaseController : Controller
     {
         public IActionResult Result(ResultVM resultVM, Func<IActionResult> successResult, Func<IActionResult> errorResult)

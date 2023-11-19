@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Services.Services.Contracts;
 using Services.ViewModels.AuthVMs;
 using Web.PageViewModels;
 
 namespace Web.Controllers
 {
+    [AllowAnonymous]
     public class AuthController : BaseController
     {
         private readonly IAuthService _authService;
@@ -34,9 +36,9 @@ namespace Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
-            return View();
+            return await Logout(new LogoutPostVM());
         }
 
         [HttpPost]
@@ -44,7 +46,7 @@ namespace Web.Controllers
         {
             await _authService.Logout();
 
-            return RedirectToAction(nameof(Login));
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpGet]

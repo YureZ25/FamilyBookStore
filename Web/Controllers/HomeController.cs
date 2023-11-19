@@ -1,10 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Services.Services.Contracts;
+using System.Security.Claims;
 
 namespace Web.Controllers
 {
-    [Authorize]
     public class HomeController : BaseController
     {
         private readonly IStoreService _storeService;
@@ -17,7 +16,13 @@ namespace Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
-            var stores = await _storeService.GetUserStoresOverviewAsync(1, cancellationToken);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var stores = await _storeService.GetUserStoresOverviewAsync(int.Parse(userId), cancellationToken);
 
             return View(stores);
         }

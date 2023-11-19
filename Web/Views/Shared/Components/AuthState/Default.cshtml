@@ -1,0 +1,19 @@
+﻿@model AuthStateComponentVM
+
+<ul class="nav">
+    @if (Model.IsLoggedIn)
+    {
+        <li class="nav-item">
+            <span class="nav-link text-dark disabled">@Model.UserName</span>
+        </li>
+        <li class="nav-item">
+            <a asp-controller="Auth" asp-action="Logout" class="nav-link">Выход</a>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item">
+            <a asp-controller="Auth" asp-action="Login" class="nav-link">Вход</a>
+        </li>
+    }
+</ul>
