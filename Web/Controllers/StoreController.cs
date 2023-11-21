@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Services.Services.Contracts;
+using Services.ViewModels.BookVMs;
 using Services.ViewModels.StoreVMs;
 using Web.PageViewModels;
 
@@ -17,10 +18,14 @@ namespace Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> StoreBookList(int id, CancellationToken cancellationToken)
+        public async Task<IActionResult> StoreBookList(int? id, CancellationToken cancellationToken)
         {
-            var books = await _bookService.GetBooksByStoreAsync(id, cancellationToken);
+            if (!id.HasValue) return View(Enumerable.Empty<BookGetVM>());
 
+            var store = await _storeService.GetByIdAsync(id.Value, cancellationToken);
+            var books = await _bookService.GetBooksByStoreAsync(store.Id, cancellationToken);
+
+            ViewData["Title"] = $"Список книг хранилища {store.Name}";
             return View(books);
         }
 
@@ -38,6 +43,26 @@ namespace Web.Controllers
             if (!id.HasValue) return View(new StorePageVM());
 
             return View(new StorePageVM(await _storeService.GetByIdAsync(id.Value, cancellationToken)));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> LinkStoreToUser(int? storeId, CancellationToken cancellationToken)
+        {
+            if (!storeId.HasValue) return BadRequest();
+
+            await _storeService.LinkStoreToUser(storeId.Value, cancellationToken);
+
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UnlinkStoreFromUser(int? storeId, CancellationToken cancellationToken)
+        {
+            if (!storeId.HasValue) return BadRequest();
+
+            await _storeService.UnlinkStoreFromUser(storeId.Value, cancellationToken);
+
+            return Ok();
         }
 
         [HttpPost]

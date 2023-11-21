@@ -7,6 +7,8 @@ namespace Data.Repos.Contracts
         Task<IEnumerable<Store>> GetStoresAsync(CancellationToken cancellationToken);
         Task<IEnumerable<Store>> GetStoresByUserIdAsync(int userId, CancellationToken cancellationToken);
         Task<Store> GetByIdAsync(int id, CancellationToken cancellationToken);
+        void LinkStoreToUser(Store store, User user);
+        void UnlinkStoreFromUser(Store store, User user);
         void Insert(Store store);
         void Update(Store store);
         void DeleteById(int id);
