@@ -29,8 +29,31 @@
             else
             {
                 <button type="submit" formmethod="post" asp-action="EditStore" class="btn btn-primary">Изменить</button>
+                @if (Model.StoreGet.IsLinkedToUser)
+                {
+                    <button id="unlinkStoreFromUserButton" class="btn btn-outline-success">Удалить из моих хранилищ</button>
+                }
+                else
+                {
+                    <button id="linkStoreToUserButton" class="btn btn-success">Добавить в мои хранилища</button>
+                }
                 <button type="submit" formmethod="post" asp-action="RemoveStore" class="btn btn-danger">Удалить</button>
             }
         </div>
     </div>
 </form>
+
+@section Scripts {
+    <script>
+        $('#linkStoreToUserButton').click(function () {
+            $.post('/Store/LinkStoreToUser', {
+                storeId: @Model.StoreGet?.Id,
+            });
+        });
+        $('#unlinkStoreFromUserButton').click(function () {
+            $.post('/Store/UnlinkStoreFromUser', {
+                storeId: @Model.StoreGet?.Id,
+            });
+        });
+    </script>
+}

@@ -10,6 +10,8 @@ namespace Services.ViewModels.StoreVMs
 
         public string Address { get; set; }
 
+        public bool IsLinkedToUser { get; init; }
+
         public IEnumerable<BookGetVM> Books { get; set; }
     }
 }

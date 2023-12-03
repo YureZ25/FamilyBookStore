@@ -1,17 +1,25 @@
 ﻿@model IEnumerable<BookGetVM>
 
-<table class="table table-hover">
+<table class="table table-hover table-bordered">
     <thead class="table-light">
         <tr>
             <th scope="col">Название</th>
+            <th scope="col">Автор</th>
+            <th scope="col">Жанр</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var book in Model)
+        @foreach (var book in Model.OrderBy(e => $"{e.Author.LastName} {e.Author.FirstName}").ThenBy(e => e.Title))
         {
-            <tr>
+            <tr navigate asp-controller="Book" asp-action="Book" asp-route-id="@book.Id">
                 <td>
                     @book.Title
+                </td>
+                <td>
+                    @book.Author.LastName @book.Author.FirstName
+                </td>
+                <td>
+                    @book.Genre.Name
                 </td>
             </tr>
         }

@@ -30,8 +30,14 @@ namespace Data.Repos
                         Authors.FirstName, 
                         Authors.LastName, 
                         Books.GenreId, 
-                        Genres.Name AS GenreName
+                        Genres.Name AS GenreName,
+                        Users2Stores.UserId,
+                        Users.UserName,
+                        Users.NormalizedUserName,
+                        Users.PasswordHash
                     FROM Stores
+                    LEFT JOIN Users2Stores ON Stores.Id = Users2Stores.StoreId
+                    LEFT JOIN Users ON Users2Stores.UserId = Users.Id
                     LEFT JOIN Book2Stores ON Stores.Id = Book2Stores.StoreId
                     LEFT JOIN Books ON Book2Stores.BookId = Books.Id
                     LEFT JOIN Authors ON Books.AuthorId = Authors.Id
@@ -48,7 +54,17 @@ namespace Data.Repos
                 var store = stores.Find(e => e.Id == tempStore.Id);
                 if (store != null)
                 {
-                    store.Books = store.Books.Append(tempStore.Books.Single());
+                    var book = tempStore.Books.Single();
+                    if (store.Books.All(b => b.Id != book.Id))
+                    {
+                        store.Books = store.Books.Append(book);
+                    }
+
+                    var user = tempStore.Users.Single();
+                    if (store.Users.All(u => u.Id != user.Id))
+                    {
+                        store.Users = store.Users.Append(user);
+                    }
                 }
                 else
                 {
@@ -72,13 +88,18 @@ namespace Data.Repos
                         Authors.FirstName, 
                         Authors.LastName, 
                         Books.GenreId, 
-                        Genres.Name AS GenreName
+                        Genres.Name AS GenreName,
+                        Users2Stores.UserId,
+                        Users.UserName,
+                        Users.NormalizedUserName,
+                        Users.PasswordHash
                     FROM Stores
                     JOIN Book2Stores ON Stores.Id = Book2Stores.StoreId
                     JOIN Books ON Book2Stores.BookId = Books.Id
                     JOIN Authors ON Books.AuthorId = Authors.Id
                     JOIN Genres ON Books.GenreId = Genres.Id
                     JOIN Users2Stores ON Stores.Id = Users2Stores.StoreId
+                    JOIN Users ON Users2Stores.UserId = Users.Id
                     WHERE Users2Stores.UserId = @userId
                     ORDER BY Stores.Id")
                 .WithParameter("userId", userId);
@@ -117,8 +138,14 @@ namespace Data.Repos
                         Authors.FirstName, 
                         Authors.LastName, 
                         Books.GenreId, 
-                        Genres.Name AS GenreName
+                        Genres.Name AS GenreName,
+                        Users2Stores.UserId,
+                        Users.UserName,
+                        Users.NormalizedUserName,
+                        Users.PasswordHash
                     FROM Stores
+                    LEFT JOIN Users2Stores ON Stores.Id = Users2Stores.StoreId
+                    LEFT JOIN Users ON Users2Stores.UserId = Users.Id
                     LEFT JOIN Book2Stores ON Stores.Id = Book2Stores.StoreId
                     LEFT JOIN Books ON Book2Stores.BookId = Books.Id
                     LEFT JOIN Authors ON Books.AuthorId = Authors.Id
@@ -129,12 +156,63 @@ namespace Data.Repos
 
             using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
 
-            if (reader.HasRows && await reader.ReadAsync(cancellationToken))
-            {
-                return Map(reader);
-            }
+            if (!reader.HasRows) return null;
 
-            return null;
+            var store = new Store();
+            while (await reader.ReadAsync(cancellationToken))
+            {
+                var tempStore = Map(reader);
+
+                if (store.Id == tempStore.Id)
+                {
+                    var book = tempStore.Books.Single();
+                    if (store.Books.All(b => b.Id != book.Id))
+                    {
+                        store.Books = store.Books.Append(book);
+                    }
+
+                    var user = tempStore.Users.Single();
+                    if (store.Users.All(u => u.Id != user.Id))
+                    {
+                        store.Users = store.Users.Append(user);
+                    }
+                }
+                else
+                {
+                    store = tempStore;
+                }
+            }
+            return store;
+        }
+
+        public void LinkStoreToUser(Store store, User user)
+        {
+            var u2s = new Users2Stores
+            {
+                StoreId = store.Id,
+                UserId = user.Id,
+            };
+
+            _dbContext.CreateCommand(u2s)
+                .WithText(@"INSERT INTO Users2Stores (StoreId, UserId)
+                    VALUES (@storeId, @userId)")
+                .WithParameter(e => e.StoreId)
+                .WithParameter(e => e.UserId);
+        }
+
+        public void UnlinkStoreFromUser(Store store, User user)
+        {
+            var u2s = new Users2Stores
+            {
+                StoreId = store.Id,
+                UserId = user.Id,
+            };
+
+            _dbContext.CreateCommand(u2s)
+                .WithText(@"DELETE Users2Stores
+                    WHERE StoreId = @storeId AND UserId = @userId")
+                .WithParameter(e => e.StoreId)
+                .WithParameter(e => e.UserId);
         }
 
         public void Insert(Store store)
@@ -175,30 +253,44 @@ namespace Data.Repos
                 Address = reader.MapString(nameof(Store.Address)),
             };
 
-            if (reader.IsDBNull(nameof(Book2Stores.BookId))) return store;
-
-            var book = new Book
+            if (!reader.IsDBNull(nameof(Book2Stores.BookId)))
             {
-                Id = reader.MapInt32(nameof(Book2Stores.BookId)),
-                Title = reader.MapString(nameof(Book.Title)),
-                Description = reader.MapString(nameof(Book.Description)),
-                AuthorId = reader.MapInt32(nameof(Book.AuthorId)),
-                Author = new Author
+                var book = new Book
                 {
-                    Id = reader.MapInt32(nameof(Book.AuthorId)),
-                    FirstName = reader.MapString(nameof(Author.FirstName)),
-                    LastName = reader.MapString(nameof(Author.LastName)),
-                },
-                GenreId = reader.MapInt32(nameof(Book.GenreId)),
-                Genre = new Genre
-                {
-                    Id = reader.MapInt32(nameof(Book.GenreId)),
-                    Name = reader.MapString("GenreName"),
-                },
-                Store = store,
-            };
+                    Id = reader.MapInt32(nameof(Book2Stores.BookId)),
+                    Title = reader.MapString(nameof(Book.Title)),
+                    Description = reader.MapString(nameof(Book.Description)),
+                    AuthorId = reader.MapInt32(nameof(Book.AuthorId)),
+                    Author = new Author
+                    {
+                        Id = reader.MapInt32(nameof(Book.AuthorId)),
+                        FirstName = reader.MapString(nameof(Author.FirstName)),
+                        LastName = reader.MapString(nameof(Author.LastName)),
+                    },
+                    GenreId = reader.MapInt32(nameof(Book.GenreId)),
+                    Genre = new Genre
+                    {
+                        Id = reader.MapInt32(nameof(Book.GenreId)),
+                        Name = reader.MapString("GenreName"),
+                    },
+                    Store = store,
+                };
 
-            store.Books = new[] { book };
+                store.Books = new[] { book };
+            }
+
+            if (!reader.IsDBNull(nameof(Users2Stores.UserId)))
+            {
+                var user = new User
+                {
+                    Id = reader.MapInt32(nameof(Users2Stores.UserId)),
+                    UserName = reader.MapString(nameof(User.UserName)),
+                    NormalizedUserName = reader.MapString(nameof(User.NormalizedUserName)),
+                    PasswordHash = reader.MapString(nameof(User.PasswordHash)),
+                };
+
+                store.Users = new[] { user };
+            }
 
             return store;
         }

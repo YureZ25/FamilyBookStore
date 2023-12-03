@@ -10,6 +10,7 @@
             <th scope="col">Название</th>
             <th scope="col">Адрес</th>
             <th scope="col">Кол-во книг</th>
+            <th scope="col">В моих хранилищах</th>
         </tr>
     </thead>
     <tbody>
@@ -24,6 +25,16 @@
                 </td>
                 <td>
                     @(store.Books?.Count() ?? 0)
+                </td>
+                <td>
+                    @if (store.IsLinkedToUser)
+                    {
+                        <i class="bi bi-check-square-fill"></i>
+                    }
+                    else
+                    {
+                        <i class="bi bi-x-square-fill"></i>
+                    }
                 </td>
             </tr>
         }
