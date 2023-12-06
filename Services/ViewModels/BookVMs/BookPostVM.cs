@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Data.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Services.ViewModels.BookVMs
 {
@@ -11,6 +12,8 @@ namespace Services.ViewModels.BookVMs
         public string Title { get; set; }
 
         public string Description { get; set; }
+
+        public BookStatus BookStatus { get; set; }
 
         public int AuthorId { get; set; }
 

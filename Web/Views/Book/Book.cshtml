@@ -1,4 +1,6 @@
-﻿@model BookPageVM
+﻿@using Data.Enums
+@using Data.Extensions
+@model BookPageVM
 
 @{
     var isEdit = Model?.BookGet?.Id is > 0;
@@ -24,7 +26,7 @@
             <label asp-for="BookPost.AuthorId" class="form-label">Автор</label>
             <select asp-for="BookPost.AuthorId" class="form-select">
                 <option value="">Выбарите автора</option>
-                @foreach (var author in Model.Authors)
+                @foreach (var author in Model.Authors.OrderBy(a => $"{a.FirstName} {a.LastName}"))
                 {
                     if(author.Id == Model.BookGet?.Author?.Id)
                     {
@@ -42,7 +44,7 @@
             <label asp-for="BookPost.GenreId" class="form-label">Жанр</label>
             <select asp-for="BookPost.GenreId" class="form-select">
                 <option value="">Выбарите жанр</option>
-                @foreach (var genre in Model.Genres)
+                @foreach (var genre in Model.Genres.OrderBy(g => g.Name))
                 {
                     if (genre.Id == Model.BookGet?.Genre?.Id)
                     {
@@ -60,7 +62,7 @@
             <label asp-for="BookPost.StoreId" class="form-label">Хранилище</label>
             <select asp-for="BookPost.StoreId" class="form-select">
                 <option value="">Выбарите хранилище</option>
-                @foreach (var store in Model.Stores)
+                @foreach (var store in Model.Stores.OrderByDescending(s => s.Books.Count()))
                 {
                     if (store.Id == Model.BookGet?.Store?.Id)
                     {
@@ -73,6 +75,23 @@
                 }
             </select>
             <span asp-validation-for="BookPost.StoreId" class="text-danger"></span>
+        </div>
+
+        <div class="col-12 d-flex justify-content-center">
+            <div class="col-6 btn-group" role="group" aria-label="Check book status">
+                @foreach (var bookStatus in Enum.GetValues<BookStatus>())
+                {
+                    @if (bookStatus == BookStatus.None)
+                    {
+                        <input type="radio" style="display: none" checked asp-for="BookPost.BookStatus" value="@bookStatus" id="@bookStatus.ToString()" name="@nameof(BookStatus)" autocomplete="off" />
+                    }
+                    else
+                    {
+                        <input type="radio" class="btn-check" asp-for="BookPost.BookStatus" value="@bookStatus" id="@bookStatus.ToString()" name="@nameof(BookStatus)" autocomplete="off" />
+                        <label class="btn btn-outline-primary" for="@bookStatus.ToString()">@bookStatus.GetDescription()</label>
+                    }
+                }
+            </div>
         </div>
 
         <div class="col-12 d-flex justify-content-around">
@@ -88,3 +107,16 @@
         </div>
     </div>
 </form>
+
+@section Scripts {
+    <script>
+        let bookStatusId;
+        $(":radio").click(function (e) {
+            if (bookStatusId === e.target.id) {
+                $(e.target).prop('checked', false);
+                $('#@BookStatus.None.ToString()').prop('checked', true);
+            }
+            bookStatusId = e.target.id;
+        });
+    </script>
+}
