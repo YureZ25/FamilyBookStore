@@ -73,6 +73,19 @@ begin
 	);
 end
 
+if not exists (select * from INFORMATION_SCHEMA.TABLES where TABLE_CATALOG = 'adonet-fbs' and TABLE_NAME = 'UsersBooksStatuses')
+begin
+	create table UsersBooksStatuses
+	(
+		Id int identity(1,1) primary key,
+		UserId int not null foreign key references Users(Id),
+		BookId int not null foreign key references Books(Id),
+		BookStatus tinyint not null,
+		CurrentPage smallint null,
+		StartRead datetime2(7) null,
+		EndRead datetime2(7) null
+	);
+end
 
 if not exists (select * from INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS where CONSTRAINT_NAME = 'FK_Books_Authors_AuthorId')
 begin
