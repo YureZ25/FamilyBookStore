@@ -21,9 +21,11 @@ namespace Data.Entities
         [EnumDataType(typeof(BookStatus))]
         public BookStatus BookStatus { get; set; }
 
-        public int? CurrentPage { get; set; }
+        public DateTime? WishRead { get; set; }
 
         public DateTime? StartRead { get; set; }
+
+        public int? CurrentPage { get; set; }
 
         public DateTime? EndRead { get; set; }
     }

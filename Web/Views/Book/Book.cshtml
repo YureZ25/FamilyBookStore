@@ -9,101 +9,117 @@
 }
 
 <form>
-    <div class="row g-3 w-75 mx-auto">
-        <input type="hidden" asp-for="BookPost.Id" value="@Model.BookGet?.Id" />
-
-        <div class="col-6">
-            <label asp-for="BookPost.Title" class="form-label">Название книги:</label>
-            <input type="text" asp-for="BookPost.Title" value="@Model.BookGet?.Title" class="form-control" />
-            <span asp-validation-for="BookPost.Title" class="text-danger"></span>
-        </div>
-        <div class="col-6">
-            <label asp-for="BookPost.Description" class="form-label">Описание книги:</label>
-            <input type="text" asp-for="BookPost.Description" value="@Model.BookGet?.Description" class="form-control" />
-            <span asp-validation-for="BookPost.Description" class="text-danger"></span>
-        </div>
-        <div class="col-6">
-            <label asp-for="BookPost.AuthorId" class="form-label">Автор</label>
-            <select asp-for="BookPost.AuthorId" class="form-select">
-                <option value="">Выбарите автора</option>
-                @foreach (var author in Model.Authors.OrderBy(a => $"{a.FirstName} {a.LastName}"))
-                {
-                    if(author.Id == Model.BookGet?.Author?.Id)
-                    {
-                        <option selected value="@author.Id">@author.FirstName @author.LastName</option>
-                    }
-                    else
-                    {
-                        <option value="@author.Id">@author.FirstName @author.LastName</option>
-                    }
-                }
-            </select>
-            <span asp-validation-for="BookPost.AuthorId" class="text-danger"></span>
-        </div>
-        <div class="col-6">
-            <label asp-for="BookPost.GenreId" class="form-label">Жанр</label>
-            <select asp-for="BookPost.GenreId" class="form-select">
-                <option value="">Выбарите жанр</option>
-                @foreach (var genre in Model.Genres.OrderBy(g => g.Name))
-                {
-                    if (genre.Id == Model.BookGet?.Genre?.Id)
-                    {
-                        <option selected value="@genre.Id">@genre.Name</option>
-                    }
-                    else
-                    {
-                        <option value="@genre.Id">@genre.Name</option>
-                    }
-                }
-            </select>
-            <span asp-validation-for="BookPost.GenreId" class="text-danger"></span>
-        </div>
-        <div class="col-6">
-            <label asp-for="BookPost.StoreId" class="form-label">Хранилище</label>
-            <select asp-for="BookPost.StoreId" class="form-select">
-                <option value="">Выбарите хранилище</option>
-                @foreach (var store in Model.Stores.OrderByDescending(s => s.Books.Count()))
-                {
-                    if (store.Id == Model.BookGet?.Store?.Id)
-                    {
-                        <option selected value="@store.Id">@store.Name</option>
-                    }
-                    else
-                    {
-                        <option value="@store.Id">@store.Name</option>
-                    }
-                }
-            </select>
-            <span asp-validation-for="BookPost.StoreId" class="text-danger"></span>
-        </div>
-
-        <div class="col-12 d-flex justify-content-center">
-            <div class="col-6 btn-group" role="group" aria-label="Check book status">
-                @foreach (var bookStatus in Enum.GetValues<BookStatus>())
-                {
-                    @if (bookStatus == BookStatus.None)
-                    {
-                        <input type="radio" style="display: none" checked asp-for="BookPost.BookStatus" value="@bookStatus" id="@bookStatus.ToString()" name="@nameof(BookStatus)" autocomplete="off" />
-                    }
-                    else
-                    {
-                        <input type="radio" class="btn-check" asp-for="BookPost.BookStatus" value="@bookStatus" id="@bookStatus.ToString()" name="@nameof(BookStatus)" autocomplete="off" />
-                        <label class="btn btn-outline-primary" for="@bookStatus.ToString()">@bookStatus.GetDescription()</label>
-                    }
-                }
+    <div class="row">
+        <div class="col-3">
+            <div class="bookThumbnail">
+                <img src="~/img/Thumbnails/BookThumbnail.jpg" class="rounded mx-auto d-block">
+            </div>
+            <div class="my-3">
+                <input class="form-control" type="file" accept="image/png, image/jpeg" multiple="false">
             </div>
         </div>
+        <div class="col-9">
+            <div class="row g-4">
+                <input type="hidden" asp-for="BookPost.Id" value="@Model.BookGet?.Id" />
 
-        <div class="col-12 d-flex justify-content-around">
-            @if (!isEdit)
-            {
-                <button type="submit" formmethod="post" asp-action="AddBook" class="btn btn-primary">Добавить</button>
-            }
-            else
-            {
-                <button type="submit" formmethod="post" asp-action="EditBook" class="btn btn-primary">Изменить</button>
-                <button type="submit" formmethod="post" asp-action="RemoveBook" class="btn btn-danger">Удалить</button>
-            }
+                <div class="col-6">
+                    <label asp-for="BookPost.Title" class="form-label">Название книги</label>
+                    <input type="text" asp-for="BookPost.Title" value="@Model.BookGet?.Title" class="form-control" />
+                    <span asp-validation-for="BookPost.Title" class="text-danger"></span>
+                </div>
+                <div class="col-6">
+                    <label asp-for="BookPost.Description" class="form-label">Описание книги</label>
+                    <input type="text" asp-for="BookPost.Description" value="@Model.BookGet?.Description" class="form-control" />
+                    <span asp-validation-for="BookPost.Description" class="text-danger"></span>
+                </div>
+                <div class="col-6">
+                    <label asp-for="BookPost.AuthorId" class="form-label">Автор</label>
+                    <select asp-for="BookPost.AuthorId" class="form-select">
+                        <option value="">Выберите автора</option>
+                        @foreach (var author in Model.Authors.OrderBy(a => $"{a.FirstName} {a.LastName}"))
+                        {
+                            if (author.Id == Model.BookGet?.Author?.Id)
+                            {
+                                <option selected value="@author.Id">@author.FirstName @author.LastName</option>
+                            }
+                            else
+                            {
+                                <option value="@author.Id">@author.FirstName @author.LastName</option>
+                            }
+                        }
+                    </select>
+                    <span asp-validation-for="BookPost.AuthorId" class="text-danger"></span>
+                </div>
+                <div class="col-6">
+                    <label asp-for="BookPost.GenreId" class="form-label">Жанр</label>
+                    <select asp-for="BookPost.GenreId" class="form-select">
+                        <option value="">Выберите жанр</option>
+                        @foreach (var genre in Model.Genres.OrderBy(g => g.Name))
+                        {
+                            if (genre.Id == Model.BookGet?.Genre?.Id)
+                            {
+                                <option selected value="@genre.Id">@genre.Name</option>
+                            }
+                            else
+                            {
+                                <option value="@genre.Id">@genre.Name</option>
+                            }
+                        }
+                    </select>
+                    <span asp-validation-for="BookPost.GenreId" class="text-danger"></span>
+                </div>
+                <div class="col-6">
+                    <label asp-for="BookPost.StoreId" class="form-label">Хранилище</label>
+                    <select asp-for="BookPost.StoreId" class="form-select">
+                        <option value="">Выберите хранилище</option>
+                        @foreach (var store in Model.Stores.OrderByDescending(s => s.Books.Count()))
+                        {
+                            if (store.Id == Model.BookGet?.Store?.Id)
+                            {
+                                <option selected value="@store.Id">@store.Name</option>
+                            }
+                            else
+                            {
+                                <option value="@store.Id">@store.Name</option>
+                            }
+                        }
+                    </select>
+                    <span asp-validation-for="BookPost.StoreId" class="text-danger"></span>
+                </div>
+                <div class="col-6">
+                    <label for="price" class="form-label">Цена</label>
+                    <input type="number" id="price" class="form-control" />
+                </div>
+
+                <div class="col-12 d-flex justify-content-center">
+                    <div class="col-6 btn-group" role="group" aria-label="Check book status">
+                        @foreach (var bookStatus in Enum.GetValues<BookStatus>())
+                        {
+                            @if (bookStatus == BookStatus.None)
+                            {
+                                <input type="radio" style="display: none" checked asp-for="BookPost.BookStatus" value="@bookStatus" id="@bookStatus.ToString()" name="@nameof(BookStatus)" autocomplete="off" />
+                            }
+                            else
+                            {
+                                <input type="radio" class="btn-check" asp-for="BookPost.BookStatus" value="@bookStatus" id="@bookStatus.ToString()" name="@nameof(BookStatus)" autocomplete="off" />
+                                <label class="btn btn-outline-primary" for="@bookStatus.ToString()">@bookStatus.GetDescription()</label>
+                            }
+                        }
+                    </div>
+                </div>
+
+                <div class="col-12 d-flex justify-content-around">
+                    @if (!isEdit)
+                    {
+                        <button type="submit" formmethod="post" asp-action="AddBook" class="btn btn-primary">Добавить</button>
+                    }
+                    else
+                    {
+                        <button type="submit" formmethod="post" asp-action="EditBook" class="btn btn-primary">Изменить</button>
+                        <button type="submit" formmethod="post" asp-action="RemoveBook" class="btn btn-danger">Удалить</button>
+                    }
+                </div>
+            </div>
         </div>
     </div>
 </form>
@@ -117,6 +133,10 @@
                 $('#@BookStatus.None.ToString()').prop('checked', true);
             }
             bookStatusId = e.target.id;
+        });
+
+        $("input[type=number]").change(function () {
+            this.value = parseFloat(this.value).toFixed(2);
         });
     </script>
 }

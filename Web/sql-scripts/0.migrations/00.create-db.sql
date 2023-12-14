@@ -81,8 +81,9 @@ begin
 		UserId int not null foreign key references Users(Id),
 		BookId int not null foreign key references Books(Id),
 		BookStatus tinyint not null,
-		CurrentPage smallint null,
+		WishRead datetime2(7) null,
 		StartRead datetime2(7) null,
+		CurrentPage smallint null,
 		EndRead datetime2(7) null
 	);
 end
