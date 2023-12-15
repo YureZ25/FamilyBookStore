@@ -15,6 +15,14 @@ namespace Data.Entities
 
         public string Description { get; set; }
 
+        [DataType("bigint")]
+        internal ulong ISBNStoreValue { get; set; }
+        public ISBN ISBN
+        {
+            get => ISBN.FromStoreValue(ISBNStoreValue); 
+            set => ISBNStoreValue = value.ToStoreValue();
+        }
+
         [ForeignKey(nameof(Author))]
         public int AuthorId { get; set; }
         public Author Author { get; set; }
