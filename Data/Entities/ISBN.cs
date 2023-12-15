@@ -17,6 +17,13 @@
         private readonly uint _publication;
         private readonly byte _checksum;
 
+        private const byte _length = 13;
+        private const byte _prefixLength = 3;
+        private readonly byte _countryLength;
+        private readonly byte _publisherLength;
+        private readonly byte _publicationLength;
+        private const byte _checksumLength = 1;
+
         public ISBN(uint country, uint publisher, uint publication, byte checksum)
         {
             if (!Enum.IsDefined((Country)country))
@@ -24,8 +31,12 @@
                 throw new ArgumentOutOfRangeException(nameof(country), "Invalid country code");
             }
             _country = (Country)country;
+            _countryLength = GetLength(country);
 
-            if (GetNumberLength(publisher) + GetNumberLength(publication) != 8)
+            _publisherLength = GetLength(publisher);
+            _publicationLength = GetLength(publication);
+
+            if (_publisherLength + _publicationLength != _length - _prefixLength - _countryLength - _checksumLength)
             {
                 throw new ArgumentException("Publisher or publication code is invalid");
             }
@@ -39,54 +50,26 @@
             _checksum = checksum;
         }
 
+        public override string ToString()
+        {
+            return $"{_prefix}-{(uint)_country}-{_publisher}-{_publication}-{_checksum}";
+        }
+
         private byte GetChecksum()
         {
-            var nums = new List<byte>();
-
-            byte publicationLen = GetNumberLength(_publication);
-            for (byte i = 0; i < publicationLen; i++)
-            {
-                uint divider = (uint)Math.Pow(10, i);
-
-                nums.Add((byte)(_publication / divider % 10));
-            }
-
-            byte publisherLen = GetNumberLength(_publisher);
-            for (byte i = 0; i < publisherLen; i++)
-            {
-                uint divider = (uint)Math.Pow(10, i);
-
-                nums.Add((byte)(_publisher / divider % 10));
-            }
-
-            uint countryInt = (uint)_country;
-            byte countryLen = GetNumberLength(countryInt);
-            for (byte i = 0; i < countryLen; i++)
-            {
-                uint divider = (uint)Math.Pow(10, i);
-
-                nums.Add((byte)(countryInt / divider % 10));
-            }
-
-            byte prefixLen = GetNumberLength(_prefix);
-            for (byte i = 0; i < prefixLen; i++)
-            {
-                uint divider = (uint)Math.Pow(10, i);
-
-                nums.Add((byte)(_prefix / divider % 10));
-            }
+            var numbers = GetNumbers();
 
             int evenSum = 0, oddSum = 0;
 
-            for (int i = 11; i >= 0; i--)
+            for (int i = 0; i < _length - _checksumLength; i++)
             {
-                if (i % 2 == 1)
+                if ((i + 1) % 2 == 1)
                 {
-                    oddSum += nums[i];
+                    oddSum += numbers[i];
                 }
                 else
                 {
-                    evenSum += nums[i];
+                    evenSum += numbers[i];
                 }
             }
 
@@ -97,7 +80,45 @@
             return (byte)Math.Abs(ceiled - sum);
         }
 
-        private byte GetNumberLength(ulong value)
+        private byte[] GetNumbers()
+        {
+            byte j = 0;
+            byte[] numbers = new byte[_length];
+
+            for (byte i = _prefixLength; i > 0; i--, j++)
+            {
+                uint divider = (uint)Math.Pow(10, i - 1);
+
+                numbers[j] = (byte)(_prefix / divider % 10);
+            }
+
+            for (byte i = _countryLength; i > 0; i--, j++)
+            {
+                uint divider = (uint)Math.Pow(10, i - 1);
+
+                numbers[j] = (byte)((uint)_country / divider % 10);
+            }
+
+            for (byte i = _publisherLength; i > 0; i--, j++)
+            {
+                uint divider = (uint)Math.Pow(10, i - 1);
+
+                numbers[j] = (byte)(_publisher / divider % 10);
+            }
+
+            for (byte i = _publicationLength; i > 0; i--, j++)
+            {
+                uint divider = (uint)Math.Pow(10, i - 1);
+
+                numbers[j] = (byte)(_publication / divider % 10);
+            }
+
+            numbers[j] = _checksum;
+
+            return numbers;
+        }
+
+        private byte GetLength(ulong value)
         {
             byte valueLen = 0;
             while (value % Math.Pow(10, valueLen) != value)
