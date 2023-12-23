@@ -62,11 +62,11 @@
 
             if (!Check())
             {
-                throw new ArgumentException("ISBN is invalid");
+                throw new ArgumentException("ISBN validation by checksum was failed");
             }
         }
 
-        public static ISBN FromStoreValue(ulong storeVal)
+        public static ISBN FromStoreValue(long storeVal)
         {
             const byte mask = _dash;
 
@@ -121,7 +121,7 @@
             return new ISBN(oldISBN ? null : _prefix, country, [.. publisher], [.. publication], checksum);
         }
 
-        public readonly ulong ToStoreValue()
+        public readonly long ToStoreValue()
         {
             byte j = 0;
             byte[] digits = new byte[_length - _prefixLength + 3];
@@ -155,7 +155,7 @@
             digits[j] = _checksum;
 
 
-            ulong storeVal = _oldISBN ? 0ul : 1ul;
+            long storeVal = _oldISBN ? 0 : 1;
 
             for (int i = 0; i < digits.Length; i++)
             {
@@ -293,7 +293,7 @@
             return digits;
         }
 
-        private static byte GetLength(ulong value)
+        private static byte GetLength(long value)
         {
             byte valueLen = 0;
             while (value % Math.Pow(10, valueLen) != value)

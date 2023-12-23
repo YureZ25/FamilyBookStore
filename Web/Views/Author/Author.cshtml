@@ -11,14 +11,14 @@
         <input type="hidden" asp-for="AuthorPost.Id" value="@Model.AuthorGet?.Id" />
 
         <div class="col-6">
-            <label asp-for="AuthorPost.LastName" class="form-label">Фамилия:</label>
-            <input asp-for="AuthorPost.LastName" value="@Model.AuthorGet?.LastName" class="form-control" />
-            <span asp-validation-for="AuthorPost.LastName" class="text-danger"></span>
-        </div>
-        <div class="col-6">
             <label asp-for="AuthorPost.FirstName" class="form-label">Имя:</label>
             <input asp-for="AuthorPost.FirstName" value="@Model.AuthorGet?.FirstName" class="form-control" />
             <span asp-validation-for="AuthorPost.FirstName" class="text-danger"></span>
+        </div>
+        <div class="col-6">
+            <label asp-for="AuthorPost.LastName" class="form-label">Фамилия:</label>
+            <input asp-for="AuthorPost.LastName" value="@Model.AuthorGet?.LastName" class="form-control" />
+            <span asp-validation-for="AuthorPost.LastName" class="text-danger"></span>
         </div>
 
         <div class="col-12 d-flex justify-content-around">

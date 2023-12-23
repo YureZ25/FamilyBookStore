@@ -16,12 +16,19 @@ namespace Data.Entities
         public string Description { get; set; }
 
         [DataType("bigint")]
-        internal ulong ISBNStoreValue { get; set; }
-        public ISBN ISBN
+        internal long? IsbnStoreValue { get; set; }
+        public ISBN? Isbn
         {
-            get => ISBN.FromStoreValue(ISBNStoreValue); 
-            set => ISBNStoreValue = value.ToStoreValue();
+            get => IsbnStoreValue.HasValue ? ISBN.FromStoreValue(IsbnStoreValue.Value) : null; 
+            set => IsbnStoreValue = value?.ToStoreValue();
         }
+
+        [Range(1, int.MaxValue)]
+        public int? PageCount { get; set; }
+
+        [Range(0, 200_000)]
+        [DataType("smallmoney")]
+        public decimal? Price { get; set; }
 
         [ForeignKey(nameof(Author))]
         public int AuthorId { get; set; }

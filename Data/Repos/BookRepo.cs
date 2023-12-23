@@ -19,23 +19,28 @@ namespace Data.Repos
         public async Task<IEnumerable<Book>> GetBooksAsync(CancellationToken cancellationToken)
         {
             var cmd = _dbContext.CreateQuery()
-                .WithText(@"SELECT 
-                        Books.Id, 
-                        Books.Title, 
-                        Books.Description, 
-                        Books.AuthorId, 
-                        Authors.FirstName, 
-                        Authors.LastName, 
-                        Books.GenreId, 
-                        Genres.Name, 
-                        Book2Stores.StoreId,
-                        Stores.Name AS StoreName,
-                        Stores.Address
-                    FROM Books 
-                    JOIN Authors ON Books.AuthorId = Authors.Id
-                    JOIN Genres ON Books.GenreId = Genres.Id
-                    LEFT JOIN Book2Stores ON Books.Id = Book2Stores.BookId
-                    LEFT JOIN Stores ON Book2Stores.StoreId = Stores.Id");
+                .WithText("""
+                SELECT 
+                    Books.Id, 
+                    Books.Title, 
+                    Books.Description, 
+                    Books.IsbnStoreValue,
+                    Books.PageCount,
+                    Books.Price,
+                    Books.AuthorId, 
+                    Authors.FirstName, 
+                    Authors.LastName, 
+                    Books.GenreId, 
+                    Genres.Name, 
+                    Book2Stores.StoreId,
+                    Stores.Name AS StoreName,
+                    Stores.Address
+                FROM Books 
+                JOIN Authors ON Books.AuthorId = Authors.Id
+                JOIN Genres ON Books.GenreId = Genres.Id
+                LEFT JOIN Book2Stores ON Books.Id = Book2Stores.BookId
+                LEFT JOIN Stores ON Book2Stores.StoreId = Stores.Id
+                """);
 
             using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
 
@@ -50,24 +55,29 @@ namespace Data.Repos
         public async Task<Book> GetByIdAsync(int id, CancellationToken cancellationToken)
         {
             var cmd = _dbContext.CreateQuery()
-                .WithText(@"SELECT 
-                        Books.Id, 
-                        Books.Title, 
-                        Books.Description, 
-                        Books.AuthorId, 
-                        Authors.FirstName, 
-                        Authors.LastName, 
-                        Books.GenreId, 
-                        Genres.Name, 
-                        Book2Stores.StoreId,
-                        Stores.Name AS StoreName,
-                        Stores.Address
-                    FROM Books 
-                    JOIN Authors ON Books.AuthorId = Authors.Id
-                    JOIN Genres ON Books.GenreId = Genres.Id
-                    JOIN Book2Stores ON Books.Id = Book2Stores.BookId
-                    JOIN Stores ON Book2Stores.StoreId = Stores.Id
-                    WHERE Books.Id = @id")
+                .WithText("""
+                SELECT 
+                    Books.Id, 
+                    Books.Title, 
+                    Books.Description, 
+                    Books.IsbnStoreValue,
+                    Books.PageCount,
+                    Books.Price,
+                    Books.AuthorId, 
+                    Authors.FirstName, 
+                    Authors.LastName, 
+                    Books.GenreId, 
+                    Genres.Name, 
+                    Book2Stores.StoreId,
+                    Stores.Name AS StoreName,
+                    Stores.Address
+                FROM Books 
+                JOIN Authors ON Books.AuthorId = Authors.Id
+                JOIN Genres ON Books.GenreId = Genres.Id
+                LEFT JOIN Book2Stores ON Books.Id = Book2Stores.BookId
+                LEFT JOIN Stores ON Book2Stores.StoreId = Stores.Id
+                WHERE Books.Id = @id
+                """)
                 .WithParameter("id", id);
 
             using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
@@ -83,8 +93,10 @@ namespace Data.Repos
         public async Task<bool> AttachedToStore(int bookId, int storeId, CancellationToken cancellationToken)
         {
             var cmd = _dbContext.CreateQuery()
-                .WithText(@"SELECT COUNT(*) FROM Book2Stores
-                    WHERE BookId = @bookId AND StoreId = @storeId")
+                .WithText("""
+                SELECT COUNT(*) FROM Book2Stores
+                WHERE BookId = @bookId AND StoreId = @storeId
+                """)
                 .WithParameter(nameof(bookId), bookId)
                 .WithParameter(nameof(storeId), storeId);
 
@@ -94,8 +106,10 @@ namespace Data.Repos
         public void AttachToStore(Book book)
         {
             _dbContext.CreateCommand(book)
-                .WithText(@"INSERT INTO Book2Stores (BookId, StoreId)
-                    VALUES (@bookId, @storeId);")
+                .WithText("""
+                INSERT INTO Book2Stores (BookId, StoreId)
+                VALUES (@bookId, @storeId);
+                """)
                 .WithParameter(e => e.Id, "bookId", ParameterDirection.InputOutput)
                 .WithParameter(e => e.Store.Id, "storeId");
         }
@@ -103,20 +117,27 @@ namespace Data.Repos
         public void DetachFromStore(Book book)
         {
             _dbContext.CreateCommand(book)
-                .WithText(@"DELETE Book2Stores
-                    WHERE BookId = @bookId")
+                .WithText("""
+                DELETE Book2Stores
+                WHERE BookId = @bookId
+                """)
                 .WithParameter(e => e.Id, "bookId");
         }
 
         public void Insert(Book book)
         {
             _dbContext.CreateCommand(book)
-                .WithText(@"INSERT INTO Books (Title, Description, AuthorId, GenreId) 
-                    VALUES (@title, @description, @authorId, @genreId); 
-                    SET @id = SCOPE_IDENTITY();")
+                .WithText("""
+                INSERT INTO Books (Title, Description, IsbnStoreValue, PageCount, Price, AuthorId, GenreId) 
+                VALUES (@title, @description, @isbnStoreValue, @pageCount, @price,  @authorId, @genreId); 
+                SET @id = SCOPE_IDENTITY();
+                """)
                 .WithParameter(e => e.Id, ParameterDirection.Output)
                 .WithParameter(e => e.Title)
                 .WithParameter(e => e.Description)
+                .WithParameter(e => e.IsbnStoreValue)
+                .WithParameter(e => e.PageCount)
+                .WithParameter(e => e.Price)
                 .WithParameter(e => e.AuthorId)
                 .WithParameter(e => e.GenreId);
         }
@@ -124,12 +145,24 @@ namespace Data.Repos
         public void Update(Book book)
         {
             _dbContext.CreateCommand(book)
-                .WithText(@"UPDATE Books 
-                    SET Title = @title, Description = @description, AuthorId = @authorId, GenreId = @genreId 
-                    WHERE Id = @id")
+                .WithText("""
+                UPDATE Books 
+                SET 
+                    Title = @title, 
+                    Description = @description, 
+                    IsbnStoreValue = @isbnStoreValue, 
+                    PageCount = @pageCount, 
+                    Price = @price, 
+                    AuthorId = @authorId, 
+                    GenreId = @genreId 
+                WHERE Id = @id
+                """)
                 .WithParameter(e => e.Id)
                 .WithParameter(e => e.Title)
                 .WithParameter(e => e.Description)
+                .WithParameter(e => e.IsbnStoreValue)
+                .WithParameter(e => e.PageCount)
+                .WithParameter(e => e.Price)
                 .WithParameter(e => e.AuthorId)
                 .WithParameter(e => e.GenreId);
         }
@@ -145,21 +178,24 @@ namespace Data.Repos
         {
             var book = new Book
             {
-                Id = reader.MapInt32(nameof(Book.Id)),
-                Title = reader.MapString(nameof(Book.Title)),
-                Description = reader.MapString(nameof(Book.Description)),
-                AuthorId = reader.MapInt32(nameof(Book.AuthorId)),
+                Id = reader.Map<int>(nameof(Book.Id)),
+                Title = reader.Map<string>(nameof(Book.Title)),
+                Description = reader.Map<string>(nameof(Book.Description)),
+                IsbnStoreValue = reader.Map<long?>(nameof(Book.IsbnStoreValue)),
+                PageCount = reader.Map<int?>(nameof(Book.PageCount)),
+                Price = reader.Map<decimal?>(nameof(Book.Price)),
+                AuthorId = reader.Map<int>(nameof(Book.AuthorId)),
                 Author = new Author
                 {
-                    Id = reader.MapInt32(nameof(Book.AuthorId)),
-                    FirstName = reader.MapString(nameof(Author.FirstName)),
-                    LastName = reader.MapString(nameof(Author.LastName)),
+                    Id = reader.Map<int>(nameof(Book.AuthorId)),
+                    FirstName = reader.Map<string>(nameof(Author.FirstName)),
+                    LastName = reader.Map<string>(nameof(Author.LastName)),
                 },
-                GenreId = reader.MapInt32(nameof(Book.GenreId)),
+                GenreId = reader.Map<int>(nameof(Book.GenreId)),
                 Genre = new Genre
                 {
-                    Id = reader.MapInt32(nameof(Book.GenreId)),
-                    Name = reader.MapString(nameof(Genre.Name)),
+                    Id = reader.Map<int>(nameof(Book.GenreId)),
+                    Name = reader.Map<string>(nameof(Genre.Name)),
                 },
             };
 
@@ -167,9 +203,9 @@ namespace Data.Repos
 
             book.Store = new Store
             {
-                Id = reader.MapInt32(nameof(Book2Stores.StoreId)),
-                Name = reader.MapString("StoreName"),
-                Address = reader.MapString(nameof(Store.Address)),
+                Id = reader.Map<int>(nameof(Book2Stores.StoreId)),
+                Name = reader.Map<string>("StoreName"),
+                Address = reader.Map<string>(nameof(Store.Address)),
             };
 
             return book;

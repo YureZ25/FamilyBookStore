@@ -1,6 +1,8 @@
 using Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Services;
+using Services.ModelBinders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +16,11 @@ builder.Services
     {
         opt.MaxModelValidationErrors = 20;
         opt.ModelBindingMessageProvider.SetValueMustNotBeNullAccessor(_ => "Поле обязательно для заполнения");
+        opt.ModelBinderProviders.Insert(0, new IsbnModelBinderProvider());
+    })
+    .AddViewOptions(opt =>
+    {
+        opt.HtmlHelperOptions.FormInputRenderMode = FormInputRenderMode.DetectCultureFromInputType;
     });
 
 builder.Services

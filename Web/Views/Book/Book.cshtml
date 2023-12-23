@@ -51,6 +51,11 @@
                     <span asp-validation-for="BookPost.AuthorId" class="text-danger"></span>
                 </div>
                 <div class="col-6">
+                    <label asp-for="BookPost.Isbn" class="form-label">ISBN</label>
+                    <input type="text" asp-for="BookPost.Isbn" value="@Model.BookGet?.Isbn.ToString()" class="form-control" />
+                    <span asp-validation-for="BookPost.Isbn" class="text-danger"></span>
+                </div>
+                <div class="col-6">
                     <label asp-for="BookPost.GenreId" class="form-label">Жанр</label>
                     <select asp-for="BookPost.GenreId" class="form-select">
                         <option value="">Выберите жанр</option>
@@ -67,6 +72,11 @@
                         }
                     </select>
                     <span asp-validation-for="BookPost.GenreId" class="text-danger"></span>
+                </div>
+                <div class="col-6">
+                    <label asp-for="BookPost.PageCount" class="form-label">Кол-во страниц</label>
+                    <input type="number" asp-for="BookPost.PageCount" value="@Model.BookGet?.PageCount" class="form-control" />
+                    <span asp-validation-for="BookPost.PageCount" class="text-danger"></span>
                 </div>
                 <div class="col-6">
                     <label asp-for="BookPost.StoreId" class="form-label">Хранилище</label>
@@ -87,8 +97,9 @@
                     <span asp-validation-for="BookPost.StoreId" class="text-danger"></span>
                 </div>
                 <div class="col-6">
-                    <label for="price" class="form-label">Цена</label>
-                    <input type="number" id="price" class="form-control" />
+                    <label asp-for="BookPost.Price" class="form-label">Цена</label>
+                    <input type="number" asp-for="BookPost.Price" value="@Model.BookGet?.Price?.ToString(CultureInfo.InvariantCulture)" class="form-control" />
+                    <span asp-validation-for="BookPost.Price" class="text-danger"></span>
                 </div>
 
                 <div class="col-12 d-flex justify-content-center">
@@ -135,7 +146,7 @@
             bookStatusId = e.target.id;
         });
 
-        $("input[type=number]").change(function () {
+        $("#@nameof(Model.BookPost)_@nameof(Model.BookPost.Price)").change(function () {
             this.value = parseFloat(this.value).toFixed(2);
         });
     </script>

@@ -10,6 +10,9 @@ begin
 		Id int identity(1,1) primary key,
 		Title nvarchar(1024) not null,
 		Description nvarchar(max),
+		IsbnStoreValue bigint null,
+		PageCount int null,
+		Price smallmoney null,
 		AuthorId int not null,
 		GenreId int not null
 	);
