@@ -36,10 +36,10 @@ namespace Services.Services
 
             var stores = await _storeRepo.GetStoresByUserIdAsync(user.Id, cancellationToken);
 
-            var storesVM = stores.Select(s =>
+            var storesVM = stores.Take(3).Select(s =>
             {
                 var storeVM = s.Map();
-                storeVM.Books = storeVM.Books.Take(6);
+                storeVM.Books = storeVM.Books.Take(3);
                 return storeVM;
             });
 

@@ -7,19 +7,19 @@
 <table class="table table-hover table-bordered">
     <thead class="table-light">
         <tr>
-            <th scope="col">Фамилия</th>
             <th scope="col">Имя</th>
+            <th scope="col">Фамилия</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var author in Model.OrderBy(e => e.LastName).ThenBy(e => e.FirstName))
+        @foreach (var author in Model.OrderBy(e => e.ToString()))
         {
             <tr navigate asp-action="Author" asp-route-id="@author.Id">
                 <td>
-                    @author.LastName
+                    @author.FirstName
                 </td>
                 <td>
-                    @author.FirstName
+                    @author.LastName
                 </td>
             </tr>
         }

@@ -36,15 +36,15 @@
                     <label asp-for="BookPost.AuthorId" class="form-label">Автор</label>
                     <select asp-for="BookPost.AuthorId" class="form-select">
                         <option value="">Выберите автора</option>
-                        @foreach (var author in Model.Authors.OrderBy(a => $"{a.FirstName} {a.LastName}"))
+                        @foreach (var author in Model.Authors.OrderBy(a => a.ToString()))
                         {
                             if (author.Id == Model.BookGet?.Author?.Id)
                             {
-                                <option selected value="@author.Id">@author.FirstName @author.LastName</option>
+                                <option selected value="@author.Id">@author.ToString()</option>
                             }
                             else
                             {
-                                <option value="@author.Id">@author.FirstName @author.LastName</option>
+                                <option value="@author.Id">@author.ToString()</option>
                             }
                         }
                     </select>

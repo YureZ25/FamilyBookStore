@@ -9,14 +9,14 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var book in Model.OrderBy(e => $"{e.Author.LastName} {e.Author.FirstName}").ThenBy(e => e.Title))
+        @foreach (var book in Model.OrderBy(e => e.Author.ToString()).ThenBy(e => e.Title))
         {
             <tr navigate asp-controller="Book" asp-action="Book" asp-route-id="@book.Id">
                 <td>
                     @book.Title
                 </td>
                 <td>
-                    @book.Author.LastName @book.Author.FirstName
+                    @book.Author.ToString()
                 </td>
                 <td>
                     @book.Genre.Name

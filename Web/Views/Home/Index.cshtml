@@ -1,7 +1,10 @@
-﻿@model IEnumerable<StoreGetVM>
+﻿@using Data.Enums
+@using Data.Extensions
+
+@model IEnumerable<StoreGetVM>
 
 @{
-    ViewData["Title"] = "Мои хранилища";
+    ViewData["Title"] = "Главная";
 }
 
 <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
@@ -16,7 +19,7 @@
                     @foreach (var book in store.Books)
                     {
                         <div class="col">
-                            <div class="card">
+                            <div class="card m-1">
                                 <img src="~/img/Thumbnails/BookThumbnail.svg" class="card-img-bottom">
                             </div>
                         </div>
@@ -26,3 +29,44 @@
         </div>
     }
 </div>
+
+<div class="row mt-4">
+    <div class="col">
+        <ul class="nav nav-tabs" role="tablist">
+            @foreach (var status in Enum.GetValues<BookStatus>().WithDescription())
+            {
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" type="button" data-bs-toggle="tab" data-bs-target="#@status" role="tab">@status.GetDescription()</button>
+                </li>
+            }
+        </ul>
+        <div class="tab-content">
+            @foreach (var status in Enum.GetValues<BookStatus>().WithDescription())
+            {
+                <div class="tab-pane fade" id="@status" role="tabpanel">
+                    <vc:books-by-status book-status="@status" />
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+        $("button.nav-link[data-bs-target]").click(function () {
+            const searchParams = new URLSearchParams(window.location.search);
+            searchParams.set("@(nameof(BookStatus))", this.getAttribute("data-bs-target").replace("#", ""));
+            history.pushState(null, '', window.location.pathname + '?' + searchParams.toString());
+        });
+
+        $(document).ready(function () {
+            const searchParams = new URLSearchParams(window.location.search);
+
+            let bookStatusTab = searchParams.get("@(nameof(BookStatus))");
+            if (!bookStatusTab) bookStatusTab = "@(BookStatus.WillRead)";
+
+            $(`button.nav-link[data-bs-target='#${bookStatusTab}']`).click();
+        });
+    </script>
+}

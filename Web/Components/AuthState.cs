@@ -1,6 +1,7 @@
 ﻿using Data.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Services.Exeptions;
 using System.Security.Claims;
 using Web.ComponentViewModels;
 
@@ -23,7 +24,7 @@ namespace Web.Components
             }
 
             var userId = UserClaimsPrincipal.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await _userManager.FindByIdAsync(userId) ?? throw new EntityNotFoundExeption(nameof(User), userId);
 
             return View(new AuthStateComponentVM { IsLoggedIn = true, UserName = user.UserName });
         }
