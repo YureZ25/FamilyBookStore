@@ -19,7 +19,13 @@ namespace Data.Repos
         public async Task<IEnumerable<Author>> GetAuthorsAsync(CancellationToken cancellationToken)
         {
             var cmd = _dbContext.CreateQuery()
-                .WithText("SELECT * FROM Authors");
+                .WithText("""
+                SELECT
+                    Authors.Id,
+                    Authors.FirstName,
+                    Authors.LastName
+                FROM Authors
+                """);
 
             using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
 
@@ -34,7 +40,14 @@ namespace Data.Repos
         public async Task<Author> GetByIdAsync(int id, CancellationToken cancellationToken)
         {
             var cmd = _dbContext.CreateQuery()
-                .WithText("SELECT * FROM Authors WHERE Id = @id")
+                .WithText("""
+                SELECT
+                    Authors.Id,
+                    Authors.FirstName,
+                    Authors.LastName
+                FROM Authors
+                WHERE Authors.Id = @id
+                """)
                 .WithParameter("id", id);
 
             using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
@@ -50,9 +63,11 @@ namespace Data.Repos
         public void Insert(Author author)
         {
             _dbContext.CreateCommand(author)
-                .WithText(@"INSERT INTO Authors (FirstName, LastName) 
-                    VALUES (@firstName, @lastName); 
-                    SET @id = SCOPE_IDENTITY();")
+                .WithText("""
+                INSERT INTO Authors (FirstName, LastName) 
+                VALUES (@firstName, @lastName); 
+                SET @id = SCOPE_IDENTITY();
+                """)
                 .WithParameter(e => e.Id, ParameterDirection.Output)
                 .WithParameter(e => e.FirstName)
                 .WithParameter(e => e.LastName);
@@ -61,9 +76,13 @@ namespace Data.Repos
         public void Update(Author author)
         {
             _dbContext.CreateCommand(author)
-                .WithText(@"UPDATE Authors 
-                    SET FirstName = @firstName, LastName = @lastName 
-                    WHERE Id = @id")
+                .WithText("""
+                UPDATE Authors 
+                SET 
+                    FirstName = @firstName, 
+                    LastName = @lastName 
+                WHERE Id = @id;
+                """)
                 .WithParameter(e => e.Id)
                 .WithParameter(e => e.FirstName)
                 .WithParameter(e => e.LastName);
@@ -80,9 +99,9 @@ namespace Data.Repos
         {
             return new Author
             {
-                Id = reader.MapInt32(nameof(Author.Id)),
-                FirstName = reader.MapString(nameof(Author.FirstName)),
-                LastName = reader.MapString(nameof(Author.LastName)),
+                Id = reader.Map<int>(nameof(Author.Id)),
+                FirstName = reader.Map<string>(nameof(Author.FirstName)),
+                LastName = reader.Map<string>(nameof(Author.LastName)),
             };
         }
     }

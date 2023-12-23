@@ -25,7 +25,15 @@ namespace Data.Repos
         public async Task<User> FindByIdAsync(int userId, CancellationToken cancellationToken)
         {
             var cmd = _dbContext.CreateQuery()
-                .WithText("SELECT * FROM Users WHERE Id = @id")
+                .WithText("""
+                SELECT 
+                    Users.Id,
+                    Users.UserName,
+                    Users.NormalizedUserName,
+                    Users.PasswordHash,
+                FROM Users 
+                WHERE Id = @id
+                """)
                 .WithParameter("id", userId);
 
             using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
@@ -41,7 +49,15 @@ namespace Data.Repos
         public async Task<User> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
         {
             var cmd = _dbContext.CreateQuery()
-                .WithText("SELECT * FROM Users WHERE NormalizedUserName = @normalizedUserName")
+                .WithText("""
+                SELECT 
+                    Users.Id,
+                    Users.UserName,
+                    Users.NormalizedUserName,
+                    Users.PasswordHash,
+                FROM Users 
+                WHERE Users.NormalizedUserName = @normalizedUserName
+                """)
                 .WithParameter("normalizedUserName", normalizedUserName);
 
             using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
@@ -104,9 +120,11 @@ namespace Data.Repos
         public async Task<IdentityResult> CreateAsync(User user, CancellationToken cancellationToken)
         {
             _dbContext.CreateCommand(user)
-                .WithText(@"INSERT INTO Users (UserName, NormalizedUserName, PasswordHash)
-                    VALUES (@userName, @normalizedUserName, @passwordHash);
-                    SET @id = SCOPE_IDENTITY();")
+                .WithText("""
+                INSERT INTO Users (UserName, NormalizedUserName, PasswordHash)
+                VALUES (@userName, @normalizedUserName, @passwordHash);
+                SET @id = SCOPE_IDENTITY();
+                """)
                 .WithParameter(e => e.Id, ParameterDirection.Output)
                 .WithParameter(e => e.UserName)
                 .WithParameter(e => e.NormalizedUserName)
@@ -120,9 +138,14 @@ namespace Data.Repos
         public async Task<IdentityResult> UpdateAsync(User user, CancellationToken cancellationToken)
         {
             _dbContext.CreateCommand(user)
-                .WithText(@"UPDATE Users
-                    SET UserName = @userName, NormalizedUserName = @normalizedUserName, PasswordHash = @passwordHash
-                    WHERE Id = @id")
+                .WithText("""
+                UPDATE Users
+                SET 
+                    UserName = @userName, 
+                    NormalizedUserName = @normalizedUserName, 
+                    PasswordHash = @passwordHash
+                WHERE Id = @id;
+                """)
                 .WithParameter(e => e.Id)
                 .WithParameter(e => e.UserName)
                 .WithParameter(e => e.NormalizedUserName)
@@ -154,10 +177,10 @@ namespace Data.Repos
         {
             return new User
             {
-                Id = reader.MapInt32(nameof(User.Id)),
-                UserName = reader.MapString(nameof(User.UserName)),
-                NormalizedUserName = reader.MapString(nameof(User.NormalizedUserName)),
-                PasswordHash = reader.MapString(nameof(User.PasswordHash)),
+                Id = reader.Map<int>(nameof(User.Id)),
+                UserName = reader.Map<string>(nameof(User.UserName)),
+                NormalizedUserName = reader.Map<string>(nameof(User.NormalizedUserName)),
+                PasswordHash = reader.Map<string>(nameof(User.PasswordHash)),
             };
         }
     }

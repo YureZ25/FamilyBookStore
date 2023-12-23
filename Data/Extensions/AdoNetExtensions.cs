@@ -23,7 +23,7 @@ namespace Data.Extensions
             return command;
         }
 
-        public static Dictionary<Type, Func<DbDataReader, string, dynamic>> _mappings = new() 
+        private static Dictionary<Type, Func<DbDataReader, string, dynamic>> _mappings = new() 
         {  
             [typeof(int)] = (r, n) => r.GetInt32(n),
             [typeof(long)] = (r, n) => r.GetInt64(n),
@@ -50,20 +50,6 @@ namespace Data.Extensions
             }
 
             return (T)mapping(reader, columnName);
-        }
-
-        public static int MapInt32(this DbDataReader reader, string columnName)
-        {
-            return reader.GetInt32(columnName);
-        }
-
-        public static string MapString(this DbDataReader reader, string columnName)
-        {
-            if (reader.IsDBNull(columnName))
-            {
-                return null;
-            }
-            return reader.GetString(columnName);
         }
     }
 }

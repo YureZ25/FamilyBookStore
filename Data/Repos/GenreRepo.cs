@@ -19,7 +19,12 @@ namespace Data.Repos
         public async Task<IEnumerable<Genre>> GetGenresAsync(CancellationToken cancellationToken)
         {
             var cmd = _dbContext.CreateQuery()
-                .WithText("SELECT * FROM Genres");
+                .WithText("""
+                SELECT 
+                    Genres.Id, 
+                    Genres.Name 
+                FROM Genres
+                """);
 
             using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
 
@@ -34,7 +39,13 @@ namespace Data.Repos
         public async Task<Genre> GetByIdAsync(int id, CancellationToken cancellationToken)
         {
             var cmd = _dbContext.CreateQuery()
-                .WithText("SELECT * FROM Genres WHERE Id = @id")
+                .WithText("""
+                SELECT 
+                    Genres.Id, 
+                    Genres.Name 
+                FROM Genres
+                WHERE Genres.Id = @id
+                """)
                 .WithParameter("id", id);
 
             using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
@@ -50,9 +61,11 @@ namespace Data.Repos
         public void Insert(Genre genre)
         {
             _dbContext.CreateCommand(genre)
-                .WithText(@"INSERT INTO Genres (Name) 
-                    VALUES (@name); 
-                    SET @id = SCOPE_IDENTITY();")
+                .WithText("""
+                INSERT INTO Genres (Name) 
+                VALUES (@name); 
+                SET @id = SCOPE_IDENTITY();
+                """)
                 .WithParameter(e => e.Id, ParameterDirection.Output)
                 .WithParameter(e => e.Name);
         }
@@ -60,9 +73,11 @@ namespace Data.Repos
         public void Update(Genre genre)
         {
             _dbContext.CreateCommand(genre)
-                .WithText(@"UPDATE Genres 
-                    SET Name = @name 
-                    WHERE Id = @id")
+                .WithText("""
+                UPDATE Genres 
+                SET Name = @name 
+                WHERE Id = @id
+                """)
                 .WithParameter(e => e.Id)
                 .WithParameter(e => e.Name);
         }
@@ -78,8 +93,8 @@ namespace Data.Repos
         {
             return new Genre
             {
-                Id = reader.MapInt32(nameof(Genre.Id)),
-                Name = reader.MapString(nameof(Genre.Name)),
+                Id = reader.Map<int>(nameof(Genre.Id)),
+                Name = reader.Map<string>(nameof(Genre.Name)),
             };
         }
     }
