@@ -38,7 +38,7 @@ namespace Data.Repos
 
             using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
 
-            if (reader.HasRows && await reader.ReadAsync(cancellationToken))
+           if (reader.HasRows && await reader.ReadAsync(cancellationToken))
             {
                 return Map(reader);
             }

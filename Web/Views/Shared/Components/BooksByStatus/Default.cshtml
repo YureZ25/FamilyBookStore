@@ -1,4 +1,6 @@
-﻿@model BooksByStatusComponentVM
+﻿@using Data.Enums
+
+@model BooksByStatusComponentVM
 
 <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
     @foreach (var book in Model.Books)
@@ -9,6 +11,12 @@
                 <div class="card-body"> 
                     <h5 class="card-title">@book.Title</h5>
                     <h6 class="card-subtitle text-muted">@book.Author.ToString()</h6>
+                    @if (book.BookStatus is BookStatus.Reading or BookStatus.Dropped)
+                    {
+                        <div class="progress mt-3" role="progressbar" aria-label="Прогресс чтения" aria-valuenow="@book.ReadingProgress" aria-valuemin="0" aria-valuemax="100">
+                            <div class="progress-bar" style="width: @(book.ReadingProgress)%"></div>
+                        </div>
+                    }
                 </div>
                 <div class="card-footer">
                     <small>Находится в <a asp-controller="Store" asp-action="Store" asp-route-id="@book.Store.Id">@book.Store.Name</a></small>
