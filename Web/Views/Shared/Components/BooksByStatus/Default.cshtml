@@ -11,7 +11,7 @@
                     <h6 class="card-subtitle text-muted">@book.Author.ToString()</h6>
                 </div>
                 <div class="card-footer">
-                    <small>Находится в <a class="text-dark" asp-controller="Store" asp-action="Store" asp-route-id="@book.Store.Id">@book.Store.Name</a></small>
+                    <small>Находится в <a asp-controller="Store" asp-action="Store" asp-route-id="@book.Store.Id">@book.Store.Name</a></small>
                 </div>
             </div>
         </div>

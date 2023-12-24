@@ -5,12 +5,12 @@
 }
 
 <table class="table table-hover table-bordered">
-    <thead class="table-light">
+    <thead>
         <tr>
             <th scope="col">Название</th>
         </tr>
     </thead>
-    <tbody>
+    <tbody class="table-group-divider">
         @foreach (var genre in Model.OrderBy(e => e.Name))
         {
             <tr navigate asp-action="Genre" asp-route-id="@genre.Id">
