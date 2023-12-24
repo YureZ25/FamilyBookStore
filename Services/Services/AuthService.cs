@@ -2,9 +2,11 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Services.Exeptions;
 using Services.Services.Contracts;
 using Services.ViewModels;
 using Services.ViewModels.AuthVMs;
+using Services.ViewModels.UserVMs;
 using System.Security.Claims;
 
 namespace Services.Services
@@ -18,6 +20,17 @@ namespace Services.Services
         {
             _userManager = userManager;
             _httpContextAccessor = httpContextAccessor;
+        }
+
+        public async Task<UserGetVM> GetCurrentUser()
+        {
+            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)
+                ?? throw new EntityNotFoundExeption(nameof(User), null);
+
+            var user = await _userManager.FindByIdAsync(userId)
+                ?? throw new EntityNotFoundExeption(nameof(User), userId);
+
+            return user.Map();
         }
 
         public async Task<ResultVM> Login(LoginPostVM loginVM)

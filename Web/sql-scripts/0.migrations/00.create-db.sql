@@ -11,7 +11,7 @@ begin
 		Title nvarchar(1024) not null,
 		Description nvarchar(max),
 		IsbnStoreValue bigint null,
-		PageCount int null,
+		PageCount smallint null,
 		Price smallmoney null,
 		AuthorId int not null,
 		GenreId int not null

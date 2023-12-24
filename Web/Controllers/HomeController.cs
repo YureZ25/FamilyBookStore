@@ -1,28 +1,25 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Services.Services.Contracts;
-using System.Security.Claims;
 
 namespace Web.Controllers
 {
     public class HomeController : BaseController
     {
         private readonly IStoreService _storeService;
+        private readonly IAuthService _authService;
 
-        public HomeController(IStoreService storeService)
+        public HomeController(IStoreService storeService, IAuthService authService)
         {
             _storeService = storeService;
+            _authService = authService;
         }
 
         [HttpGet]
         public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null)
-            {
-                return Unauthorized();
-            }
+            var user = await _authService.GetCurrentUser();
 
-            var stores = await _storeService.GetUserStoresOverviewAsync(int.Parse(userId), cancellationToken);
+            var stores = await _storeService.GetUserStoresOverviewAsync(user.Id, cancellationToken);
 
             return View(stores);
         }

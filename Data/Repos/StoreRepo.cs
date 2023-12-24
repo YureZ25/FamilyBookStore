@@ -62,8 +62,8 @@ namespace Data.Repos
                         store.Books = store.Books.Append(book);
                     }
 
-                    var user = tempStore.Users.Single();
-                    if (store.Users.All(u => u.Id != user.Id))
+                    var user = tempStore.Users.SingleOrDefault();
+                    if (user != null && store.Users.All(u => u.Id != user.Id))
                     {
                         store.Users = store.Users.Append(user);
                     }
@@ -176,8 +176,8 @@ namespace Data.Repos
                         store.Books = store.Books.Append(book);
                     }
 
-                    var user = tempStore.Users.Single();
-                    if (store.Users.All(u => u.Id != user.Id))
+                    var user = tempStore.Users.SingleOrDefault();
+                    if (user != null && store.Users.All(u => u.Id != user.Id))
                     {
                         store.Users = store.Users.Append(user);
                     }

@@ -24,7 +24,7 @@ namespace Data.Entities
         }
 
         [Range(1, int.MaxValue)]
-        public int? PageCount { get; set; }
+        public short? PageCount { get; set; }
 
         [Range(0, 200_000)]
         [DataType("smallmoney")]
@@ -40,5 +40,8 @@ namespace Data.Entities
 
         [ForeignKey(nameof(Book2Stores.BookId))]
         public Store Store { get; set; }
+
+        [ForeignKey(nameof(UsersBooksStatus.BookId))]
+        public UsersBooksStatus Status { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Data.Context;
 using Data.Entities;
+using Data.Enums;
 using Data.Extensions;
 using Data.Repos.Contracts;
 using System.Data;
@@ -16,7 +17,45 @@ namespace Data.Repos
             _dbContext = dbContext;
         }
 
+        const string getBooksSql = """
+            SELECT 
+                Books.Id, 
+                Books.Title, 
+                Books.Description, 
+                Books.IsbnStoreValue,
+                Books.PageCount,
+                Books.Price,
+                Books.AuthorId, 
+                Authors.FirstName, 
+                Authors.LastName, 
+                Books.GenreId, 
+                Genres.Name, 
+                Book2Stores.StoreId,
+                Stores.Name AS StoreName,
+                Stores.Address
+            FROM Books 
+            JOIN Authors ON Books.AuthorId = Authors.Id
+            JOIN Genres ON Books.GenreId = Genres.Id
+            LEFT JOIN Book2Stores ON Books.Id = Book2Stores.BookId
+            LEFT JOIN Stores ON Book2Stores.StoreId = Stores.Id
+            """;
+
         public async Task<IEnumerable<Book>> GetBooksAsync(CancellationToken cancellationToken)
+        {
+            var cmd = _dbContext.CreateQuery()
+                .WithText(getBooksSql);
+
+            using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
+
+            var books = new List<Book>();
+            while (await reader.ReadAsync(cancellationToken))
+            {
+                books.Add(Map(reader));
+            }
+            return books;
+        }
+
+        public async Task<IEnumerable<Book>> GetBooksByUserStatusAsync(int userId, BookStatus bookStatus, CancellationToken cancellationToken)
         {
             var cmd = _dbContext.CreateQuery()
                 .WithText("""
@@ -34,13 +73,43 @@ namespace Data.Repos
                     Genres.Name, 
                     Book2Stores.StoreId,
                     Stores.Name AS StoreName,
-                    Stores.Address
+                    Stores.Address,
+                    UsersBooksStatuses.Id AS UsersBooksStatusesId,
+                    UsersBooksStatuses.BookStatus,
+                    UsersBooksStatuses.WishRead,
+                    UsersBooksStatuses.StartRead,
+                    UsersBooksStatuses.CurrentPage,
+                    UsersBooksStatuses.EndRead,
+                    UsersBooksStatuses.UserId
                 FROM Books 
                 JOIN Authors ON Books.AuthorId = Authors.Id
                 JOIN Genres ON Books.GenreId = Genres.Id
                 LEFT JOIN Book2Stores ON Books.Id = Book2Stores.BookId
                 LEFT JOIN Stores ON Book2Stores.StoreId = Stores.Id
-                """);
+                LEFT JOIN UsersBooksStatuses ON UsersBooksStatuses.BookId = Books.Id
+                WHERE UsersBooksStatuses.UserId = @userId AND UsersBooksStatuses.BookStatus = @bookStatus
+                """)
+                .WithParameter("userId", userId)
+                .WithParameter("bookStatus", (byte)bookStatus);
+
+            using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
+
+            var books = new List<Book>();
+            while (await reader.ReadAsync(cancellationToken))
+            {
+                books.Add(Map(reader));
+            }
+            return books;
+        }
+
+        public async Task<IEnumerable<Book>> GetBooksByStoreAsync(int storeId, CancellationToken cancellationToken)
+        {
+            var cmd = _dbContext.CreateQuery()
+                .WithText($"""
+                {getBooksSql}
+                WHERE Stores.Id = @storeId
+                """)
+                .WithParameter("storeId", storeId);
 
             using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
 
@@ -55,27 +124,8 @@ namespace Data.Repos
         public async Task<Book> GetByIdAsync(int id, CancellationToken cancellationToken)
         {
             var cmd = _dbContext.CreateQuery()
-                .WithText("""
-                SELECT 
-                    Books.Id, 
-                    Books.Title, 
-                    Books.Description, 
-                    Books.IsbnStoreValue,
-                    Books.PageCount,
-                    Books.Price,
-                    Books.AuthorId, 
-                    Authors.FirstName, 
-                    Authors.LastName, 
-                    Books.GenreId, 
-                    Genres.Name, 
-                    Book2Stores.StoreId,
-                    Stores.Name AS StoreName,
-                    Stores.Address
-                FROM Books 
-                JOIN Authors ON Books.AuthorId = Authors.Id
-                JOIN Genres ON Books.GenreId = Genres.Id
-                LEFT JOIN Book2Stores ON Books.Id = Book2Stores.BookId
-                LEFT JOIN Stores ON Book2Stores.StoreId = Stores.Id
+                .WithText($"""
+                {getBooksSql}
                 WHERE Books.Id = @id
                 """)
                 .WithParameter("id", id);
@@ -176,13 +226,17 @@ namespace Data.Repos
 
         private static Book Map(DbDataReader reader)
         {
+            var schema = reader.GetSchemaTable().AsEnumerable();
+
+            var columnNames = schema.Select(r => r["ColumnName"]).Cast<string>();
+
             var book = new Book
             {
                 Id = reader.Map<int>(nameof(Book.Id)),
                 Title = reader.Map<string>(nameof(Book.Title)),
                 Description = reader.Map<string>(nameof(Book.Description)),
                 IsbnStoreValue = reader.Map<long?>(nameof(Book.IsbnStoreValue)),
-                PageCount = reader.Map<int?>(nameof(Book.PageCount)),
+                PageCount = reader.Map<short?>(nameof(Book.PageCount)),
                 Price = reader.Map<decimal?>(nameof(Book.Price)),
                 AuthorId = reader.Map<int>(nameof(Book.AuthorId)),
                 Author = new Author
@@ -199,14 +253,31 @@ namespace Data.Repos
                 },
             };
 
-            if (reader.IsDBNull(nameof(Book2Stores.StoreId))) return book;
-
-            book.Store = new Store
+            if (columnNames.Contains(nameof(Book2Stores.StoreId)) && !reader.IsDBNull(nameof(Book2Stores.StoreId)))
             {
-                Id = reader.Map<int>(nameof(Book2Stores.StoreId)),
-                Name = reader.Map<string>("StoreName"),
-                Address = reader.Map<string>(nameof(Store.Address)),
-            };
+                book.Store = new Store
+                {
+                    Id = reader.Map<int>(nameof(Book2Stores.StoreId)),
+                    Name = reader.Map<string>("StoreName"),
+                    Address = reader.Map<string>(nameof(Store.Address)),
+                };
+            }
+
+            if (columnNames.Contains("UsersBooksStatusesId") && !reader.IsDBNull("UsersBooksStatusesId"))
+            {
+                book.Status = new UsersBooksStatus
+                {
+                    Id = reader.Map<int>("UsersBooksStatusesId"),
+                    BookStatus = (BookStatus)reader.Map<byte>(nameof(UsersBooksStatus.BookStatus)),
+                    WishRead = reader.Map<DateTime?>(nameof(UsersBooksStatus.WishRead)),
+                    StartRead = reader.Map<DateTime?>(nameof(UsersBooksStatus.StartRead)),
+                    CurrentPage = reader.Map<short?>(nameof(UsersBooksStatus.CurrentPage)),
+                    EndRead = reader.Map<DateTime?>(nameof(UsersBooksStatus.EndRead)),
+                    UserId = reader.Map<int>(nameof(UsersBooksStatus.UserId)),
+                    BookId = book.Id,
+                    Book = book,
+                };
+            }
 
             return book;
         }

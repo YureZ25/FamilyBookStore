@@ -76,6 +76,18 @@ namespace Services.ViewModels
         /// <summary>
         /// Error result for specific key
         /// </summary>
+        /// <param name="errorKey">Model class + model field error for</param>
+        /// <param name="errorMessage">Error message for the user</param>
+        public ResultVM(string errorKey, string errorMessage)
+        {
+            Success = false;
+            ErrorKey = errorKey;
+            ErrorMessage = errorMessage;
+        }
+
+        /// <summary>
+        /// Error result for specific key
+        /// </summary>
         /// <param name="errorKeyExpr">Model field selector</param>
         /// <param name="errorMessage">Error message for the user</param>
         public ResultVM(Expression<Func<T, object>> errorKeyExpr, string errorMessage)
@@ -84,7 +96,15 @@ namespace Services.ViewModels
             Data = default;
             ErrorMessage = errorMessage;
 
-            MemberExpression memberExpr = errorKeyExpr.Body as MemberExpression ?? throw new ArgumentException("Must be member selector", nameof(errorKeyExpr));
+            MemberExpression memberExpr = errorKeyExpr.Body as MemberExpression;
+
+            if (memberExpr is null && errorKeyExpr.Body is UnaryExpression { NodeType: ExpressionType.Convert } unary)
+            {
+                memberExpr = unary.Operand as MemberExpression;
+            }
+
+            if (memberExpr is null) throw new ArgumentException("Must be member selector", nameof(errorKeyExpr));
+
             ErrorKey = memberExpr.Member.Name;
             while (memberExpr.Expression is MemberExpression)
             {

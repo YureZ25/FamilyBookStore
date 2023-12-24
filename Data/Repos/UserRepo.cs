@@ -30,7 +30,7 @@ namespace Data.Repos
                     Users.Id,
                     Users.UserName,
                     Users.NormalizedUserName,
-                    Users.PasswordHash,
+                    Users.PasswordHash
                 FROM Users 
                 WHERE Id = @id
                 """)
@@ -54,7 +54,7 @@ namespace Data.Repos
                     Users.Id,
                     Users.UserName,
                     Users.NormalizedUserName,
-                    Users.PasswordHash,
+                    Users.PasswordHash
                 FROM Users 
                 WHERE Users.NormalizedUserName = @normalizedUserName
                 """)

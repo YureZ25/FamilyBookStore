@@ -20,5 +20,33 @@ namespace Web.Controllers
                 return errorResult();
             }
         }
+
+        public IActionResult Result(ResultVM resultVM, Func<ResultVM, IActionResult> successResult, Func<ResultVM, IActionResult> errorResult)
+        {
+            if (resultVM.Success)
+            {
+                return successResult(resultVM);
+            }
+            else
+            {
+                ModelState.AddModelError(resultVM.ErrorKey, resultVM.ErrorMessage);
+
+                return errorResult(resultVM);
+            }
+        }
+
+        public IActionResult Result<T>(ResultVM<T> resultVM, Func<ResultVM<T>, IActionResult> successResult, Func<ResultVM<T>, IActionResult> errorResult)
+        {
+            if (resultVM.Success)
+            {
+                return successResult(resultVM);
+            }
+            else
+            {
+                ModelState.AddModelError(resultVM.ErrorKey, resultVM.ErrorMessage);
+
+                return errorResult(resultVM);
+            }
+        }
     }
 }

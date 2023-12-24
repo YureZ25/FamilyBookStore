@@ -1,4 +1,5 @@
 ﻿using Data.Entities;
+using Data.Enums;
 using Services.ViewModels.AuthorVMs;
 using Services.ViewModels.GenreVMs;
 using Services.ViewModels.StoreVMs;
@@ -15,9 +16,13 @@ namespace Services.ViewModels.BookVMs
 
         public ISBN? Isbn { get; set; }
 
-        public int? PageCount { get; set; }
+        public short? PageCount { get; set; }
 
         public decimal? Price { get; set; }
+
+        public BookStatus BookStatus { get; set; }
+
+        public short? CurrentPage { get; set; }
 
         public AuthorGetVM Author { get; set; }
 

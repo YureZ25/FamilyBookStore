@@ -50,47 +50,48 @@ namespace Web.Controllers
         [HttpPost]
         public async Task<IActionResult> AddBook([FromForm(Name = nameof(BookPageVM.BookPost))] BookPostVM bookVM, CancellationToken cancellationToken)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(
-                    nameof(Book),
-                    new BookPageVM(
-                        bookVM,
+            var bookPageVM = new BookPageVM(bookVM,
                         await _authorService.GetAuthorsAsync(cancellationToken),
                         await _genreService.GetGenresAsync(cancellationToken),
-                        await _storeService.GetStoresAsync(cancellationToken)));
+                        await _storeService.GetStoresAsync(cancellationToken));
+
+            if (!ModelState.IsValid)
+            {
+                return View(nameof(Book), bookPageVM);
             }
 
-            await _bookService.InsertAsync(bookVM, cancellationToken);
-
-            return RedirectToAction(nameof(BookList));
+            return Result(
+                await _bookService.InsertAsync(bookVM, cancellationToken), 
+                () => RedirectToAction(nameof(BookList)), 
+                () => View(nameof(Book), bookPageVM));
         }
 
         [HttpPost]
         public async Task<IActionResult> EditBook([FromForm(Name = nameof(BookPageVM.BookPost))] BookPostVM bookVM, CancellationToken cancellationToken)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(
-                    nameof(Book),
-                    new BookPageVM(
-                        bookVM,
+            var bookPageVM = new BookPageVM(bookVM,
                         await _authorService.GetAuthorsAsync(cancellationToken),
                         await _genreService.GetGenresAsync(cancellationToken),
-                        await _storeService.GetStoresAsync(cancellationToken)));
+                        await _storeService.GetStoresAsync(cancellationToken));
+
+            if (!ModelState.IsValid)
+            {
+                return View(nameof(Book), bookPageVM);
             }
 
-            await _bookService.UpdateAsync(bookVM, cancellationToken);
-
-            return RedirectToAction(nameof(BookList));
+            return Result(
+                await _bookService.UpdateAsync(bookVM, cancellationToken),
+                () => RedirectToAction(nameof(BookList)),
+                () => View(nameof(Book), bookPageVM));
         }
 
         [HttpPost]
         public async Task<IActionResult> RemoveBook([FromForm(Name = nameof(BookPageVM.BookPost))] BookPostVM bookVM, CancellationToken cancellationToken)
         {
-            await _bookService.DeleteByIdAsync(bookVM.Id ?? 0, cancellationToken);
-
-            return RedirectToAction(nameof(BookList));
+            return Result(
+                await _bookService.DeleteByIdAsync(bookVM.Id ?? 0, cancellationToken),
+                (r) => RedirectToAction(nameof(BookList)),
+                (r) => BadRequest(r.ErrorMessage));
         }
     }
 }

@@ -7,9 +7,9 @@ namespace Services.ViewModels.BookVMs
 {
     internal static class BookMapper
     {
-        public static BookGetVM Map(this Book book)
+        public static BookGetVM Map(this Book book, Action<BookGetVM> additionalMapping = null)
         {
-            return new BookGetVM
+            var bookVM = new BookGetVM
             {
                 Id = book.Id,
                 Title = book.Title,
@@ -21,6 +21,16 @@ namespace Services.ViewModels.BookVMs
                 Genre = book.Genre.Map(),
                 Store = book.Store?.Map()
             };
+
+            if (book.Status != null)
+            {
+                bookVM.BookStatus = book.Status.BookStatus;
+                bookVM.CurrentPage = book.Status.CurrentPage;
+            }
+
+            additionalMapping?.Invoke(bookVM);
+
+            return bookVM;
         }
 
         public static Book Map(this BookPostVM bookVM)

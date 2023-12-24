@@ -23,12 +23,15 @@ namespace Data.Extensions
             return command;
         }
 
-        private static Dictionary<Type, Func<DbDataReader, string, dynamic>> _mappings = new() 
+        private static readonly Dictionary<Type, Func<DbDataReader, string, dynamic>> _mappings = new() 
         {  
+            [typeof(byte)] = (r, n) => r.GetByte(n),
+            [typeof(short)] = (r, n) => r.GetInt16(n),
             [typeof(int)] = (r, n) => r.GetInt32(n),
             [typeof(long)] = (r, n) => r.GetInt64(n),
             [typeof(decimal)] = (r, n) => r.GetDecimal(n),
             [typeof(string)] = (r, n) => !r.IsDBNull(n) ? r.GetString(n) : null,
+            [typeof(DateTime)] = (r, n) => !r.IsDBNull(n) ? r.GetDateTime(n) : null,
         };
 
         public static T Map<T>(this DbDataReader reader, string columnName)
