@@ -67,6 +67,8 @@ namespace Data.Context
             {
                 Commands.Remove(commandBuilder);
 
+                if (target is not null) commandBuilder.ApplyNavigationsUpdates(target);
+
                 updated += await commandBuilder.Command.ExecuteNonQueryAsync(cancellationToken);
 
                 if (target is null) continue;

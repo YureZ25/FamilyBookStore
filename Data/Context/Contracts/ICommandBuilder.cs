@@ -10,5 +10,6 @@ namespace Data.Context.Contracts
 
         void ApplyEntityUpdates(IEntity target);
         void ApplyParametersUpdates(IEntity target);
+        void ApplyNavigationsUpdates(IEntity target);
     }
 }

@@ -63,8 +63,6 @@ namespace Services.Services
             _bookRepo.Insert(book);
             _bookRepo.AttachToStore(book);
 
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
-
             if (bookVM.BookStatus is BookStatus.None)
             {
                 return new(book.Map());
@@ -73,7 +71,7 @@ namespace Services.Services
             var user = await _authService.GetCurrentUser();
             book.Status = new UsersBooksStatus
             {
-                BookId = book.Id,
+                Book = book,
                 UserId = user.Id,
             };
 
@@ -105,18 +103,6 @@ namespace Services.Services
                     UserId = user.Id,
                 };
 
-            if (bookVM.BookStatus == book.Status.BookStatus)
-            {
-                if (bookVM.BookStatus is BookStatus.Reading)
-                {
-                    book.Status.CurrentPage = bookVM.CurrentPage;
-                    _usersBooksStatusRepo.Update(book.Status);
-                }
-
-                await _unitOfWork.SaveChangesAsync(cancellationToken);
-                return new(book.Map());
-            }
-
             var result = ProcessStatus(book.Status, bookVM);
             if (!result.Success) return result;
 
@@ -140,11 +126,14 @@ namespace Services.Services
 
         private ResultVM<BookGetVM> ProcessStatus(UsersBooksStatus status, BookPostVM bookVM)
         {
-            var now = DateTime.Now;
-
-            if (bookVM.BookStatus is BookStatus.Reading or BookStatus.Read or BookStatus.Dropped && !bookVM.CurrentPage.HasValue)
+            if (bookVM.BookStatus is BookStatus.Read && !bookVM.PageCount.HasValue)
             {
                 return new("BookPost.BookStatus", $"При статусе '{bookVM.BookStatus.GetDescription()}' должно быть указано количество страниц книги.");
+            }
+
+            if (bookVM.BookStatus is BookStatus.Reading or BookStatus.Dropped && !bookVM.CurrentPage.HasValue)
+            {
+                return new("BookPost.BookStatus", $"При статусе '{bookVM.BookStatus.GetDescription()}' должно быть указано количество прочитанных страниц книги.");
             }
 
             if (bookVM.CurrentPage.HasValue && bookVM.CurrentPage > bookVM.PageCount)
@@ -152,31 +141,37 @@ namespace Services.Services
                 return new("BookPost.CurrentPage", $"Количество прочитанных страниц не может быть больше общего их числа");
             }
 
-            switch (bookVM.BookStatus)
+            status.CurrentPage = bookVM.CurrentPage;
+
+            if (status.BookStatus != bookVM.BookStatus)
             {
-                case BookStatus.None: break;
-                case BookStatus.WillRead:
-                    status.WishRead = now;
-                    break;
-                case BookStatus.Reading:
-                    status.StartRead = now;
-                    status.CurrentPage = bookVM.CurrentPage ?? 0;
-                    break;
-                case BookStatus.Read:
-                    status.CurrentPage = bookVM.PageCount;
-                    status.EndRead = now;
-                    break;
-                case BookStatus.Dropped:
-                    status.CurrentPage = bookVM.CurrentPage;
-                    status.EndRead = now;
-                    break;
-                default:
-                    throw new NotImplementedException();
+                var now = DateTime.Now;
+                switch (bookVM.BookStatus)
+                {
+                    case BookStatus.None: break;
+                    case BookStatus.WillRead:
+                        status.WishRead = now;
+                        break;
+                    case BookStatus.Reading:
+                        status.StartRead = now;
+                        status.CurrentPage = bookVM.CurrentPage ?? 0;
+                        break;
+                    case BookStatus.Read:
+                        status.CurrentPage = bookVM.PageCount;
+                        status.EndRead = now;
+                        break;
+                    case BookStatus.Dropped:
+                        status.CurrentPage = bookVM.CurrentPage;
+                        status.EndRead = now;
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
             }
 
             status.BookStatus = bookVM.BookStatus;
 
-            if (status.Id != 0)
+            if (status.Id != default)
             {
                 _usersBooksStatusRepo.Update(status);
             }

@@ -1,8 +1,10 @@
 ﻿using Data.Context.Contracts;
 using Data.Entities.Contracts;
 using Microsoft.Data.SqlClient;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Data.Context
 {
@@ -12,12 +14,14 @@ namespace Data.Context
         private readonly SqlCommand _command;
         private readonly TEntity _entity;
 
-        private readonly List<AdoNetParameter> _parameters = new();
+        private readonly List<AdoNetParameter> _parameters = [];
+        private readonly List<AdoNetNavigation> _navigations = [];
 
         public AdoNetCommandBuilder(SqlCommand sqlCommand, TEntity entity)
         {
             _command = sqlCommand;
             _entity = entity;
+            CollectNavigationProps();
         }
 
         public SqlCommand Command => _command;
@@ -108,6 +112,76 @@ namespace Data.Context
             public SqlParameter Parameter { get; set; }
             public Action<TEntity, SqlParameter> AssignParamToProp { get; set; }
             public Action<SqlParameter, TEntity> AssignPropToParam { get; set; }
+        }
+
+        private void CollectNavigationProps()
+        {
+            foreach (var prop in EntityType.GetProperties())
+            {
+                if (prop.PropertyType.IsAssignableTo(typeof(ICommonEntity)))
+                {
+                    var navigation = new AdoNetNavigation
+                    {
+                        Navigation = prop,
+                    };
+
+                    if (prop.GetCustomAttribute<ForeignKeyAttribute>() is { } attr
+                        && EntityType.GetProperty(attr.Name) is { } foreignKey)
+                    {
+                        navigation.ForeignKey = foreignKey;
+                    }
+                    else if (EntityType.GetProperties().FirstOrDefault(p => 
+                        p.GetCustomAttribute<ForeignKeyAttribute>() is { } attr && attr.Name == prop.Name) is { } foreignKeyProp)
+                    {
+                        navigation.ForeignKey = foreignKeyProp;
+                    }
+                    else
+                    {
+                        continue;
+                    }
+
+                    if (navigation.ForeignKey.PropertyType != typeof(int))
+                    {
+                        throw new ApplicationException("Foreign key property must be int type");
+                    }
+
+                    _navigations.Add(navigation);
+                }
+            }
+        }
+
+        public void ApplyNavigationsUpdates(IEntity target)
+        {
+            if (target is not TEntity entity) throw new ApplicationException($"Can't apply updates of {EntityType} type for {target.GetType()} type entity");
+
+            foreach (var nav in _navigations)
+            {
+                var foreignKey = (int)nav.ForeignKey.GetValue(entity);
+                var navigation = (ICommonEntity)nav.Navigation.GetValue(entity);
+
+                if (navigation?.Id == foreignKey) continue;
+
+                if (foreignKey != default && navigation?.Id == default)
+                {
+                    navigation ??= (ICommonEntity)Activator.CreateInstance(nav.Navigation.PropertyType);
+                    navigation.Id = foreignKey;
+                }
+                else if (navigation?.Id != default && foreignKey == default)
+                {
+                    foreignKey = navigation.Id;
+                }
+
+                nav.ForeignKey.SetValue(entity, foreignKey);
+                nav.Navigation.SetValue(entity, navigation);
+            }
+
+            ApplyParametersUpdates(entity);
+        }
+
+        private class AdoNetNavigation
+        {
+            public PropertyInfo ForeignKey { get; set; }
+            public PropertyInfo Navigation { get; set; }
         }
     }
 }
