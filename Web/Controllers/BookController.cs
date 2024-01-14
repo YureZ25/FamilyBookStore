@@ -7,21 +7,32 @@ namespace Web.Controllers
 {
     public class BookController : BaseController
     {
+        private readonly IImageService _imageService;
         private readonly IBookService _bookService;
         private readonly IAuthorService _authorService;
         private readonly IGenreService _genreService;
         private readonly IStoreService _storeService;
 
         public BookController(
+            IImageService imageService,
             IBookService bookService, 
             IAuthorService authorService, 
             IGenreService genreService,
             IStoreService storeService)
         {
+            _imageService = imageService;
             _bookService = bookService;
             _authorService = authorService;
             _genreService = genreService;
             _storeService = storeService;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Image(int? bookId, CancellationToken cancellationToken)
+        {
+            var (content, contentType) = await _imageService.GetBookImage(bookId, cancellationToken);
+
+            return File(content, contentType);
         }
 
         [HttpGet]

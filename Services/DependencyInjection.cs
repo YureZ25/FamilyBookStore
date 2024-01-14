@@ -17,6 +17,8 @@ namespace Services
             services.AddScoped<IAuthorService, AuthorService>();
             services.AddScoped<IGenreService, GenreService>();
 
+            services.AddScoped<IImageService, ImageService>();
+
             return services;
         }
     }
