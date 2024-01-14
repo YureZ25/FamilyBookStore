@@ -51,7 +51,7 @@ namespace Services.Services
             var book = await _bookRepo.GetByIdAsync(id, cancellationToken);
 
             var user = await _authService.GetCurrentUser();
-            book.Status = await _usersBooksStatusRepo.GeStatusAsync(user.Id, book.Id, cancellationToken);
+            book.Status = await _usersBooksStatusRepo.GetStatusAsync(user.Id, book.Id, cancellationToken);
 
             return book.Map();
         }
@@ -63,20 +63,18 @@ namespace Services.Services
             _bookRepo.Insert(book);
             _bookRepo.AttachToStore(book);
 
-            if (bookVM.BookStatus is BookStatus.None)
+            if (bookVM.BookStatus is not BookStatus.None)
             {
-                return new(book.Map());
+                var user = await _authService.GetCurrentUser();
+                book.Status = new UsersBooksStatus
+                {
+                    Book = book,
+                    UserId = user.Id,
+                };
+
+                var result = ProcessStatus(book.Status, bookVM);
+                if (!result.Success) return result;
             }
-
-            var user = await _authService.GetCurrentUser();
-            book.Status = new UsersBooksStatus
-            {
-                Book = book,
-                UserId = user.Id,
-            };
-
-            var result = ProcessStatus(book.Status, bookVM);
-            if (!result.Success) return result;
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
@@ -96,7 +94,7 @@ namespace Services.Services
             }
 
             var user = await _authService.GetCurrentUser();
-            book.Status = await _usersBooksStatusRepo.GeStatusAsync(user.Id, book.Id, cancellationToken)
+            book.Status = await _usersBooksStatusRepo.GetStatusAsync(user.Id, book.Id, cancellationToken)
                 ?? new UsersBooksStatus
                 {
                     BookId = book.Id,
@@ -114,6 +112,13 @@ namespace Services.Services
         public async Task<ResultVM<BookGetVM>> DeleteByIdAsync(int id, CancellationToken cancellationToken)
         {
             var book = await _bookRepo.GetByIdAsync(id, cancellationToken);
+
+            var user = await _authService.GetCurrentUser();
+            var status = await _usersBooksStatusRepo.GetStatusAsync(user.Id, book.Id, cancellationToken);
+            if (status is not null)
+            {
+                _usersBooksStatusRepo.DeleteById(status.Id);
+            }
 
             _bookRepo.DetachFromStore(book);
 

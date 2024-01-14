@@ -17,7 +17,7 @@ namespace Data.Repos
             _dbContext = dbContext;
         }
 
-        public async Task<UsersBooksStatus> GeStatusAsync(int userId, int bookId, CancellationToken cancellationToken)
+        public async Task<UsersBooksStatus> GetStatusAsync(int userId, int bookId, CancellationToken cancellationToken)
         {
             var cmd = _dbContext.CreateQuery()
                 .WithText("""
