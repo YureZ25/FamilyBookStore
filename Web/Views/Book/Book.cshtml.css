@@ -1,4 +1,4 @@
-﻿.bookThumbnail {
-    width: auto;
-    height: 400px;
+﻿.book-thumbnail {
+    display: flex;
+    justify-content: center;
 }

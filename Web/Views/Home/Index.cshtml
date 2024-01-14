@@ -20,7 +20,7 @@
                     {
                         <div class="col">
                             <div class="card m-1">
-                                <img src="~/img/Thumbnails/BookThumbnail.svg" class="card-img-bottom">
+                                <img src="@(Url.Action("Image", "Book", new { bookId = book.Id }))" class="card-img-bottom">
                             </div>
                         </div>
                     }
