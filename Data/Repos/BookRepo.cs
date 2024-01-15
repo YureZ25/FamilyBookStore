@@ -25,6 +25,7 @@ namespace Data.Repos
                 Books.IsbnStoreValue,
                 Books.PageCount,
                 Books.Price,
+                Books.ImageId,
                 Books.AuthorId, 
                 Authors.FirstName, 
                 Authors.LastName, 
@@ -66,6 +67,7 @@ namespace Data.Repos
                     Books.IsbnStoreValue,
                     Books.PageCount,
                     Books.Price,
+                    Books.ImageId,
                     Books.AuthorId, 
                     Authors.FirstName, 
                     Authors.LastName, 
@@ -178,8 +180,8 @@ namespace Data.Repos
         {
             _dbContext.CreateCommand(book)
                 .WithText("""
-                INSERT INTO Books (Title, Description, IsbnStoreValue, PageCount, Price, AuthorId, GenreId) 
-                VALUES (@title, @description, @isbnStoreValue, @pageCount, @price,  @authorId, @genreId); 
+                INSERT INTO Books (Title, Description, IsbnStoreValue, PageCount, Price, ImageId, AuthorId, GenreId) 
+                VALUES (@title, @description, @isbnStoreValue, @pageCount, @price, @imageId, @authorId, @genreId); 
                 SET @id = SCOPE_IDENTITY();
                 """)
                 .WithParameter(e => e.Id, ParameterDirection.Output)
@@ -188,6 +190,7 @@ namespace Data.Repos
                 .WithParameter(e => e.IsbnStoreValue)
                 .WithParameter(e => e.PageCount)
                 .WithParameter(e => e.Price)
+                .WithParameter(e => e.ImageId)
                 .WithParameter(e => e.AuthorId)
                 .WithParameter(e => e.GenreId);
         }
@@ -203,6 +206,7 @@ namespace Data.Repos
                     IsbnStoreValue = @isbnStoreValue, 
                     PageCount = @pageCount, 
                     Price = @price, 
+                    ImageId = @imageId,
                     AuthorId = @authorId, 
                     GenreId = @genreId 
                 WHERE Id = @id
@@ -213,6 +217,7 @@ namespace Data.Repos
                 .WithParameter(e => e.IsbnStoreValue)
                 .WithParameter(e => e.PageCount)
                 .WithParameter(e => e.Price)
+                .WithParameter(e => e.ImageId)
                 .WithParameter(e => e.AuthorId)
                 .WithParameter(e => e.GenreId);
         }
@@ -238,6 +243,7 @@ namespace Data.Repos
                 IsbnStoreValue = reader.Map<long?>(nameof(Book.IsbnStoreValue)),
                 PageCount = reader.Map<short?>(nameof(Book.PageCount)),
                 Price = reader.Map<decimal?>(nameof(Book.Price)),
+                ImageId = reader.Map<int?>(nameof(Book.ImageId)),
                 AuthorId = reader.Map<int>(nameof(Book.AuthorId)),
                 Author = new Author
                 {

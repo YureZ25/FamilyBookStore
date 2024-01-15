@@ -21,6 +21,7 @@ namespace Data
             services.AddScoped<IStoreRepo, StoreRepo>();
             services.AddScoped<IUserRepo, UserRepo>();
             services.AddScoped<IUsersBooksStatusRepo, UsersBooksStatusRepo>();
+            services.AddScoped<IBookImageRepo, BookImageRepo>();
 
             services.AddIdentityCore<User>()
                 .AddUserStore<UserRepo>();

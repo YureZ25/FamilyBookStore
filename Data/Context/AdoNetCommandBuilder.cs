@@ -1,5 +1,6 @@
 ﻿using Data.Context.Contracts;
 using Data.Entities.Contracts;
+using Data.Extensions;
 using Microsoft.Data.SqlClient;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
@@ -140,7 +141,7 @@ namespace Data.Context
                         continue;
                     }
 
-                    if (navigation.ForeignKey.PropertyType != typeof(int))
+                    if (navigation.ForeignKey.PropertyType != typeof(int) && navigation.ForeignKey.PropertyType != typeof(int?))
                     {
                         throw new ApplicationException("Foreign key property must be int type");
                     }
@@ -154,25 +155,48 @@ namespace Data.Context
         {
             if (target is not TEntity entity) throw new ApplicationException($"Can't apply updates of {EntityType} type for {target.GetType()} type entity");
 
-            foreach (var nav in _navigations)
+            foreach (var (key, nav) in _navigations.Select(x => (x.ForeignKey, x.Navigation)))
             {
-                var foreignKey = (int)nav.ForeignKey.GetValue(entity);
-                var navigation = (ICommonEntity)nav.Navigation.GetValue(entity);
-
-                if (navigation?.Id == foreignKey) continue;
-
-                if (foreignKey != default && navigation?.Id == default)
+                if (key.PropertyType.IsNullable())
                 {
-                    navigation ??= (ICommonEntity)Activator.CreateInstance(nav.Navigation.PropertyType);
-                    navigation.Id = foreignKey;
-                }
-                else if (navigation?.Id != default && foreignKey == default)
-                {
-                    foreignKey = navigation.Id;
-                }
+                    var foreignKey = (int?)key.GetValue(entity);
+                    var navigation = (ICommonEntity)nav.GetValue(entity);
 
-                nav.ForeignKey.SetValue(entity, foreignKey);
-                nav.Navigation.SetValue(entity, navigation);
+                    if (navigation?.Id == foreignKey) continue;
+
+                    if (foreignKey != default && navigation?.Id == default)
+                    {
+                        navigation ??= (ICommonEntity)Activator.CreateInstance(nav.PropertyType);
+                        navigation.Id = foreignKey ?? 0;
+                    }
+                    else if (navigation?.Id != default && foreignKey == default)
+                    {
+                        foreignKey = navigation.Id;
+                    }
+
+                    key.SetValue(entity, foreignKey);
+                    nav.SetValue(entity, navigation);
+                }
+                else
+                {
+                    var foreignKey = (int)key.GetValue(entity);
+                    var navigation = (ICommonEntity)nav.GetValue(entity);
+
+                    if (navigation?.Id == foreignKey) continue;
+
+                    if (foreignKey != default && navigation?.Id == default)
+                    {
+                        navigation ??= (ICommonEntity)Activator.CreateInstance(nav.PropertyType);
+                        navigation.Id = foreignKey;
+                    }
+                    else if (navigation?.Id != default && foreignKey == default)
+                    {
+                        foreignKey = navigation.Id;
+                    }
+
+                    key.SetValue(entity, foreignKey);
+                    nav.SetValue(entity, navigation);
+                }
             }
 
             ApplyParametersUpdates(entity);

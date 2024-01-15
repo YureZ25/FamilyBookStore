@@ -9,5 +9,10 @@ namespace Data.Extensions
         {
             return type.GetCustomAttribute<TAttr>() is not null;
         }
+
+        public static bool IsNullable(this Type type)
+        {
+            return Nullable.GetUnderlyingType(type) != null;
+        }
     }
 }

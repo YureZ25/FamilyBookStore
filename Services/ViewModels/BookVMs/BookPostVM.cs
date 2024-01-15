@@ -1,5 +1,6 @@
 ﻿using Data.Entities;
 using Data.Enums;
+using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
 namespace Services.ViewModels.BookVMs
@@ -16,7 +17,7 @@ namespace Services.ViewModels.BookVMs
 
         [RegularExpression(
             "^(?=(?:\\D*\\d){10}(?:(?:\\D*\\d){3})?$)[\\d-]+$", 
-            ErrorMessage = "Поле ISBN должно содержать 10 или 13 цифр раздеденных дефисами")]
+            ErrorMessage = "Поле ISBN должно содержать 10 или 13 цифр разделенных дефисами")]
         public ISBN? Isbn { get; set; }
 
         [Range(1, int.MaxValue)]
@@ -36,5 +37,7 @@ namespace Services.ViewModels.BookVMs
         public int GenreId { get; set; }
 
         public int StoreId { get; set; }
+
+        public IFormFile Image { get; set; }
     }
 }

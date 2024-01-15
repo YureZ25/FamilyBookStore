@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Data.Repos.Contracts;
 using Services.Services.Contracts;
 using Services.ViewModels.AuthorVMs;
 using Services.ViewModels.BookVMs;
@@ -9,15 +9,21 @@ namespace Services.Services
     internal class ImageService : IImageService
     {
         private readonly IBookService _bookService;
+        private readonly IBookImageRepo _bookImageRepo;
 
-        public ImageService(IBookService bookService)
+        public ImageService(IBookService bookService, IBookImageRepo bookImageRepo)
         {
             _bookService = bookService;
+            _bookImageRepo = bookImageRepo;
         }
 
         public async Task<(byte[] content, string contentType)> GetBookImage(int? bookId, CancellationToken cancellationToken)
         {
-            // Get img from DB
+            if (bookId.HasValue)
+            {
+                var img = await _bookImageRepo.GetByBookId(bookId.Value, cancellationToken);
+                if (img != null) return (img.Content, img.ContentType);
+            }
 
             var book = bookId.HasValue
                 ? await _bookService.GetByIdAsync(bookId.Value, cancellationToken)

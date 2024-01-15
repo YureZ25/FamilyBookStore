@@ -13,6 +13,7 @@ begin
 		IsbnStoreValue bigint null,
 		PageCount smallint null,
 		Price smallmoney null,
+		ImageId int null,
 		AuthorId int not null,
 		GenreId int not null
 	);
@@ -91,6 +92,17 @@ begin
 	);
 end
 
+if not exists (select * from INFORMATION_SCHEMA.TABLES where TABLE_CATALOG = 'adonet-fbs' and TABLE_NAME = 'BookImages')
+begin
+	create table BookImages
+	(
+		Id int identity(1,1) primary key,
+		FileName nvarchar(128) not null,
+		ContentType nvarchar(64) not null,
+		Content varbinary(max) not null
+	);
+end
+
 if not exists (select * from INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS where CONSTRAINT_NAME = 'FK_Books_Authors_AuthorId')
 begin
 	alter table Books
@@ -103,6 +115,13 @@ begin
 	alter table Books
 	add constraint FK_Books_Genres_GenreId
 	foreign key (GenreId) references Genres(Id);
+end
+
+if not exists (select * from INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS where CONSTRAINT_NAME = 'FK_Books_BookImages_ImageId')
+begin
+	alter table Books
+	add constraint FK_Books_BookImages_ImageId
+	foreign key (ImageId) references BookImages(Id);
 end
 
 declare @indexes table (IndexName nvarchar(max), IndexType nvarchar(max), TableName nvarchar(max), IsIndexUnique bit)

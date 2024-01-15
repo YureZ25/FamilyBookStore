@@ -8,14 +8,15 @@
     ViewData["Title"] = !isEdit ? "Добавление книги" : "Изменение книги";
 }
 
-<form>
+<form enctype="multipart/form-data">
     <div class="row">
         <div class="col-3">
             <div class="book-thumbnail">
                 <img src="@(Url.Action("Image", "Book", new { bookId = Model.BookGet?.Id }))" class="rounded">
             </div>
             <div class="my-3">
-                <input class="form-control" type="file" accept="image/png, image/jpeg">
+                <input type="file" asp-for="BookPost.Image" accept="image/png, image/jpeg" class="form-control">
+                <span asp-validation-for="BookPost.Image" class="text-danger"></span>
             </div>
         </div>
         <div class="col-9">

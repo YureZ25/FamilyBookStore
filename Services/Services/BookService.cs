@@ -12,12 +12,20 @@ namespace Services.Services
     internal class BookService : IBookService
     {
         private readonly IUsersBooksStatusRepo _usersBooksStatusRepo;
+        private readonly IBookImageRepo _bookImageRepo;
         private readonly IBookRepo _bookRepo;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IAuthService _authService;
-        public BookService(IUsersBooksStatusRepo usersBooksStatusRepo, IBookRepo bookRepo, IUnitOfWork unitOfWork, IAuthService authService)
+
+        public BookService(
+            IUsersBooksStatusRepo usersBooksStatusRepo,
+            IBookImageRepo bookImageRepo,
+            IBookRepo bookRepo,
+            IUnitOfWork unitOfWork,
+            IAuthService authService)
         {
             _usersBooksStatusRepo = usersBooksStatusRepo;
+            _bookImageRepo = bookImageRepo;
             _bookRepo = bookRepo;
             _unitOfWork = unitOfWork;
             _authService = authService;
@@ -60,6 +68,13 @@ namespace Services.Services
         {
             var book = bookVM.Map();
 
+            if (bookVM.Image != null)
+            {
+                book.Image = new BookImage();
+                var imageResult = ProcessImage(book.Image, bookVM);
+                if (!imageResult.Success) return imageResult;
+            }
+
             _bookRepo.Insert(book);
             _bookRepo.AttachToStore(book);
 
@@ -72,8 +87,8 @@ namespace Services.Services
                     UserId = user.Id,
                 };
 
-                var result = ProcessStatus(book.Status, bookVM);
-                if (!result.Success) return result;
+                var statusResult = ProcessStatus(book.Status, bookVM);
+                if (!statusResult.Success) return statusResult;
             }
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -84,6 +99,13 @@ namespace Services.Services
         public async Task<ResultVM<BookGetVM>> UpdateAsync(BookPostVM bookVM, CancellationToken cancellationToken)
         {
             var book = bookVM.Map();
+
+            if (bookVM.Image != null)
+            {
+                book.Image = await _bookImageRepo.GetByBookId(book.Id, cancellationToken) ?? new BookImage();
+                var imageResult = ProcessImage(book.Image, bookVM);
+                if (!imageResult.Success) return imageResult;
+            }
 
             _bookRepo.Update(book);
 
@@ -101,8 +123,8 @@ namespace Services.Services
                     UserId = user.Id,
                 };
 
-            var result = ProcessStatus(book.Status, bookVM);
-            if (!result.Success) return result;
+            var statusResult = ProcessStatus(book.Status, bookVM);
+            if (!statusResult.Success) return statusResult;
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
@@ -183,6 +205,34 @@ namespace Services.Services
             else
             {
                 _usersBooksStatusRepo.Insert(status);
+            }
+
+            return new(new BookGetVM());
+        }
+
+        private ResultVM<BookGetVM> ProcessImage(BookImage bookImage, BookPostVM bookVM)
+        {
+            const int maxSize = 5 * 1024 * 1024;
+
+            if (bookVM.Image.Length > maxSize)
+            {
+                return new("BookPost.Image", "Обложка книги не может быть больше 5 Мб");
+            }
+
+            bookImage.FileName = bookVM.Image.FileName;
+            bookImage.ContentType = bookVM.Image.ContentType;
+
+            using MemoryStream ms = new();
+            bookVM.Image.CopyTo(ms);
+            bookImage.Content = ms.ToArray();
+
+            if (bookImage.Id != default)
+            {
+                _bookImageRepo.Update(bookImage);
+            }
+            else
+            {
+                _bookImageRepo.Insert(bookImage);
             }
 
             return new(new BookGetVM());

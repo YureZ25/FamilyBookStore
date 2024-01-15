@@ -32,6 +32,26 @@ namespace Data.Extensions
             [typeof(decimal)] = (r, n) => r.GetDecimal(n),
             [typeof(string)] = (r, n) => !r.IsDBNull(n) ? r.GetString(n) : null,
             [typeof(DateTime)] = (r, n) => !r.IsDBNull(n) ? r.GetDateTime(n) : null,
+            [typeof(byte[])] = (r, n) =>
+            {
+                if (r.IsDBNull(n)) return null;
+
+                byte[] buffer = new byte[4096];
+                using MemoryStream bufferStream = new();
+
+                long bytesRead = 0;
+                long bytesReadTotal = 0;
+
+                do
+                {
+                    bytesRead = r.GetBytes(n, bytesReadTotal, buffer, 0, buffer.Length);
+                    bufferStream.Write(buffer, 0, (int)bytesRead);
+                    bytesReadTotal += bytesRead;
+                }
+                while (bytesRead > 0);
+
+                return bufferStream.ToArray();
+            },
         };
 
         public static T Map<T>(this DbDataReader reader, string columnName)

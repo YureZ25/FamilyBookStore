@@ -30,6 +30,10 @@ namespace Data.Entities
         [DataType("smallmoney")]
         public decimal? Price { get; set; }
 
+        [ForeignKey(nameof(Image))]
+        public int? ImageId { get; set; }
+        public BookImage Image { get; set; }
+
         [ForeignKey(nameof(Author))]
         public int AuthorId { get; set; }
         public Author Author { get; set; }
