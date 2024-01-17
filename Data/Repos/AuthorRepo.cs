@@ -16,7 +16,7 @@ namespace Data.Repos
             _dbContext = dbContext;
         }
 
-        public async Task<IEnumerable<Author>> GetAuthorsAsync(CancellationToken cancellationToken)
+        public async Task<IEnumerable<Author>> GetAll(CancellationToken cancellationToken)
         {
             var cmd = _dbContext.CreateQuery()
                 .WithText("""
@@ -37,7 +37,7 @@ namespace Data.Repos
             return authors;
         }
 
-        public async Task<Author> GetByIdAsync(int id, CancellationToken cancellationToken)
+        public async Task<Author> GetById(int id, CancellationToken cancellationToken)
         {
             var cmd = _dbContext.CreateQuery()
                 .WithText("""

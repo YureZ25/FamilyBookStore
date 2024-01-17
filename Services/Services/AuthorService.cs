@@ -18,14 +18,14 @@ namespace Services.Services
 
         public async Task<IEnumerable<AuthorGetVM>> GetAuthorsAsync(CancellationToken cancellationToken)
         {
-            var authors = await _authorRepo.GetAuthorsAsync(cancellationToken);
+            var authors = await _authorRepo.GetAll(cancellationToken);
 
             return authors.Select(e => e.Map());
         }
 
         public async Task<AuthorGetVM> GetByIdAsync(int id, CancellationToken cancellationToken)
         {
-            var author = await _authorRepo.GetByIdAsync(id, cancellationToken);
+            var author = await _authorRepo.GetById(id, cancellationToken);
 
             return author.Map();
         }
@@ -54,7 +54,7 @@ namespace Services.Services
 
         public async Task<AuthorGetVM> DeleteByIdAsync(int id, CancellationToken cancellationToken)
         {
-            var author = await _authorRepo.GetByIdAsync(id, cancellationToken);
+            var author = await _authorRepo.GetById(id, cancellationToken);
 
             _authorRepo.DeleteById(author.Id);
 

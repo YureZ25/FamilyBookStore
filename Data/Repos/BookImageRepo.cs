@@ -16,6 +16,28 @@ namespace Data.Repos
             _dbContext = dbContext;
         }
 
+        public async Task<IEnumerable<BookImage>> GetAll(CancellationToken cancellationToken)
+        {
+            var cmd = _dbContext.CreateQuery()
+                .WithText("""
+                SELECT
+                    BookImages.Id,
+                    BookImages.FileName,
+                    BookImages.ContentType,
+                    BookImages.Content
+                FROM BookImages
+                """);
+
+            using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
+
+            List<BookImage> bookImages = [];
+            while (await reader.ReadAsync(cancellationToken))
+            {
+                bookImages.Add(Map(reader));
+            }
+            return bookImages;
+        }
+
         public async Task<BookImage> GetByBookId(int bookId, CancellationToken cancellationToken)
         {
             var cmd = _dbContext.CreateQuery()

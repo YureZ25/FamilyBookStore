@@ -2,12 +2,8 @@
 
 namespace Data.Repos.Contracts
 {
-    public interface IGenreRepo
+    public interface IGenreRepo : IBaseRepo<Genre>
     {
-        Task<IEnumerable<Genre>> GetGenresAsync(CancellationToken cancellationToken);
-        Task<Genre> GetByIdAsync(int id, CancellationToken cancellationToken);
-        void Insert(Genre genre);
-        void Update(Genre genre);
-        void DeleteById(int id);
+
     }
 }

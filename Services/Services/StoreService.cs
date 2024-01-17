@@ -34,7 +34,7 @@ namespace Services.Services
             var user = await _userManager.FindByIdAsync(Convert.ToString(userId))
                 ?? throw new EntityNotFoundExeption("Пользователь", userId);
 
-            var stores = await _storeRepo.GetStoresByUserIdAsync(user.Id, cancellationToken);
+            var stores = await _storeRepo.GetStoresByUserId(user.Id, cancellationToken);
 
             var storesVM = stores.Take(3).Select(s =>
             {
@@ -48,7 +48,7 @@ namespace Services.Services
 
         public async Task<IEnumerable<StoreGetVM>> GetStoresAsync(CancellationToken cancellationToken)
         {
-            var stores = await _storeRepo.GetStoresAsync(cancellationToken);
+            var stores = await _storeRepo.GetAll(cancellationToken);
 
             var userId = _contextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(userId) ?? throw new EntityNotFoundExeption("Пользователь", userId);
@@ -58,7 +58,7 @@ namespace Services.Services
 
         public async Task<StoreGetVM> GetByIdAsync(int id, CancellationToken cancellationToken)
         {
-            var store = await _storeRepo.GetByIdAsync(id, cancellationToken);
+            var store = await _storeRepo.GetById(id, cancellationToken);
 
             var userId = _contextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(userId) ?? throw new EntityNotFoundExeption("Пользователь", userId);
@@ -68,7 +68,7 @@ namespace Services.Services
 
         public async Task LinkStoreToUser(int storeId, CancellationToken cancellationToken)
         {
-            var store = await _storeRepo.GetByIdAsync(storeId, cancellationToken) ?? throw new EntityNotFoundExeption("Хранилище", storeId);
+            var store = await _storeRepo.GetById(storeId, cancellationToken) ?? throw new EntityNotFoundExeption("Хранилище", storeId);
 
             var userId = _contextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(userId) ?? throw new EntityNotFoundExeption("Пользователь", userId);
@@ -80,7 +80,7 @@ namespace Services.Services
 
         public async Task UnlinkStoreFromUser(int storeId, CancellationToken cancellationToken)
         {
-            var store = await _storeRepo.GetByIdAsync(storeId, cancellationToken) ?? throw new EntityNotFoundExeption("Хранилище", storeId);
+            var store = await _storeRepo.GetById(storeId, cancellationToken) ?? throw new EntityNotFoundExeption("Хранилище", storeId);
 
             var userId = _contextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(userId) ?? throw new EntityNotFoundExeption("Пользователь", userId);
@@ -114,7 +114,7 @@ namespace Services.Services
 
         public async Task<StoreGetVM> DeleteByIdAsync(int id, CancellationToken cancellationToken)
         {
-            var store = await _storeRepo.GetByIdAsync(id, cancellationToken);
+            var store = await _storeRepo.GetById(id, cancellationToken);
 
             _storeRepo.DeleteById(store.Id);
 

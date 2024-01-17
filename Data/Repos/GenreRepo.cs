@@ -16,7 +16,7 @@ namespace Data.Repos
             _dbContext = dbContext;
         }
 
-        public async Task<IEnumerable<Genre>> GetGenresAsync(CancellationToken cancellationToken)
+        public async Task<IEnumerable<Genre>> GetAll(CancellationToken cancellationToken)
         {
             var cmd = _dbContext.CreateQuery()
                 .WithText("""
@@ -36,7 +36,7 @@ namespace Data.Repos
             return genres;
         }
 
-        public async Task<Genre> GetByIdAsync(int id, CancellationToken cancellationToken)
+        public async Task<Genre> GetById(int id, CancellationToken cancellationToken)
         {
             var cmd = _dbContext.CreateQuery()
                 .WithText("""

@@ -2,11 +2,8 @@
 
 namespace Data.Repos.Contracts
 {
-    public interface IUsersBooksStatusRepo
+    public interface IUsersBooksStatusRepo : IBaseRepo<UsersBooksStatus>
     {
-        Task<UsersBooksStatus> GetStatusAsync(int userId, int bookId, CancellationToken cancellationToken);
-        void Insert(UsersBooksStatus usersBooksStatus);
-        void Update(UsersBooksStatus usersBooksStatus);
-        void DeleteById(int id);
+        Task<UsersBooksStatus> GetStatus(int userId, int bookId, CancellationToken cancellationToken);
     }
 }

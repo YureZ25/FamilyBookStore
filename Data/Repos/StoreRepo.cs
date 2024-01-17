@@ -16,7 +16,7 @@ namespace Data.Repos
             _dbContext = dbContext;
         }
 
-        public async Task<IEnumerable<Store>> GetStoresAsync(CancellationToken cancellationToken)
+        public async Task<IEnumerable<Store>> GetAll(CancellationToken cancellationToken)
         {
             var cmd = _dbContext.CreateQuery()
                 .WithText("""
@@ -76,7 +76,7 @@ namespace Data.Repos
             return stores;
         }
 
-        public async Task<IEnumerable<Store>> GetStoresByUserIdAsync(int userId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<Store>> GetStoresByUserId(int userId, CancellationToken cancellationToken)
         {
             var cmd = _dbContext.CreateQuery()
                 .WithText("""
@@ -128,7 +128,7 @@ namespace Data.Repos
             return stores;
         }
 
-        public async Task<Store> GetByIdAsync(int id, CancellationToken cancellationToken)
+        public async Task<Store> GetById(int id, CancellationToken cancellationToken)
         {
             var cmd = _dbContext.CreateQuery()
                 .WithText("""

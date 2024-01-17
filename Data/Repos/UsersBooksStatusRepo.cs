@@ -17,20 +17,58 @@ namespace Data.Repos
             _dbContext = dbContext;
         }
 
-        public async Task<UsersBooksStatus> GetStatusAsync(int userId, int bookId, CancellationToken cancellationToken)
+        private const string selectAllSql = """
+            SELECT
+                UsersBooksStatuses.Id,
+                UsersBooksStatuses.BookStatus,
+                UsersBooksStatuses.WishRead,
+                UsersBooksStatuses.StartRead,
+                UsersBooksStatuses.CurrentPage,
+                UsersBooksStatuses.EndRead,
+                UsersBooksStatuses.UserId,
+                UsersBooksStatuses.BookId
+            FROM UsersBooksStatuses
+            """;
+
+        public async Task<IEnumerable<UsersBooksStatus>> GetAll(CancellationToken cancellationToken)
         {
             var cmd = _dbContext.CreateQuery()
-                .WithText("""
-                SELECT
-                    UsersBooksStatuses.Id,
-                    UsersBooksStatuses.BookStatus,
-                    UsersBooksStatuses.WishRead,
-                    UsersBooksStatuses.StartRead,
-                    UsersBooksStatuses.CurrentPage,
-                    UsersBooksStatuses.EndRead,
-                    UsersBooksStatuses.UserId,
-                    UsersBooksStatuses.BookId
-                FROM UsersBooksStatuses
+                .WithText(selectAllSql);
+
+            using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
+
+            List<UsersBooksStatus> statuses = [];
+            while (await reader.ReadAsync(cancellationToken))
+            {
+                statuses.Add(Map(reader));
+            }
+            return statuses;
+        }
+
+        public async Task<UsersBooksStatus> GetById(int id, CancellationToken cancellationToken)
+        {
+            var cmd = _dbContext.CreateQuery()
+                .WithText($"""
+                {selectAllSql}
+                WHERE UsersBooksStatuses.Id = @id
+                """)
+                .WithParameter("id", id);
+
+            using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
+
+            if (reader.HasRows && await reader.ReadAsync(cancellationToken))
+            {
+                return Map(reader);
+            }
+
+            return null;
+        }
+
+        public async Task<UsersBooksStatus> GetStatus(int userId, int bookId, CancellationToken cancellationToken)
+        {
+            var cmd = _dbContext.CreateQuery()
+                .WithText($"""
+                {selectAllSql}
                 WHERE UsersBooksStatuses.UserId = @userId
                     AND UsersBooksStatuses.BookId = @bookId
                 """)

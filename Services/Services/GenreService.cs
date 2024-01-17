@@ -19,14 +19,14 @@ namespace Services.Services
 
         public async Task<IEnumerable<GenreGetVM>> GetGenresAsync(CancellationToken cancellationToken)
         {
-            var genres = await _genreRepo.GetGenresAsync(cancellationToken);
+            var genres = await _genreRepo.GetAll(cancellationToken);
 
             return genres.Select(e => e.Map());
         }
 
         public async Task<GenreGetVM> GetByIdAsync(int id, CancellationToken cancellationToken)
         {
-            var genre = await _genreRepo.GetByIdAsync(id, cancellationToken);
+            var genre = await _genreRepo.GetById(id, cancellationToken);
 
             return genre.Map();
         }
@@ -55,7 +55,7 @@ namespace Services.Services
 
         public async Task<GenreGetVM> DeleteByIdAsync(int id, CancellationToken cancellationToken)
         {
-            var genre = await _genreRepo.GetByIdAsync(id, cancellationToken);
+            var genre = await _genreRepo.GetById(id, cancellationToken);
 
             _genreRepo.DeleteById(genre.Id);
 

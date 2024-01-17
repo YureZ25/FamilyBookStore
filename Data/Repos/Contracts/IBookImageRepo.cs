@@ -2,12 +2,8 @@
 
 namespace Data.Repos.Contracts
 {
-    public interface IBookImageRepo
+    public interface IBookImageRepo : IBaseRepo<BookImage>
     {
         Task<BookImage> GetByBookId(int bookId, CancellationToken cancellationToken);
-        Task<BookImage> GetById(int id, CancellationToken cancellationToken);
-        void Insert(BookImage bookImage);
-        void Update(BookImage bookImage);
-        void DeleteById(int id);
     }
 }

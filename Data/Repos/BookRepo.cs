@@ -41,7 +41,7 @@ namespace Data.Repos
             LEFT JOIN Stores ON Book2Stores.StoreId = Stores.Id
             """;
 
-        public async Task<IEnumerable<Book>> GetBooksAsync(CancellationToken cancellationToken)
+        public async Task<IEnumerable<Book>> GetAll(CancellationToken cancellationToken)
         {
             var cmd = _dbContext.CreateQuery()
                 .WithText(getBooksSql);
@@ -56,7 +56,7 @@ namespace Data.Repos
             return books;
         }
 
-        public async Task<IEnumerable<Book>> GetBooksByUserStatusAsync(int userId, BookStatus bookStatus, CancellationToken cancellationToken)
+        public async Task<IEnumerable<Book>> GetBooksByUserStatus(int userId, BookStatus bookStatus, CancellationToken cancellationToken)
         {
             var cmd = _dbContext.CreateQuery()
                 .WithText("""
@@ -104,7 +104,7 @@ namespace Data.Repos
             return books;
         }
 
-        public async Task<IEnumerable<Book>> GetBooksByStoreAsync(int storeId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<Book>> GetBooksByStore(int storeId, CancellationToken cancellationToken)
         {
             var cmd = _dbContext.CreateQuery()
                 .WithText($"""
@@ -123,7 +123,7 @@ namespace Data.Repos
             return books;
         }
 
-        public async Task<Book> GetByIdAsync(int id, CancellationToken cancellationToken)
+        public async Task<Book> GetById(int id, CancellationToken cancellationToken)
         {
             var cmd = _dbContext.CreateQuery()
                 .WithText($"""
