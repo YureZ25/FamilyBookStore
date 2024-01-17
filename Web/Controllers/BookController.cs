@@ -38,7 +38,7 @@ namespace Web.Controllers
         [HttpGet]
         public async Task<IActionResult> BookList(CancellationToken cancellationToken)
         {
-            var books = await _bookService.GetBooksAsync(cancellationToken);
+            var books = await _bookService.GetBooks(cancellationToken);
 
             return View(books);
         }
@@ -47,13 +47,13 @@ namespace Web.Controllers
         public async Task<IActionResult> Book(int? id, CancellationToken cancellationToken)
         {
             var model = new BookPageVM(
-                    await _authorService.GetAuthorsAsync(cancellationToken),
-                    await _genreService.GetGenresAsync(cancellationToken),
-                    await _storeService.GetStoresAsync(cancellationToken));
+                    await _authorService.GetAuthors(cancellationToken),
+                    await _genreService.GetGenres(cancellationToken),
+                    await _storeService.GetStores(cancellationToken));
 
             if (!id.HasValue) return View(model);
 
-            model.BookGet = await _bookService.GetByIdAsync(id.Value, cancellationToken);
+            model.BookGet = await _bookService.GetById(id.Value, cancellationToken);
 
             return View(model);
         }
@@ -62,9 +62,9 @@ namespace Web.Controllers
         public async Task<IActionResult> AddBook([FromForm(Name = nameof(BookPageVM.BookPost))] BookPostVM bookVM, CancellationToken cancellationToken)
         {
             var bookPageVM = new BookPageVM(bookVM,
-                        await _authorService.GetAuthorsAsync(cancellationToken),
-                        await _genreService.GetGenresAsync(cancellationToken),
-                        await _storeService.GetStoresAsync(cancellationToken));
+                        await _authorService.GetAuthors(cancellationToken),
+                        await _genreService.GetGenres(cancellationToken),
+                        await _storeService.GetStores(cancellationToken));
 
             if (!ModelState.IsValid)
             {
@@ -72,7 +72,7 @@ namespace Web.Controllers
             }
 
             return Result(
-                await _bookService.InsertAsync(bookVM, cancellationToken), 
+                await _bookService.Insert(bookVM, cancellationToken), 
                 () => RedirectToAction(nameof(BookList)), 
                 () => View(nameof(Book), bookPageVM));
         }
@@ -81,9 +81,9 @@ namespace Web.Controllers
         public async Task<IActionResult> EditBook([FromForm(Name = nameof(BookPageVM.BookPost))] BookPostVM bookVM, CancellationToken cancellationToken)
         {
             var bookPageVM = new BookPageVM(bookVM,
-                        await _authorService.GetAuthorsAsync(cancellationToken),
-                        await _genreService.GetGenresAsync(cancellationToken),
-                        await _storeService.GetStoresAsync(cancellationToken));
+                        await _authorService.GetAuthors(cancellationToken),
+                        await _genreService.GetGenres(cancellationToken),
+                        await _storeService.GetStores(cancellationToken));
 
             if (!ModelState.IsValid)
             {
@@ -91,7 +91,7 @@ namespace Web.Controllers
             }
 
             return Result(
-                await _bookService.UpdateAsync(bookVM, cancellationToken),
+                await _bookService.Update(bookVM, cancellationToken),
                 () => RedirectToAction(nameof(BookList)),
                 () => View(nameof(Book), bookPageVM));
         }
@@ -100,7 +100,7 @@ namespace Web.Controllers
         public async Task<IActionResult> RemoveBook([FromForm(Name = nameof(BookPageVM.BookPost))] BookPostVM bookVM, CancellationToken cancellationToken)
         {
             return Result(
-                await _bookService.DeleteByIdAsync(bookVM.Id ?? 0, cancellationToken),
+                await _bookService.DeleteById(bookVM.Id ?? 0, cancellationToken),
                 (r) => RedirectToAction(nameof(BookList)),
                 (r) => BadRequest(r.ErrorMessage));
         }

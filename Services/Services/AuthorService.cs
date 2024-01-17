@@ -16,49 +16,49 @@ namespace Services.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IEnumerable<AuthorGetVM>> GetAuthorsAsync(CancellationToken cancellationToken)
+        public async Task<IEnumerable<AuthorGetVM>> GetAuthors(CancellationToken cancellationToken)
         {
             var authors = await _authorRepo.GetAll(cancellationToken);
 
             return authors.Select(e => e.Map());
         }
 
-        public async Task<AuthorGetVM> GetByIdAsync(int id, CancellationToken cancellationToken)
+        public async Task<AuthorGetVM> GetById(int id, CancellationToken cancellationToken)
         {
             var author = await _authorRepo.GetById(id, cancellationToken);
 
             return author.Map();
         }
 
-        public async Task<AuthorGetVM> InsertAsync(AuthorPostVM authorVM, CancellationToken cancellationToken)
+        public async Task<AuthorGetVM> Insert(AuthorPostVM authorVM, CancellationToken cancellationToken)
         {
             var author = authorVM.Map();
 
             _authorRepo.Insert(author);
 
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChanges(cancellationToken);
 
             return author.Map();
         }
 
-        public async Task<AuthorGetVM> UpdateAsync(AuthorPostVM authorVM, CancellationToken cancellationToken)
+        public async Task<AuthorGetVM> Update(AuthorPostVM authorVM, CancellationToken cancellationToken)
         {
             var author = authorVM.Map();
 
             _authorRepo.Update(author);
 
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChanges(cancellationToken);
 
             return author.Map();
         }
 
-        public async Task<AuthorGetVM> DeleteByIdAsync(int id, CancellationToken cancellationToken)
+        public async Task<AuthorGetVM> DeleteById(int id, CancellationToken cancellationToken)
         {
             var author = await _authorRepo.GetById(id, cancellationToken);
 
             _authorRepo.DeleteById(author.Id);
 
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChanges(cancellationToken);
 
             return author.Map();
         }

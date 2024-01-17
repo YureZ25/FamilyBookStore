@@ -56,6 +56,6 @@ app.UseAuthorization();
 
 app.MapDefaultControllerRoute();
 
-await app.RunMigrateDbStartupTaskAsync(app.Environment);
+await app.RunMigrateDbStartupTask(app.Environment);
 
 app.Run();

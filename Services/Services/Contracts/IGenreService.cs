@@ -4,10 +4,10 @@ namespace Services.Services.Contracts
 {
     public interface IGenreService
     {
-        Task<IEnumerable<GenreGetVM>> GetGenresAsync(CancellationToken cancellationToken);
-        Task<GenreGetVM> GetByIdAsync(int id, CancellationToken cancellationToken);
-        Task<GenreGetVM> InsertAsync(GenrePostVM genreVM, CancellationToken cancellationToken);
-        Task<GenreGetVM> UpdateAsync(GenrePostVM genreVM, CancellationToken cancellationToken);
-        Task<GenreGetVM> DeleteByIdAsync(int id, CancellationToken cancellationToken);
+        Task<IEnumerable<GenreGetVM>> GetGenres(CancellationToken cancellationToken);
+        Task<GenreGetVM> GetById(int id, CancellationToken cancellationToken);
+        Task<GenreGetVM> Insert(GenrePostVM genreVM, CancellationToken cancellationToken);
+        Task<GenreGetVM> Update(GenrePostVM genreVM, CancellationToken cancellationToken);
+        Task<GenreGetVM> DeleteById(int id, CancellationToken cancellationToken);
     }
 }

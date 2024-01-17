@@ -60,7 +60,7 @@ namespace Data.Context
             return builder;
         }
 
-        public async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
+        public async Task<int> SaveChanges(CancellationToken cancellationToken)
         {
             int updated = 0;
             foreach (var (commandBuilder, target) in Commands)

@@ -7,7 +7,7 @@ namespace Data
 {
     public static class StartupTasks
     {
-        public static async Task RunMigrateDbStartupTaskAsync(this IHost host, IHostEnvironment env)
+        public static async Task RunMigrateDbStartupTask(this IHost host, IHostEnvironment env)
         {
             using var scope = host.Services.CreateScope();
 
@@ -23,7 +23,7 @@ namespace Data
                 }
             }
 
-            await context.SaveChangesAsync(CancellationToken.None);
+            await context.SaveChanges(CancellationToken.None);
         }
     }
 }

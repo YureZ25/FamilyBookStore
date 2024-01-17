@@ -11,9 +11,9 @@ namespace Data.Context
             _dbContext = dbContext;
         }
 
-        public Task<int> SaveChangesAsync(CancellationToken cancellationToken)
+        public Task<int> SaveChanges(CancellationToken cancellationToken)
         {
-            return _dbContext.SaveChangesAsync(cancellationToken);
+            return _dbContext.SaveChanges(cancellationToken);
         }
     }
 }

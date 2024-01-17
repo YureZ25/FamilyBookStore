@@ -4,10 +4,10 @@ namespace Services.Services.Contracts
 {
     public interface IAuthorService
     {
-        Task<IEnumerable<AuthorGetVM>> GetAuthorsAsync(CancellationToken cancellationToken);
-        Task<AuthorGetVM> GetByIdAsync(int id, CancellationToken cancellationToken);
-        Task<AuthorGetVM> InsertAsync(AuthorPostVM authorVM, CancellationToken cancellationToken);
-        Task<AuthorGetVM> UpdateAsync(AuthorPostVM authorVM, CancellationToken cancellationToken);
-        Task<AuthorGetVM> DeleteByIdAsync(int id, CancellationToken cancellationToken);
+        Task<IEnumerable<AuthorGetVM>> GetAuthors(CancellationToken cancellationToken);
+        Task<AuthorGetVM> GetById(int id, CancellationToken cancellationToken);
+        Task<AuthorGetVM> Insert(AuthorPostVM authorVM, CancellationToken cancellationToken);
+        Task<AuthorGetVM> Update(AuthorPostVM authorVM, CancellationToken cancellationToken);
+        Task<AuthorGetVM> DeleteById(int id, CancellationToken cancellationToken);
     }
 }

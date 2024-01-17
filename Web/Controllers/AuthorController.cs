@@ -17,7 +17,7 @@ namespace Web.Controllers
         [HttpGet]
         public async Task<IActionResult> AuthorList(CancellationToken cancellationToken)
         {
-            var authors = await _authorService.GetAuthorsAsync(cancellationToken);
+            var authors = await _authorService.GetAuthors(cancellationToken);
 
             return View(authors);
         }
@@ -27,7 +27,7 @@ namespace Web.Controllers
         {
             if (!id.HasValue) return View(new AuthorPageVM());
 
-            return View(new AuthorPageVM(await _authorService.GetByIdAsync(id.Value, cancellationToken)));
+            return View(new AuthorPageVM(await _authorService.GetById(id.Value, cancellationToken)));
         }
 
         [HttpPost]
@@ -38,7 +38,7 @@ namespace Web.Controllers
                 return View(nameof(Author), new AuthorPageVM(authorVM));
             }
 
-            await _authorService.InsertAsync(authorVM, cancellationToken);
+            await _authorService.Insert(authorVM, cancellationToken);
 
             return RedirectToAction(nameof(AuthorList));
         }
@@ -51,7 +51,7 @@ namespace Web.Controllers
                 return View(nameof(Author), new AuthorPageVM(authorVM));
             }
 
-            await _authorService.UpdateAsync(authorVM, cancellationToken);
+            await _authorService.Update(authorVM, cancellationToken);
 
             return RedirectToAction(nameof(AuthorList));
         }
@@ -59,7 +59,7 @@ namespace Web.Controllers
         [HttpPost]
         public async Task<IActionResult> RemoveAuthor([FromForm(Name = nameof(AuthorPageVM.AuthorPost))] AuthorPostVM authorVM, CancellationToken cancellationToken)
         {
-            await _authorService.DeleteByIdAsync(authorVM.Id ?? 0, cancellationToken);
+            await _authorService.DeleteById(authorVM.Id ?? 0, cancellationToken);
 
             return RedirectToAction(nameof(AuthorList));
         }

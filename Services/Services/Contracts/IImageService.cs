@@ -1,6 +1,4 @@
-﻿using Services.ViewModels.BookVMs;
-
-namespace Services.Services.Contracts
+﻿namespace Services.Services.Contracts
 {
     public interface IImageService
     {

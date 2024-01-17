@@ -29,7 +29,7 @@ namespace Services.Services
             _contextAccessor = contextAccessor;
         }
 
-        public async Task<IEnumerable<StoreGetVM>> GetUserStoresOverviewAsync(int userId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<StoreGetVM>> GetUserStoresOverview(int userId, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByIdAsync(Convert.ToString(userId))
                 ?? throw new EntityNotFoundExeption("Пользователь", userId);
@@ -46,7 +46,7 @@ namespace Services.Services
             return storesVM;
         }
 
-        public async Task<IEnumerable<StoreGetVM>> GetStoresAsync(CancellationToken cancellationToken)
+        public async Task<IEnumerable<StoreGetVM>> GetStores(CancellationToken cancellationToken)
         {
             var stores = await _storeRepo.GetAll(cancellationToken);
 
@@ -56,7 +56,7 @@ namespace Services.Services
             return stores.Select(s => s.Map(user));
         }
 
-        public async Task<StoreGetVM> GetByIdAsync(int id, CancellationToken cancellationToken)
+        public async Task<StoreGetVM> GetById(int id, CancellationToken cancellationToken)
         {
             var store = await _storeRepo.GetById(id, cancellationToken);
 
@@ -75,7 +75,7 @@ namespace Services.Services
 
             _storeRepo.LinkStoreToUser(store, user);
 
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChanges(cancellationToken);
         }
 
         public async Task UnlinkStoreFromUser(int storeId, CancellationToken cancellationToken)
@@ -87,38 +87,38 @@ namespace Services.Services
 
             _storeRepo.UnlinkStoreFromUser(store, user);
 
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChanges(cancellationToken);
         }
 
-        public async Task<StoreGetVM> InsertAsync(StorePostVM storeVM, CancellationToken cancellationToken)
+        public async Task<StoreGetVM> Insert(StorePostVM storeVM, CancellationToken cancellationToken)
         {
             var store = storeVM.Map();
 
             _storeRepo.Insert(store);
 
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChanges(cancellationToken);
 
             return store.Map();
         }
 
-        public async Task<StoreGetVM> UpdateAsync(StorePostVM storeVM, CancellationToken cancellationToken)
+        public async Task<StoreGetVM> Update(StorePostVM storeVM, CancellationToken cancellationToken)
         {
             var store = storeVM.Map();
 
             _storeRepo.Update(store);
 
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChanges(cancellationToken);
 
             return store.Map();
         }
 
-        public async Task<StoreGetVM> DeleteByIdAsync(int id, CancellationToken cancellationToken)
+        public async Task<StoreGetVM> DeleteById(int id, CancellationToken cancellationToken)
         {
             var store = await _storeRepo.GetById(id, cancellationToken);
 
             _storeRepo.DeleteById(store.Id);
 
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChanges(cancellationToken);
 
             return store.Map();
         }

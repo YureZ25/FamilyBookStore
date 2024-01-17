@@ -26,7 +26,7 @@ namespace Services.Services
             }
 
             var book = bookId.HasValue
-                ? await _bookService.GetByIdAsync(bookId.Value, cancellationToken)
+                ? await _bookService.GetById(bookId.Value, cancellationToken)
                 : new BookGetVM { Title = "Название книги", Author = new AuthorGetVM { FirstName = "Имя", LastName = "Автора" } };
 
             return (Encoding.Default.GetBytes(GetBookImageSvg(book)), "image/svg+xml");

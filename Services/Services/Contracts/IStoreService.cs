@@ -4,14 +4,14 @@ namespace Services.Services.Contracts
 {
     public interface IStoreService
     {
-        Task<IEnumerable<StoreGetVM>> GetUserStoresOverviewAsync(int userId, CancellationToken cancellationToken);
+        Task<IEnumerable<StoreGetVM>> GetUserStoresOverview(int userId, CancellationToken cancellationToken);
 
-        Task<IEnumerable<StoreGetVM>> GetStoresAsync(CancellationToken cancellationToken);
-        Task<StoreGetVM> GetByIdAsync(int id, CancellationToken cancellationToken);
+        Task<IEnumerable<StoreGetVM>> GetStores(CancellationToken cancellationToken);
+        Task<StoreGetVM> GetById(int id, CancellationToken cancellationToken);
         Task LinkStoreToUser(int storeId, CancellationToken cancellationToken);
         Task UnlinkStoreFromUser(int storeId, CancellationToken cancellationToken);
-        Task<StoreGetVM> InsertAsync(StorePostVM storeVM, CancellationToken cancellationToken);
-        Task<StoreGetVM> UpdateAsync(StorePostVM storeVM, CancellationToken cancellationToken);
-        Task<StoreGetVM> DeleteByIdAsync(int id, CancellationToken cancellationToken);
+        Task<StoreGetVM> Insert(StorePostVM storeVM, CancellationToken cancellationToken);
+        Task<StoreGetVM> Update(StorePostVM storeVM, CancellationToken cancellationToken);
+        Task<StoreGetVM> DeleteById(int id, CancellationToken cancellationToken);
     }
 }

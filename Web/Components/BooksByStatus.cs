@@ -16,7 +16,7 @@ namespace Web.Components
 
         public async Task<IViewComponentResult> InvokeAsync(BookStatus bookStatus)
         {
-            var books = await _bookService.GetUserBooksByStatusAsync(bookStatus, HttpContext.RequestAborted);
+            var books = await _bookService.GetUserBooksByStatus(bookStatus, HttpContext.RequestAborted);
 
             return View(new BooksByStatusComponentVM { Books = books });
         }

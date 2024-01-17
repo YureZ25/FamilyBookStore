@@ -19,7 +19,7 @@ namespace Web.Controllers
         {
             var user = await _authService.GetCurrentUser();
 
-            var stores = await _storeService.GetUserStoresOverviewAsync(user.Id, cancellationToken);
+            var stores = await _storeService.GetUserStoresOverview(user.Id, cancellationToken);
 
             return View(stores);
         }

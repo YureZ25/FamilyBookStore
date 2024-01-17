@@ -31,7 +31,7 @@ namespace Services.Services
             _authService = authService;
         }
 
-        public async Task<IEnumerable<BookGetVM>> GetUserBooksByStatusAsync(BookStatus bookStatus, CancellationToken cancellationToken)
+        public async Task<IEnumerable<BookGetVM>> GetUserBooksByStatus(BookStatus bookStatus, CancellationToken cancellationToken)
         {
             var user = await _authService.GetCurrentUser();
 
@@ -40,21 +40,21 @@ namespace Services.Services
             return books.Select(e => e.Map());
         }
 
-        public async Task<IEnumerable<BookGetVM>> GetBooksByStoreAsync(int storeId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<BookGetVM>> GetBooksByStore(int storeId, CancellationToken cancellationToken)
         {
             var books = await _bookRepo.GetBooksByStore(storeId, cancellationToken);
 
             return books.Select(e => e.Map());
         }
 
-        public async Task<IEnumerable<BookGetVM>> GetBooksAsync(CancellationToken cancellationToken)
+        public async Task<IEnumerable<BookGetVM>> GetBooks(CancellationToken cancellationToken)
         {
             var books = await _bookRepo.GetAll(cancellationToken);
 
             return books.Select(e => e.Map());
         }
 
-        public async Task<BookGetVM> GetByIdAsync(int id, CancellationToken cancellationToken)
+        public async Task<BookGetVM> GetById(int id, CancellationToken cancellationToken)
         {
             var book = await _bookRepo.GetById(id, cancellationToken);
 
@@ -64,7 +64,7 @@ namespace Services.Services
             return book.Map();
         }
 
-        public async Task<ResultVM<BookGetVM>> InsertAsync(BookPostVM bookVM, CancellationToken cancellationToken)
+        public async Task<ResultVM<BookGetVM>> Insert(BookPostVM bookVM, CancellationToken cancellationToken)
         {
             var book = bookVM.Map();
 
@@ -91,12 +91,12 @@ namespace Services.Services
                 if (!statusResult.Success) return statusResult;
             }
 
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChanges(cancellationToken);
 
             return new(book.Map());
         }
 
-        public async Task<ResultVM<BookGetVM>> UpdateAsync(BookPostVM bookVM, CancellationToken cancellationToken)
+        public async Task<ResultVM<BookGetVM>> Update(BookPostVM bookVM, CancellationToken cancellationToken)
         {
             var book = bookVM.Map();
 
@@ -126,12 +126,12 @@ namespace Services.Services
             var statusResult = ProcessStatus(book.Status, bookVM);
             if (!statusResult.Success) return statusResult;
 
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChanges(cancellationToken);
 
             return new(book.Map());
         }
 
-        public async Task<ResultVM<BookGetVM>> DeleteByIdAsync(int id, CancellationToken cancellationToken)
+        public async Task<ResultVM<BookGetVM>> DeleteById(int id, CancellationToken cancellationToken)
         {
             var book = await _bookRepo.GetById(id, cancellationToken);
 
@@ -146,7 +146,7 @@ namespace Services.Services
 
             _bookRepo.DeleteById(book.Id);
 
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChanges(cancellationToken);
 
             return new(book.Map());
         }

@@ -22,8 +22,8 @@ namespace Web.Controllers
         {
             if (!id.HasValue) return View(Enumerable.Empty<BookGetVM>());
 
-            var store = await _storeService.GetByIdAsync(id.Value, cancellationToken);
-            var books = await _bookService.GetBooksByStoreAsync(store.Id, cancellationToken);
+            var store = await _storeService.GetById(id.Value, cancellationToken);
+            var books = await _bookService.GetBooksByStore(store.Id, cancellationToken);
 
             ViewData["Title"] = $"Список книг хранилища {store.Name}";
             return View(books);
@@ -32,7 +32,7 @@ namespace Web.Controllers
         [HttpGet]
         public async Task<IActionResult> StoreList(CancellationToken cancellationToken)
         {
-            var stores = await _storeService.GetStoresAsync(cancellationToken);
+            var stores = await _storeService.GetStores(cancellationToken);
 
             return View(stores);
         }
@@ -42,7 +42,7 @@ namespace Web.Controllers
         {
             if (!id.HasValue) return View(new StorePageVM());
 
-            return View(new StorePageVM(await _storeService.GetByIdAsync(id.Value, cancellationToken)));
+            return View(new StorePageVM(await _storeService.GetById(id.Value, cancellationToken)));
         }
 
         [HttpPost]
@@ -73,7 +73,7 @@ namespace Web.Controllers
                 return View(nameof(Store), new StorePageVM(storeVM));
             }
 
-            await _storeService.InsertAsync(storeVM, cancellationToken);
+            await _storeService.Insert(storeVM, cancellationToken);
 
             return RedirectToAction(nameof(StoreList));
         }
@@ -86,7 +86,7 @@ namespace Web.Controllers
                 return View(nameof(Store), new StorePageVM(storeVM));
             }
 
-            await _storeService.UpdateAsync(storeVM, cancellationToken);
+            await _storeService.Update(storeVM, cancellationToken);
 
             return RedirectToAction(nameof(StoreList));
         }
@@ -94,7 +94,7 @@ namespace Web.Controllers
         [HttpPost]
         public async Task<IActionResult> RemoveStore([FromForm(Name = nameof(StorePageVM.StorePost))] StorePostVM storeVM, CancellationToken cancellationToken)
         {
-            await _storeService.DeleteByIdAsync(storeVM.Id ?? 0, cancellationToken);
+            await _storeService.DeleteById(storeVM.Id ?? 0, cancellationToken);
 
             return RedirectToAction(nameof(StoreList));
         }

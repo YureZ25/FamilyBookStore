@@ -130,7 +130,7 @@ namespace Data.Repos
                 .WithParameter(e => e.NormalizedUserName)
                 .WithParameter(e => e.PasswordHash);
 
-            await _dbContext.SaveChangesAsync(cancellationToken);
+            await _dbContext.SaveChanges(cancellationToken);
 
             return IdentityResult.Success;
         }
@@ -151,7 +151,7 @@ namespace Data.Repos
                 .WithParameter(e => e.NormalizedUserName)
                 .WithParameter(e => e.PasswordHash);
 
-            await _dbContext.SaveChangesAsync(cancellationToken);
+            await _dbContext.SaveChanges(cancellationToken);
 
             return IdentityResult.Success;
         }
@@ -162,7 +162,7 @@ namespace Data.Repos
                 .WithText("DELETE Users WHERE Id = @id")
                 .WithParameter("id", user.Id);
 
-            await _dbContext.SaveChangesAsync(cancellationToken);
+            await _dbContext.SaveChanges(cancellationToken);
 
             return IdentityResult.Success;
         }
