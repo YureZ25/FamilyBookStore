@@ -8,10 +8,12 @@ namespace Web.Controllers
     public class GenreController : BaseController
     {
         private readonly IGenreService _genreService;
+        private readonly IBookService _bookService;
 
-        public GenreController(IGenreService genreService)
+        public GenreController(IGenreService genreService, IBookService bookService)
         {
             _genreService = genreService;
+            _bookService = bookService;
         }
 
         [HttpGet]
@@ -27,7 +29,10 @@ namespace Web.Controllers
         {
             if (!id.HasValue) return View(new GenrePageVM());
 
-            return View(new GenrePageVM(await _genreService.GetById(id.Value, cancellationToken)));
+            return View(new GenrePageVM(await _genreService.GetById(id.Value, cancellationToken))
+            {
+                GenreBooks = await _bookService.GetBooksByGenre(id.Value, cancellationToken)
+            });
         }
 
         [HttpPost]
@@ -48,7 +53,10 @@ namespace Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(nameof(Genre), new GenrePageVM(genreVM));
+                return View(nameof(Genre), new GenrePageVM(genreVM)
+                {
+                    GenreBooks = await _bookService.GetBooksByGenre(genreVM.Id.Value, cancellationToken)
+                });
             }
 
             await _genreService.Update(genreVM, cancellationToken);

@@ -1,4 +1,5 @@
-﻿using Services.ViewModels.StoreVMs;
+﻿using Services.ViewModels.BookVMs;
+using Services.ViewModels.StoreVMs;
 
 namespace Web.PageViewModels
 {
@@ -6,10 +7,11 @@ namespace Web.PageViewModels
     {
         public StoreGetVM StoreGet { get; set; }
         public StorePostVM StorePost { get; set; }
+        public IEnumerable<BookGetVM> StoreBooks { get; set; }
 
         public StorePageVM()
         {
-            
+
         }
 
         public StorePageVM(StoreGetVM storeGet)

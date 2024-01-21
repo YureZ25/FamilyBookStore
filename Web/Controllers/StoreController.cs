@@ -42,7 +42,10 @@ namespace Web.Controllers
         {
             if (!id.HasValue) return View(new StorePageVM());
 
-            return View(new StorePageVM(await _storeService.GetById(id.Value, cancellationToken)));
+            return View(new StorePageVM(await _storeService.GetById(id.Value, cancellationToken))
+            {
+                StoreBooks = await _bookService.GetBooksByStore(id.Value, cancellationToken)
+            });
         }
 
         [HttpPost]
@@ -83,7 +86,10 @@ namespace Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(nameof(Store), new StorePageVM(storeVM));
+                return View(nameof(Store), new StorePageVM(storeVM)
+                {
+                    StoreBooks = await _bookService.GetBooksByStore(storeVM.Id.Value, cancellationToken)
+                });
             }
 
             await _storeService.Update(storeVM, cancellationToken);

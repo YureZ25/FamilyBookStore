@@ -47,6 +47,20 @@ namespace Services.Services
             return books.Select(e => e.Map());
         }
 
+        public async Task<IEnumerable<BookGetVM>> GetBooksByAuthor(int authorId, CancellationToken cancellationToken)
+        {
+            var books = await _bookRepo.GetBooksByAuthor(authorId, cancellationToken);
+
+            return books.Select(e => e.Map());
+        }
+
+        public async Task<IEnumerable<BookGetVM>> GetBooksByGenre(int genreId, CancellationToken cancellationToken)
+        {
+            var books = await _bookRepo.GetBooksByGenre(genreId, cancellationToken);
+
+            return books.Select(e => e.Map());
+        }
+
         public async Task<IEnumerable<BookGetVM>> GetBooks(CancellationToken cancellationToken)
         {
             var books = await _bookRepo.GetAll(cancellationToken);

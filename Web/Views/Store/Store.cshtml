@@ -43,6 +43,46 @@
     </div>
 </form>
 
+@if (Model.StoreBooks != null)
+{
+    <table class="table table-hover table-bordered mt-5">
+        <thead>
+            <tr>
+                <th scope="col">Название</th>
+                <th scope="col">Автор</th>
+                <th scope="col">Жанр</th>
+            </tr>
+        </thead>
+        <tbody class="table-group-divider">
+            @if (Model.StoreBooks.Any())
+            {
+                @foreach (var book in Model.StoreBooks.OrderBy(e => e.Author.ToString()).ThenBy(e => e.Title))
+                {
+                    <tr navigate asp-controller="Book" asp-action="Book" asp-route-id="@book.Id">
+                        <td>
+                            @book.Title
+                        </td>
+                        <td>
+                            @book.Author.ToString()
+                        </td>
+                        <td>
+                            @book.Genre.Name
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="3" class="text-center">
+                        В этом хранилище пока нет ни одной книги
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
 @section Scripts {
     <script>
         $('#linkStoreToUserButton').click(function () {

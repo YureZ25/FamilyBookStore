@@ -8,10 +8,12 @@ namespace Web.Controllers
     public class AuthorController : BaseController
     {
         private readonly IAuthorService _authorService;
+        private readonly IBookService _bookService;
 
-        public AuthorController(IAuthorService authorService)
+        public AuthorController(IAuthorService authorService, IBookService bookService)
         {
             _authorService = authorService;
+            _bookService = bookService;
         }
 
         [HttpGet]
@@ -27,7 +29,10 @@ namespace Web.Controllers
         {
             if (!id.HasValue) return View(new AuthorPageVM());
 
-            return View(new AuthorPageVM(await _authorService.GetById(id.Value, cancellationToken)));
+            return View(new AuthorPageVM(await _authorService.GetById(id.Value, cancellationToken))
+            {
+                AuthorBooks = await _bookService.GetBooksByAuthor(id.Value, cancellationToken)
+            });
         }
 
         [HttpPost]
@@ -48,7 +53,10 @@ namespace Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(nameof(Author), new AuthorPageVM(authorVM));
+                return View(nameof(Author), new AuthorPageVM(authorVM)
+                {
+                    AuthorBooks = await _bookService.GetBooksByAuthor(authorVM.Id.Value, cancellationToken)
+                });
             }
 
             await _authorService.Update(authorVM, cancellationToken);

@@ -1,4 +1,5 @@
 ﻿using Services.ViewModels.AuthorVMs;
+using Services.ViewModels.BookVMs;
 
 namespace Web.PageViewModels
 {
@@ -6,6 +7,7 @@ namespace Web.PageViewModels
     {
         public AuthorGetVM AuthorGet { get; set; }
         public AuthorPostVM AuthorPost { get; set; }
+        public IEnumerable<BookGetVM> AuthorBooks { get; set; }
 
         public AuthorPageVM()
         {

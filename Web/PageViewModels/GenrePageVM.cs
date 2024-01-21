@@ -1,4 +1,5 @@
-﻿using Services.ViewModels.GenreVMs;
+﻿using Services.ViewModels.BookVMs;
+using Services.ViewModels.GenreVMs;
 
 namespace Web.PageViewModels
 {
@@ -6,6 +7,7 @@ namespace Web.PageViewModels
     {
         public GenreGetVM GenreGet { get; set; }
         public GenrePostVM GenrePost { get; set; }
+        public IEnumerable<BookGetVM> GenreBooks { get; set; }
 
         public GenrePageVM()
         {

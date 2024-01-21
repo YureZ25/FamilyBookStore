@@ -34,3 +34,43 @@
         </div>
     </div>
 </form>
+
+@if (Model.AuthorBooks != null)
+{
+    <table class="table table-hover table-bordered mt-5">
+        <thead>
+            <tr>
+                <th scope="col">Название</th>
+                <th scope="col">Жанр</th>
+                <th scope="col">Текущее хранилище</th>
+            </tr>
+        </thead>
+        <tbody class="table-group-divider">
+            @if (Model.AuthorBooks.Any())
+            {
+                @foreach (var book in Model.AuthorBooks.OrderBy(e => e.Title))
+                {
+                    <tr navigate asp-controller="Book" asp-action="Book" asp-route-id="@book.Id">
+                        <td>
+                            @book.Title
+                        </td>
+                        <td>
+                            @book.Genre.Name
+                        </td>
+                        <td>
+                            @book.Store.Name
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="3" class="text-center">
+                        У этого автора пока нет ни одной книги
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
