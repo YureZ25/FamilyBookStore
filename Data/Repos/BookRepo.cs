@@ -104,6 +104,44 @@ namespace Data.Repos
             return books;
         }
 
+        public async Task<IEnumerable<Book>> GetBooksByAuthor(int authorId, CancellationToken cancellationToken)
+        {
+            var cmd = _dbContext.CreateQuery()
+                .WithText($"""
+                {getBooksSql}
+                WHERE Books.AuthorId = @authorId
+                """)
+                .WithParameter("authorId", authorId);
+
+            using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
+
+            List<Book> books = [];
+            while (await reader.ReadAsync(cancellationToken))
+            {
+                books.Add(Map(reader));
+            }
+            return books;
+        }
+
+        public async Task<IEnumerable<Book>> GetBooksByGenre(int genreId, CancellationToken cancellationToken)
+        {
+            var cmd = _dbContext.CreateQuery()
+                .WithText($"""
+                {getBooksSql}
+                WHERE Books.GenreId = @genreId
+                """)
+                .WithParameter("genreId", genreId);
+
+            using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
+
+            List<Book> books = [];
+            while (await reader.ReadAsync(cancellationToken))
+            {
+                books.Add(Map(reader));
+            }
+            return books;
+        }
+
         public async Task<IEnumerable<Book>> GetBooksByStore(int storeId, CancellationToken cancellationToken)
         {
             var cmd = _dbContext.CreateQuery()
@@ -115,7 +153,7 @@ namespace Data.Repos
 
             using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
 
-            var books = new List<Book>();
+            List<Book> books = [];
             while (await reader.ReadAsync(cancellationToken))
             {
                 books.Add(Map(reader));
