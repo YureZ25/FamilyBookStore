@@ -5,6 +5,7 @@ namespace Data.Repos.Contracts
 {
     public interface IBookRepo : IBaseRepo<Book>
     {
+        Task<IEnumerable<Book>> GetBooksByPrompt(string prompt, CancellationToken cancellationToken);
         Task<IEnumerable<Book>> GetBooksByUserStatus(int userId, BookStatus bookStatus, CancellationToken cancellationToken);
         Task<IEnumerable<Book>> GetBooksByAuthor(int authorId, CancellationToken cancellationToken);
         Task<IEnumerable<Book>> GetBooksByGenre(int genreId, CancellationToken cancellationToken);

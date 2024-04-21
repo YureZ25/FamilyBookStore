@@ -6,6 +6,7 @@ namespace Services.Services.Contracts
 {
     public interface IBookService
     {
+        Task<IEnumerable<BookGetVM>> GetBooksByPrompt(string prompt, CancellationToken cancellationToken);
         Task<IEnumerable<BookGetVM>> GetUserBooksByStatus(BookStatus bookStatus, CancellationToken cancellationToken);
         Task<IEnumerable<BookGetVM>> GetBooksByStore(int storeId, CancellationToken cancellationToken);
         Task<IEnumerable<BookGetVM>> GetBooksByAuthor(int authorId, CancellationToken cancellationToken);

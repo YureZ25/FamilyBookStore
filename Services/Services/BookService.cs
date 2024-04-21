@@ -31,6 +31,13 @@ namespace Services.Services
             _authService = authService;
         }
 
+        public async Task<IEnumerable<BookGetVM>> GetBooksByPrompt(string prompt, CancellationToken cancellationToken)
+        {
+            var books = await _bookRepo.GetBooksByPrompt(prompt, cancellationToken);
+
+            return books.Select(e => e.Map());
+        }
+
         public async Task<IEnumerable<BookGetVM>> GetUserBooksByStatus(BookStatus bookStatus, CancellationToken cancellationToken)
         {
             var user = await _authService.GetCurrentUser();

@@ -1,6 +1,9 @@
-﻿<form class="d-flex me-4" role="search">
+﻿@model BookSearchComponentVM
+
+<form class="d-flex me-4" role="search" asp-controller="Home" asp-action="Search">
     <div class="search-wrapper input-group">
-        <input class="form-control" type="search" placeholder="Введите название или автора" />
+        <input type="search" asp-for="SearchPost.Prompt" class="form-control" placeholder="Введите название или автора" />
+        <span asp-validation-for="SearchPost.Prompt" class="text-danger"></span>
         <button class="btn btn-outline-success" type="submit">Поиск</button>
     </div>
 </form>

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Web.ComponentViewModels;
 
 namespace Web.Components
 {
@@ -6,7 +7,7 @@ namespace Web.Components
     {
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            return View();
+            return View(new BookSearchComponentVM());
         }
     }
 }
