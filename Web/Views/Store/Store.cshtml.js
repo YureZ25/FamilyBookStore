@@ -1,6 +1,6 @@
 ﻿import $ from "jquery"
 
-export const Store = function () {
+const Module = function () {
     const storeId = $("#StorePost_Id").attr("value");
 
     $("#linkStoreToUserButton").on("click", function () {
@@ -14,3 +14,5 @@ export const Store = function () {
         });
     });
 }();
+
+export const Store = function () { $(Module) }();

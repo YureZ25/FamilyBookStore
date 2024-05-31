@@ -2,7 +2,7 @@
 
 import $ from "jquery";
 
-export const Book = function () {
+const Module = function () {
     let bookStatusId;
     $(":radio").on("click", function (e) {
         if (bookStatusId === e.target.id) {
@@ -15,4 +15,6 @@ export const Book = function () {
     $("#BookPost_Price").on("change", function () {
         this.value = parseFloat(this.value).toFixed(2);
     });
-}();
+};
+
+export const Book = function () { $(Module) }();

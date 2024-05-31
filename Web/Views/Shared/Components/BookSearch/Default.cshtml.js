@@ -4,7 +4,7 @@ import $ from "jquery"
 import "typeahead.js";
 import Bloodhound from "bloodhound-js";
 
-export const BookSearch = function () {
+const Module = function () {
     const books = ["muracami", "london"];
 
     const bookSource = new Bloodhound({
@@ -25,4 +25,6 @@ export const BookSearch = function () {
     };
 
     $(".typeahead").typeahead(options, bookDataset);
-}();
+};
+
+export const BookSearch = function () { $(Module) }();
