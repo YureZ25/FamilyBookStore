@@ -1,20 +1,24 @@
-﻿const books = ["muracami", "london"];
+﻿import $ from "jquery"
 
-const bookSource = new Bloodhound({
-    datumTokenizer: Bloodhound.tokenizers.whitespace,
-    queryTokenizer: Bloodhound.tokenizers.whitespace,
-    local: books
-})
+export const BookSearch = function () {
+    const books = ["muracami", "london"];
 
-const bookDataset = {
-    name: 'books',
-    source: bookSource
-};
+    const bookSource = new Bloodhound({
+        datumTokenizer: Bloodhound.tokenizers.whitespace,
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        local: books
+    })
 
-const options = {
-    highlight: true,
-    minLength: 3,
-    hint: true,
-};
+    const bookDataset = {
+        name: 'books',
+        source: bookSource
+    };
 
-$('.typeahead').typeahead(options, bookDataset);
+    const options = {
+        highlight: true,
+        minLength: 3,
+        hint: true,
+    };
+
+    $('.typeahead').typeahead(options, bookDataset);
+}();

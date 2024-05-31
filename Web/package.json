@@ -1,0 +1,23 @@
+{
+  "name": "family-book-store",
+  "description": "App for manging home library with different stores",
+  "dependencies": {
+    "@popperjs/core": "^2.11.8",
+    "bootstrap": "^5.3.3",
+    "bootstrap-icons": "^1.11.3",
+    "jquery": "^3.7.1",
+    "jquery-validation": "^1.20.0",
+    "jquery-validation-unobtrusive": "^4.0.0",
+    "typeahead": "^0.2.2"
+  },
+  "devDependencies": {
+    "css-loader": "^6.10.0",
+    "eslint": "^9.2.0",
+    "style-loader": "^3.3.4",
+    "webpack": "^5.91.0",
+    "webpack-cli": "^5.1.4"
+  },
+  "scripts": {
+    "build": "webpack"
+  }
+}
