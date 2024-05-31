@@ -83,17 +83,7 @@
     </table>
 }
 
-@section Scripts {
-    <script>
-        $('#linkStoreToUserButton').click(function () {
-            $.post('/Store/LinkStoreToUser', {
-                storeId: @Model.StoreGet?.Id,
-            });
-        });
-        $('#unlinkStoreFromUserButton').click(function () {
-            $.post('/Store/UnlinkStoreFromUser', {
-                storeId: @Model.StoreGet?.Id,
-            });
-        });
-    </script>
+@section Scripts
+{
+    <script src="~/dist/store.entry.js" defer></script>
 }

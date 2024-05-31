@@ -1,4 +1,8 @@
-﻿import $ from "jquery"
+﻿import "./Default.cshtml.css"
+
+import $ from "jquery"
+import "typeahead.js";
+import Bloodhound from "bloodhound-js";
 
 export const BookSearch = function () {
     const books = ["muracami", "london"];
@@ -10,7 +14,7 @@ export const BookSearch = function () {
     })
 
     const bookDataset = {
-        name: 'books',
+        name: "books",
         source: bookSource
     };
 
@@ -20,5 +24,5 @@ export const BookSearch = function () {
         hint: true,
     };
 
-    $('.typeahead').typeahead(options, bookDataset);
+    $(".typeahead").typeahead(options, bookDataset);
 }();

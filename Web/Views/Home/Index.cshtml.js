@@ -1,18 +1,18 @@
-﻿import $ from "jquery"
+﻿import $ from "jquery";
 
 export const Index = function () {
-    $("button.nav-link[data-bs-target]").click(function () {
+    $("button.nav-link[data-bs-target]").on("click", function () {
         const searchParams = new URLSearchParams(window.location.search);
-        searchParams.set("@(nameof(BookStatus))", this.getAttribute("data-bs-target").replace("#", ""));
+        searchParams.set("BookStatus", this.getAttribute("data-bs-target").replace("#", ""));
         history.pushState(null, '', window.location.pathname + '?' + searchParams.toString());
     });
 
-    $(document).ready(function () {
+    $(function () {
         const searchParams = new URLSearchParams(window.location.search);
 
-        let bookStatusTab = searchParams.get("@(nameof(BookStatus))");
-        if (!bookStatusTab) bookStatusTab = "@(BookStatus.WillRead)";
+        let bookStatusTab = searchParams.get("BookStatus");
+        if (!bookStatusTab) bookStatusTab = "WillRead";
 
-        $(`button.nav-link[data-bs-target='#${bookStatusTab}']`).click();
+        $(`button.nav-link[data-bs-target='#${bookStatusTab}']`).trigger("click");
     });
 }();

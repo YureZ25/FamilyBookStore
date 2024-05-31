@@ -1,14 +1,16 @@
 ﻿import $ from "jquery"
 
 export const Store = function () {
-    $('#linkStoreToUserButton').click(function () {
-        $.post('/Store/LinkStoreToUser', {
-            storeId: @Model.StoreGet?.Id,
+    const storeId = $("#StorePost_Id").attr("value");
+
+    $("#linkStoreToUserButton").on("click", function () {
+        $.post("/Store/LinkStoreToUser", {
+            storeId: storeId,
         });
     });
-    $('#unlinkStoreFromUserButton').click(function () {
-        $.post('/Store/UnlinkStoreFromUser', {
-            storeId: @Model.StoreGet?.Id,
+    $("#unlinkStoreFromUserButton").on("click", function () {
+        $.post("/Store/UnlinkStoreFromUser", {
+            storeId: storeId,
         });
     });
 }();

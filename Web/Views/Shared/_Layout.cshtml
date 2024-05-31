@@ -4,7 +4,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - FBS</title>
+    <link rel="stylesheet" href="~/dist/site.css" />
     <script src="~/dist/site.entry.js" defer></script>
+    @await RenderSectionAsync("Scripts", required: false)
 </head>
 <body>
     <header>
