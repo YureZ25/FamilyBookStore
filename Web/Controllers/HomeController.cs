@@ -28,10 +28,22 @@ namespace Web.Controllers
             return View(stores);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> BooksPrompts([FromQuery] string prompt, CancellationToken cancellationToken)
+        {
+            var prompts = await _bookService.GetBooksPrompts(prompt, cancellationToken);
+
+            return Json(prompts);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Search([FromForm(Name = nameof(BookSearchComponentVM.SearchPost))] SearchPostVM searchVM, CancellationToken cancellationToken)
         {
             var books = await _bookService.GetBooksByPrompt(searchVM.Prompt, cancellationToken);
+            if (books.Count() == 1)
+            {
+                return RedirectToAction("Book", "Book", new { books.First().Id });
+            }
 
             return View("~/Views/Book/BookList.cshtml", books);
         }

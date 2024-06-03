@@ -2,29 +2,41 @@
 
 import $ from "jquery"
 import "typeahead.js";
-import Bloodhound from "bloodhound-js";
+import Bloodhound from "typeahead.js/dist/bloodhound";
+import Handlebars from "handlebars";
 
 const Module = function () {
-    const books = ["muracami", "london"];
+
+    console.log("Book search works!")
 
     const bookSource = new Bloodhound({
         datumTokenizer: Bloodhound.tokenizers.whitespace,
         queryTokenizer: Bloodhound.tokenizers.whitespace,
-        local: books
-    })
+        identify: (e) => { console.log(e); return e.id;},
+        remote: {
+            url: "/Home/BooksPrompts?prompt=$prompt$",
+            wildcard: "$prompt$",
+            rateLimitby: "debounce",
+            rateLimitWait: "500"
+        },
+    });
 
-    const bookDataset = {
-        name: "books",
-        source: bookSource
-    };
+    $(".typeahead").typeahead(
+        {
+            highlight: true,
+            minLength: 1,
+            hint: true
+        }, 
+        {
+            name: "books",
+            source: bookSource,
+            limit: 5,
 
-    const options = {
-        highlight: true,
-        minLength: 3,
-        hint: true,
-    };
-
-    $(".typeahead").typeahead(options, bookDataset);
+            display: "title",
+            templates: {
+                suggestion: Handlebars.compile('<div><strong>{{title}}</strong></div>')
+            }
+        });
 };
 
 export const BookSearch = function () { $(Module) }();
