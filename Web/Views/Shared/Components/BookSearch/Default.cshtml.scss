@@ -1,0 +1,25 @@
+﻿$search-width: 400px;
+$search-hight: 40px;
+
+.typeahead {
+    width: $search-width;
+    height: $search-hight;
+}
+
+.tt-input {
+    width: $search-width;
+    height: $search-hight;
+}
+
+.tt-menu {
+    @extend .dropdown-menu;
+}
+
+.tt-suggestion {
+    @extend .dropdown-item;
+    width: $search-width;
+}
+
+.tt-cursor {
+    @extend .active;
+}

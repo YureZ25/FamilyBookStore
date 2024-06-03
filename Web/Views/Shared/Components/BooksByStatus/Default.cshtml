@@ -10,7 +10,7 @@
                 <img src="@(Url.Action("Image", "Book", new { bookId = book.Id }))" class="card-img-top">
                 <div class="card-body"> 
                     <h5 class="card-title">@book.Title</h5>
-                    <h6 class="card-subtitle text-muted">@book.Author.ToString()</h6>
+                    <h6 class="card-subtitle text-muted">@book.Author.FullName</h6>
                     @if (book.BookStatus is BookStatus.Reading or BookStatus.Dropped)
                     {
                         <div class="progress mt-3" role="progressbar" aria-label="Прогресс чтения" aria-valuenow="@book.ReadingProgress" aria-valuemin="0" aria-valuemax="100">

@@ -2,6 +2,16 @@
 @using Data.Extensions
 @model BookPageVM
 
+@section Scripts
+{
+    <script src="~/dist/book.entry.js" defer></script>
+}
+
+@section Styles
+{
+    <link rel="stylesheet" href="~/dist/book.css" />
+}
+
 @{
     var isEdit = Model?.BookGet?.Id is > 0;
 
@@ -37,15 +47,15 @@
                     <label asp-for="BookPost.AuthorId" class="form-label">Автор</label>
                     <select asp-for="BookPost.AuthorId" class="form-select">
                         <option value="">Выберите автора</option>
-                        @foreach (var author in Model.Authors.OrderBy(a => a.ToString()))
+                        @foreach (var author in Model.Authors.OrderBy(a => a.FullName))
                         {
                             if (author.Id == Model.BookGet?.Author?.Id)
                             {
-                                <option selected value="@author.Id">@author.ToString()</option>
+                                <option selected value="@author.Id">@author.FullName</option>
                             }
                             else
                             {
-                                <option value="@author.Id">@author.ToString()</option>
+                                <option value="@author.Id">@author.FullName</option>
                             }
                         }
                     </select>
@@ -139,8 +149,3 @@
         </div>
     </div>
 </form>
-
-@section Scripts
-{
-    <script src="~/dist/book.entry.js" defer></script>
-}

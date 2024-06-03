@@ -1,4 +1,4 @@
-﻿import "./Book.cshtml.css"
+﻿import "./Book.cshtml.scss"
 
 import $ from "jquery";
 

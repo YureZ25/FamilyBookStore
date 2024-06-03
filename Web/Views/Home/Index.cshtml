@@ -3,6 +3,11 @@
 
 @model IEnumerable<StoreGetVM>
 
+@section Scripts
+{
+    <script src="~/dist/index.entry.js" defer></script>
+}
+
 @{
     ViewData["Title"] = "Главная";
 }
@@ -50,8 +55,3 @@
         </div>
     </div>
 </div>
-
-@section Scripts
-{
-    <script src="~/dist/index.entry.js" defer></script>
-}

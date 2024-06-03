@@ -1,9 +1,6 @@
 ﻿@model BookSearchComponentVM
 
 <form class="d-flex me-4" role="search" asp-controller="Home" asp-action="Search">
-    <div class="search-wrapper input-group">
-        <input type="search" asp-for="SearchPost.Prompt" class="form-control typeahead" placeholder="Название или автор" data-provide="typeahead" />
-        <button class="btn btn-outline-success" type="submit">Поиск</button>
-        <span asp-validation-for="SearchPost.Prompt" class="text-danger"></span>
-    </div>
+    <input type="search" asp-for="SearchPost.Prompt" class="form-control typeahead" placeholder="Название или автор" data-provide="typeahead" />
+    <input type="submit" hidden />
 </form>

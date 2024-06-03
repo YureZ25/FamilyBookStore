@@ -16,6 +16,16 @@ namespace Services.Services
             _unitOfWork = unitOfWork;
         }
 
+        public async Task<IEnumerable<AuthorGetVM>> GetAuthorsPrompts(string prompt, CancellationToken cancellationToken)
+        {
+            var authors = await _authorRepo.GetAll(cancellationToken);
+            var datums = prompt.Split(' ');
+
+            return authors
+                .Where(e => datums.Any(d => e.FullName.Contains(d, StringComparison.InvariantCultureIgnoreCase)))
+                .Select(e => e.Map());
+        }
+
         public async Task<IEnumerable<AuthorGetVM>> GetAuthors(CancellationToken cancellationToken)
         {
             var authors = await _authorRepo.GetAll(cancellationToken);

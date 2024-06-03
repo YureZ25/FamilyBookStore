@@ -4,6 +4,7 @@ namespace Services.Services.Contracts
 {
     public interface IAuthorService
     {
+        Task<IEnumerable<AuthorGetVM>> GetAuthorsPrompts(string prompt, CancellationToken cancellationToken);
         Task<IEnumerable<AuthorGetVM>> GetAuthors(CancellationToken cancellationToken);
         Task<AuthorGetVM> GetById(int id, CancellationToken cancellationToken);
         Task<AuthorGetVM> Insert(AuthorPostVM authorVM, CancellationToken cancellationToken);

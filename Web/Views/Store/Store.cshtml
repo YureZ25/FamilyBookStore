@@ -1,5 +1,10 @@
 ﻿@model StorePageVM
 
+@section Scripts
+{
+    <script src="~/dist/store.entry.js" defer></script>
+}
+
 @{
     var isEdit = Model?.StoreGet?.Id is > 0;
 
@@ -56,14 +61,14 @@
         <tbody class="table-group-divider">
             @if (Model.StoreBooks.Any())
             {
-                @foreach (var book in Model.StoreBooks.OrderBy(e => e.Author.ToString()).ThenBy(e => e.Title))
+                @foreach (var book in Model.StoreBooks.OrderBy(e => e.Author.FullName).ThenBy(e => e.Title))
                 {
                     <tr navigate asp-controller="Book" asp-action="Book" asp-route-id="@book.Id">
                         <td>
                             @book.Title
                         </td>
                         <td>
-                            @book.Author.ToString()
+                            @book.Author.FullName
                         </td>
                         <td>
                             @book.Genre.Name
@@ -81,9 +86,4 @@
             }
         </tbody>
     </table>
-}
-
-@section Scripts
-{
-    <script src="~/dist/store.entry.js" defer></script>
 }

@@ -10,12 +10,18 @@ namespace Web.Controllers
         private readonly IStoreService _storeService;
         private readonly IAuthService _authService;
         private readonly IBookService _bookService;
+        private readonly IAuthorService _authorService;
 
-        public HomeController(IStoreService storeService, IAuthService authService, IBookService bookService)
+        public HomeController(
+            IStoreService storeService, 
+            IAuthService authService, 
+            IBookService bookService,
+            IAuthorService authorService)
         {
             _storeService = storeService;
             _authService = authService;
             _bookService = bookService;
+            _authorService = authorService;
         }
 
         [HttpGet]
@@ -36,9 +42,19 @@ namespace Web.Controllers
             return Json(prompts);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> AuthorsPrompts([FromQuery] string prompt, CancellationToken cancellationToken)
+        {
+            var prompts = await _authorService.GetAuthorsPrompts(prompt, cancellationToken);
+
+            return Json(prompts);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Search([FromForm(Name = nameof(BookSearchComponentVM.SearchPost))] SearchPostVM searchVM, CancellationToken cancellationToken)
         {
+            if (!ModelState.IsValid) return NoContent();
+
             var books = await _bookService.GetBooksByPrompt(searchVM.Prompt, cancellationToken);
             if (books.Count() == 1)
             {

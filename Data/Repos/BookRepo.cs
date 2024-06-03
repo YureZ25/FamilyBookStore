@@ -50,19 +50,6 @@ namespace Data.Repos
             return await FetchBooks(cmd, cancellationToken);
         }
 
-        public async Task<IEnumerable<Book>> GetBooksByPrompt(string prompt, CancellationToken cancellationToken)
-        {
-            var cmd = _dbContext.CreateQuery()
-                .WithText($"""
-                {getBooksSql}
-                WHERE Books.Title LIKE '%' + @prompt + '%' OR 
-                    Authors.FirstName LIKE '%' + @prompt + '%' OR Authors.LastName LIKE '%' + @prompt + '%'
-                """)
-                .WithParameter("prompt", prompt);
-
-            return await FetchBooks(cmd, cancellationToken);
-        }
-
         public async Task<IEnumerable<Book>> GetBooksByUserStatus(int userId, BookStatus bookStatus, CancellationToken cancellationToken)
         {
             var cmd = _dbContext.CreateQuery()

@@ -3,6 +3,7 @@ using Data.Entities;
 using Data.Enums;
 using Data.Extensions;
 using Data.Repos.Contracts;
+using Microsoft.Identity.Client;
 using Services.Services.Contracts;
 using Services.ViewModels;
 using Services.ViewModels.BookVMs;
@@ -33,20 +34,22 @@ namespace Services.Services
 
         public async Task<IEnumerable<BookGetConciseVM>> GetBooksPrompts(string prompt, CancellationToken cancellationToken)
         {
-            var books = await _bookRepo.GetBooksByPrompt(prompt, cancellationToken);
+            var books = await _bookRepo.GetAll(cancellationToken);
+            var datums = prompt.Split(' ');
 
-            return books.Select(e => new BookGetConciseVM
-            {
-                Id = e.Id,
-                Title = e.Title,
-            });
+            return books
+                .Where(e => datums.Any(d => e.Title.Contains(d, StringComparison.CurrentCultureIgnoreCase)))
+                .Select(e => new BookGetConciseVM { Id = e.Id, Title = e.Title });
         }
 
         public async Task<IEnumerable<BookGetVM>> GetBooksByPrompt(string prompt, CancellationToken cancellationToken)
         {
-            var books = await _bookRepo.GetBooksByPrompt(prompt, cancellationToken);
+            var books = await _bookRepo.GetAll(cancellationToken);
+            var datums = prompt.Split(' ');
 
-            return books.Select(e => e.Map());
+            return books
+                .Where(e => MatchPrompt(e, datums))
+                .Select(e => e.Map());
         }
 
         public async Task<IEnumerable<BookGetVM>> GetUserBooksByStatus(BookStatus bookStatus, CancellationToken cancellationToken)
@@ -268,6 +271,18 @@ namespace Services.Services
             }
 
             return new(new BookGetVM());
+        }
+
+        private bool MatchPrompt(Book book, string[] datums)
+        {
+            foreach (string datum in datums)
+            {
+                if (book.Title.Contains(datum, StringComparison.CurrentCultureIgnoreCase)) return true;
+
+                if (book.Author.FullName.Contains(datum, StringComparison.InvariantCultureIgnoreCase)) return true;
+            }
+
+            return false;
         }
     }
 }
