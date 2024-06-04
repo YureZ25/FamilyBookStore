@@ -50,5 +50,14 @@ namespace Services.ViewModels.BookVMs
                 Store = new Store { Id = bookVM.StoreId },
             };
         }
+
+        public static BookGetConciseVM MapConcise(this Book book)
+        {
+            return new BookGetConciseVM
+            {
+                Id = book.Id,
+                Title = book.Title,
+            };
+        }
     }
 }

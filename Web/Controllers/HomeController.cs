@@ -33,6 +33,22 @@ namespace Web.Controllers
         }
 
         [HttpGet]
+        public IActionResult BooksSuggestions()
+        {
+            var booksSuggestions = _searchService.GetBooksSuggestions();
+
+            return Json(booksSuggestions);
+        }
+
+        [HttpGet]
+        public IActionResult AuthorsSuggestions()
+        {
+            var authorsSuggestions = _searchService.GetAuthorsSuggestions();
+
+            return Json(authorsSuggestions);
+        }
+
+        [HttpGet]
         public async Task<IActionResult> BooksPrompts([FromQuery] string prompt, CancellationToken cancellationToken)
         {
             var prompts = await _searchService.GetBooksPrompts(prompt, cancellationToken);

@@ -9,6 +9,10 @@ const Module = function () {
         datumTokenizer: Bloodhound.tokenizers.obj.whitespace("title"),
         queryTokenizer: Bloodhound.tokenizers.whitespace,
         identify: (e) => e.id,
+        prefetch: {
+            url: "/Home/BooksSuggestions",
+            cache: false,
+        },
         remote: {
             url: "/Home/BooksPrompts?prompt=$prompt$",
             wildcard: "$prompt$",
@@ -17,10 +21,22 @@ const Module = function () {
         },
     });
 
+    function getBookSuggestions(query, sync, async) {
+        if (query === "") {
+            sync(bookSource.all());
+        } else {
+            bookSource.search(query, sync, async);
+        }
+    }
+
     const authorSource = new Bloodhound({
-        datumTokenizer: Bloodhound.tokenizers.whitespace,
+        datumTokenizer: Bloodhound.tokenizers.obj.whitespace("fullName"),
         queryTokenizer: Bloodhound.tokenizers.whitespace,
         identify: (e) => e.id,
+        prefetch: {
+            url: "/Home/AuthorsSuggestions",
+            cache: false,
+        },
         remote: {
             url: "/Home/AuthorsPrompts?prompt=$prompt$",
             wildcard: "$prompt$",
@@ -29,15 +45,23 @@ const Module = function () {
         },
     });
 
+    function getAuthorSuggestions(query, sync, async) {
+        if (query === "") {
+            sync(authorSource.all());
+        } else {
+            authorSource.search(query, sync, async);
+        }
+    }
+
     $(".typeahead").typeahead(
         {
             highlight: true,
-            minLength: 1,
+            minLength: 0,
             hint: true,
         }, 
         {
+            source: getBookSuggestions,
             name: "books",
-            source: bookSource,
             limit: 5,
             async: true,
             display: "title",
@@ -47,8 +71,8 @@ const Module = function () {
             },
         },
         {
+            source: getAuthorSuggestions,
             name: "authors",
-            source: authorSource,
             limit: 5,
             async: true,
             display: "fullName",

@@ -8,5 +8,7 @@ namespace Services.Services.Contracts
         Task<IEnumerable<BookGetVM>> GetBooksByPrompt(string prompt, CancellationToken cancellationToken);
         Task<IEnumerable<AuthorGetVM>> GetAuthorsPrompts(string prompt, CancellationToken cancellationToken);
         Task<IEnumerable<BookGetConciseVM>> GetBooksPrompts(string prompt, CancellationToken cancellationToken);
+        IEnumerable<BookGetConciseVM> GetBooksSuggestions();
+        IEnumerable<AuthorGetVM> GetAuthorsSuggestions();
     }
 }
