@@ -11,6 +11,7 @@ namespace Services.ViewModels.AuthorVMs
                 Id = author.Id,
                 FirstName = author.FirstName,
                 LastName = author.LastName,
+                FullName = author.FullName,
             };
         }
 

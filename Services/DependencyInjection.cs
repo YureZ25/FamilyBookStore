@@ -9,6 +9,8 @@ namespace Services
     {
         public static IServiceCollection AddServiceLayer(this IServiceCollection services)
         {
+            services.AddMemoryCache();
+
             services.AddIdentityCore<User>().AddClaimsPrincipalFactory<AuthService>();
             services.AddScoped<IAuthService, AuthService>();
 
@@ -18,6 +20,7 @@ namespace Services
             services.AddScoped<IGenreService, GenreService>();
 
             services.AddScoped<IImageService, ImageService>();
+            services.AddScoped<ISearchService, SearchService>();
 
             return services;
         }

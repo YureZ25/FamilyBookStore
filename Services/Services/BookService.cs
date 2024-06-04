@@ -3,6 +3,7 @@ using Data.Entities;
 using Data.Enums;
 using Data.Extensions;
 using Data.Repos.Contracts;
+using Microsoft.Identity.Client;
 using Services.Services.Contracts;
 using Services.ViewModels;
 using Services.ViewModels.BookVMs;

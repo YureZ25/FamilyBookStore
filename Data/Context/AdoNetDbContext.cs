@@ -17,7 +17,7 @@ namespace Data.Context
 
         public AdoNetDbContext(IConfiguration configuration)
         {
-            var connectionStr = configuration.GetConnectionString("LocalSqlServer");
+            var connectionStr = configuration.GetConnectionString("SqlServer");
             _connection = new SqlConnection(connectionStr);
             _connection.Open();
             _transaction = _connection.BeginTransaction();

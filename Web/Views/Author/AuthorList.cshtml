@@ -12,7 +12,7 @@
         </tr>
     </thead>
     <tbody class="table-group-divider">
-        @foreach (var author in Model.OrderBy(e => e.ToString()))
+        @foreach (var author in Model.OrderBy(e => e.FullName))
         {
             <tr navigate asp-action="Author" asp-route-id="@author.Id">
                 <td>

@@ -37,7 +37,7 @@ namespace Services.Services
             var textHtml = $"""
                 <span style="text-align: center; color: #dee2e6;" xmlns="http://www.w3.org/1999/xhtml">
                     <p style="font-size: x-large;">{bookVM.Title}</p>
-                    <p style="font-size: large; font-style: italic;">{bookVM.Author}</p>
+                    <p style="font-size: large; font-style: italic;">{bookVM.Author.FullName}</p>
                 </span>
                 """;
 

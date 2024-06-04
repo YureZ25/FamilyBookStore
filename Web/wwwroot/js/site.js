@@ -1,7 +1,16 @@
-﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿// JS Dependencies
+import "@popperjs/core";
+import "bootstrap";
+import "jquery";
+import "jquery-validation";
+import "jquery-validation-unobtrusive";
 
-// Write your JavaScript code.
-function redirect(url) {
-    window.location.href = url;
-}
+// CSS Dependencies
+import "bootstrap-icons/font/bootstrap-icons.css";
+import "bootstrap/dist/css/bootstrap.css";
+
+// Custom SCSS imports (common styles for modules imported inside)
+import "../scss/site.scss";
+
+// Custom JS imports (common for modules)
+import "../../Views/Shared/Components/BookSearch/Default.cshtml.js"

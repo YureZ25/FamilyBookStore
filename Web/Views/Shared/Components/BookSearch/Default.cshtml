@@ -1,0 +1,6 @@
+﻿@model BookSearchComponentVM
+
+<form class="d-flex me-4" role="search" asp-controller="Home" asp-action="Search">
+    <input type="search" asp-for="SearchPost.Prompt" class="form-control typeahead" placeholder="Поиск по названию или автору" data-provide="typeahead" />
+    <input type="submit" hidden />
+</form>

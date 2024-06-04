@@ -3,6 +3,7 @@ using Data.Entities;
 using Data.Enums;
 using Data.Extensions;
 using Data.Repos.Contracts;
+using Microsoft.Data.SqlClient;
 using System.Data;
 using System.Data.Common;
 
@@ -46,14 +47,7 @@ namespace Data.Repos
             var cmd = _dbContext.CreateQuery()
                 .WithText(getBooksSql);
 
-            using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
-
-            var books = new List<Book>();
-            while (await reader.ReadAsync(cancellationToken))
-            {
-                books.Add(Map(reader));
-            }
-            return books;
+            return await FetchBooks(cmd, cancellationToken);
         }
 
         public async Task<IEnumerable<Book>> GetBooksByUserStatus(int userId, BookStatus bookStatus, CancellationToken cancellationToken)
@@ -94,14 +88,7 @@ namespace Data.Repos
                 .WithParameter("userId", userId)
                 .WithParameter("bookStatus", (byte)bookStatus);
 
-            using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
-
-            var books = new List<Book>();
-            while (await reader.ReadAsync(cancellationToken))
-            {
-                books.Add(Map(reader));
-            }
-            return books;
+            return await FetchBooks(cmd, cancellationToken);
         }
 
         public async Task<IEnumerable<Book>> GetBooksByAuthor(int authorId, CancellationToken cancellationToken)
@@ -113,14 +100,7 @@ namespace Data.Repos
                 """)
                 .WithParameter("authorId", authorId);
 
-            using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
-
-            List<Book> books = [];
-            while (await reader.ReadAsync(cancellationToken))
-            {
-                books.Add(Map(reader));
-            }
-            return books;
+            return await FetchBooks(cmd, cancellationToken);
         }
 
         public async Task<IEnumerable<Book>> GetBooksByGenre(int genreId, CancellationToken cancellationToken)
@@ -132,14 +112,7 @@ namespace Data.Repos
                 """)
                 .WithParameter("genreId", genreId);
 
-            using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
-
-            List<Book> books = [];
-            while (await reader.ReadAsync(cancellationToken))
-            {
-                books.Add(Map(reader));
-            }
-            return books;
+            return await FetchBooks(cmd, cancellationToken);
         }
 
         public async Task<IEnumerable<Book>> GetBooksByStore(int storeId, CancellationToken cancellationToken)
@@ -151,14 +124,7 @@ namespace Data.Repos
                 """)
                 .WithParameter("storeId", storeId);
 
-            using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
-
-            List<Book> books = [];
-            while (await reader.ReadAsync(cancellationToken))
-            {
-                books.Add(Map(reader));
-            }
-            return books;
+            return await FetchBooks(cmd, cancellationToken);
         }
 
         public async Task<Book> GetById(int id, CancellationToken cancellationToken)
@@ -265,6 +231,18 @@ namespace Data.Repos
             _dbContext.CreateCommand()
                 .WithText("DELETE Books WHERE Id = @id")
                 .WithParameter("id", id);
+        }
+
+        private async Task<IEnumerable<Book>> FetchBooks(SqlCommand cmd, CancellationToken cancellationToken)
+        {
+            using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
+
+            List<Book> books = [];
+            while (await reader.ReadAsync(cancellationToken))
+            {
+                books.Add(Map(reader));
+            }
+            return books;
         }
 
         private static Book Map(DbDataReader reader)

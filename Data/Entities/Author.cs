@@ -15,5 +15,7 @@ namespace Data.Entities
         [Required]
         [StringLength(1024)]
         public string LastName { get; set; }
+
+        public string FullName => $"{FirstName} {LastName}";
     }
 }
