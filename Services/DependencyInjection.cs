@@ -18,6 +18,7 @@ namespace Services
             services.AddScoped<IGenreService, GenreService>();
 
             services.AddScoped<IImageService, ImageService>();
+            services.AddScoped<ISearchService, SearchService>();
 
             return services;
         }

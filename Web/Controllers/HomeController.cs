@@ -9,19 +9,17 @@ namespace Web.Controllers
     {
         private readonly IStoreService _storeService;
         private readonly IAuthService _authService;
-        private readonly IBookService _bookService;
-        private readonly IAuthorService _authorService;
+        private readonly ISearchService _searchService;
+
 
         public HomeController(
             IStoreService storeService, 
             IAuthService authService, 
-            IBookService bookService,
-            IAuthorService authorService)
+            ISearchService searchService)
         {
             _storeService = storeService;
             _authService = authService;
-            _bookService = bookService;
-            _authorService = authorService;
+            _searchService = searchService;
         }
 
         [HttpGet]
@@ -37,7 +35,7 @@ namespace Web.Controllers
         [HttpGet]
         public async Task<IActionResult> BooksPrompts([FromQuery] string prompt, CancellationToken cancellationToken)
         {
-            var prompts = await _bookService.GetBooksPrompts(prompt, cancellationToken);
+            var prompts = await _searchService.GetBooksPrompts(prompt, cancellationToken);
 
             return Json(prompts);
         }
@@ -45,7 +43,7 @@ namespace Web.Controllers
         [HttpGet]
         public async Task<IActionResult> AuthorsPrompts([FromQuery] string prompt, CancellationToken cancellationToken)
         {
-            var prompts = await _authorService.GetAuthorsPrompts(prompt, cancellationToken);
+            var prompts = await _searchService.GetAuthorsPrompts(prompt, cancellationToken);
 
             return Json(prompts);
         }
@@ -55,7 +53,7 @@ namespace Web.Controllers
         {
             if (!ModelState.IsValid) return NoContent();
 
-            var books = await _bookService.GetBooksByPrompt(searchVM.Prompt, cancellationToken);
+            var books = await _searchService.GetBooksByPrompt(searchVM.Prompt, cancellationToken);
             if (books.Count() == 1)
             {
                 return RedirectToAction("Book", "Book", new { books.First().Id });
