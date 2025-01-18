@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Linq.Expressions;
 
 namespace Services.ViewModels
@@ -126,6 +127,16 @@ namespace Services.ViewModels
             {
                 return new(string.Join(", ", identityResult.Errors.Select(e => e.Description)));
             }
+        }
+
+        public static ResultVM ToResultVM(this ModelStateDictionary modelState)
+        {
+            if (modelState.IsValid || modelState.ErrorCount == 0) return new();
+
+            var firstErrorField = modelState.First();
+            var firstError = firstErrorField.Value.Errors.First();
+
+            return new(firstErrorField.Key, firstError.ErrorMessage);
         }
     }
 }

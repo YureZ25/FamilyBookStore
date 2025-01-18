@@ -117,7 +117,6 @@
                     <input type="number" asp-for="BookPost.Price" value="@Model.BookGet?.Price?.ToString("F2", CultureInfo.InvariantCulture)" class="form-control" />
                     <span asp-validation-for="BookPost.Price" class="text-danger"></span>
                 </div>
-
                 <div class="col-12">
                     <div class="d-flex justify-content-center">
                         <input type="radio" style="display: none" asp-for="BookPost.BookStatus" value="@BookStatus.None" asp-checked="Model.BookGet?.BookStatus is null or BookStatus.None" id="@BookStatus.None.ToString()" autocomplete="off" />
@@ -133,7 +132,12 @@
                         <span asp-validation-for="BookPost.BookStatus" class="text-danger"></span>
                     </div>
                 </div>
-
+                @if (isEdit)
+                {
+                    <div class="col-12 d-flex justify-content-center">
+                        <vc:book-quote book-id="Model.BookGet.Id"></vc:book-quote>
+                    </div>
+                }
                 <div class="col-12 d-flex justify-content-around">
                     @if (!isEdit)
                     {

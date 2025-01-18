@@ -1,37 +1,61 @@
-﻿using Data.Context.Contracts;
+﻿using Data.Context.Models;
 using Data.Entities.Contracts;
-using Data.Extensions;
 using Microsoft.Data.SqlClient;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Reflection.Metadata;
 
 namespace Data.Context
 {
-    internal class AdoNetCommandBuilder<TEntity> : ICommandBuilder
+    internal class AdoNetCommandBuilder<TEntity>
         where TEntity : class, IEntity
     {
+        private readonly AdoNetDbContext _context;
         private readonly SqlCommand _command;
         private readonly TEntity _entity;
 
-        private readonly List<AdoNetParameter> _parameters = [];
+        private readonly List<AdoNetParameter<TEntity>> _parameters = [];
         private readonly List<AdoNetNavigation> _navigations = [];
 
-        public AdoNetCommandBuilder(SqlCommand sqlCommand, TEntity entity)
+        public AdoNetCommandBuilder(AdoNetDbContext context, SqlCommand sqlCommand, TEntity entity)
         {
+            _context = context;
             _command = sqlCommand;
             _entity = entity;
             CollectNavigationProps();
         }
 
-        public SqlCommand Command => _command;
-        public Type EntityType => typeof(TEntity);
+        private static Type EntityType => typeof(TEntity);
+
+        public AdoNetCommand<TEntity> Build()
+        {
+            var cmd = new AdoNetCommand<TEntity>(_command, _entity, _parameters, _navigations);
+            _context.Commands.Add(cmd, _entity);
+            return cmd;
+        }
 
         public AdoNetCommandBuilder<TEntity> WithText(string text)
         {
             _command.CommandText = text;
 
+            return this;
+        }
+
+        public AdoNetCommandBuilder<TEntity> WithParameter<TProp>(Expression<Func<TEntity, TProp>> targetProperty, TProp value, ParameterDirection direction = ParameterDirection.Input)
+        {
+            if (targetProperty.Body is not MemberExpression propExpression)
+            {
+                throw new ApplicationException("Expression must access member of entity type");
+            }
+
+            _command.Parameters.Add(new SqlParameter
+            {
+                Direction = ParameterDirection.Input,
+                ParameterName = propExpression.Member.Name,
+                Value = value,
+            });
             return this;
         }
 
@@ -69,7 +93,7 @@ namespace Data.Context
 
             assignPropToParam(sqlParameter, _entity);
 
-            var adoNetParameter = new AdoNetParameter
+            var adoNetParameter = new AdoNetParameter<TEntity>
             {
                 Parameter = sqlParameter,
                 AssignPropToParam = assignPropToParam,
@@ -84,35 +108,6 @@ namespace Data.Context
             adoNetParameter.AssignParamToProp = assignParamToProp;
 
             return this;
-        }
-
-        public void ApplyEntityUpdates(IEntity target)
-        {
-            if (target is not TEntity entity) throw new ApplicationException($"Can't apply updates of {EntityType} type for {target.GetType()} type entity");
-
-            foreach (var (sqlParameter, assignParamToProp) in _parameters.Select(p => (p.Parameter, p.AssignParamToProp)))
-            {
-                if (assignParamToProp is null) continue;
-
-                assignParamToProp(entity, sqlParameter);
-            }
-        }
-
-        public void ApplyParametersUpdates(IEntity target)
-        {
-            if (target is not TEntity entity) throw new ApplicationException($"Can't apply updates of {EntityType} type for {target.GetType()} type entity");
-
-            foreach (var (sqlParameter, assignPropToParam) in _parameters.Select(p => (p.Parameter, p.AssignPropToParam)))
-            {
-                assignPropToParam(sqlParameter, entity);
-            }
-        }
-
-        private class AdoNetParameter
-        {
-            public SqlParameter Parameter { get; set; }
-            public Action<TEntity, SqlParameter> AssignParamToProp { get; set; }
-            public Action<SqlParameter, TEntity> AssignPropToParam { get; set; }
         }
 
         private void CollectNavigationProps()
@@ -149,63 +144,6 @@ namespace Data.Context
                     _navigations.Add(navigation);
                 }
             }
-        }
-
-        public void ApplyNavigationsUpdates(IEntity target)
-        {
-            if (target is not TEntity entity) throw new ApplicationException($"Can't apply updates of {EntityType} type for {target.GetType()} type entity");
-
-            foreach (var (key, nav) in _navigations.Select(x => (x.ForeignKey, x.Navigation)))
-            {
-                if (key.PropertyType.IsNullable())
-                {
-                    var foreignKey = (int?)key.GetValue(entity);
-                    var navigation = (ICommonEntity)nav.GetValue(entity);
-
-                    if (navigation?.Id == foreignKey) continue;
-
-                    if (foreignKey != default && navigation?.Id == default)
-                    {
-                        navigation ??= (ICommonEntity)Activator.CreateInstance(nav.PropertyType);
-                        navigation.Id = foreignKey ?? 0;
-                    }
-                    else if (navigation?.Id != default && foreignKey == default)
-                    {
-                        foreignKey = navigation.Id;
-                    }
-
-                    key.SetValue(entity, foreignKey);
-                    nav.SetValue(entity, navigation);
-                }
-                else
-                {
-                    var foreignKey = (int)key.GetValue(entity);
-                    var navigation = (ICommonEntity)nav.GetValue(entity);
-
-                    if (navigation?.Id == foreignKey) continue;
-
-                    if (foreignKey != default && navigation?.Id == default)
-                    {
-                        navigation ??= (ICommonEntity)Activator.CreateInstance(nav.PropertyType);
-                        navigation.Id = foreignKey;
-                    }
-                    else if (navigation?.Id != default && foreignKey == default)
-                    {
-                        foreignKey = navigation.Id;
-                    }
-
-                    key.SetValue(entity, foreignKey);
-                    nav.SetValue(entity, navigation);
-                }
-            }
-
-            ApplyParametersUpdates(entity);
-        }
-
-        private class AdoNetNavigation
-        {
-            public PropertyInfo ForeignKey { get; set; }
-            public PropertyInfo Navigation { get; set; }
         }
     }
 }

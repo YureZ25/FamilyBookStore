@@ -103,6 +103,17 @@ begin
 	);
 end
 
+if not exists (select * from INFORMATION_SCHEMA.TABLES where TABLE_CATALOG = 'adonet-fbs' and TABLE_NAME = 'BookQuotes')
+begin
+	create table BookQuotes
+	(
+		Id int identity(1,1) primary key,
+		BookId int not null foreign key references Books(Id),
+		Page smallint not null,
+		Text nvarchar(max) not null
+	);
+end
+
 if not exists (select * from INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS where CONSTRAINT_NAME = 'FK_Books_Authors_AuthorId')
 begin
 	alter table Books

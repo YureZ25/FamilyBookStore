@@ -32,57 +32,39 @@ namespace Data.Repos
 
         public async Task<IEnumerable<UsersBooksStatus>> GetAll(CancellationToken cancellationToken)
         {
-            var cmd = _dbContext.CreateQuery()
-                .WithText(selectAllSql);
+            var cmd = _dbContext.CreateQuery(Map)
+                .WithText(selectAllSql)
+                .Build();
 
-            using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
-
-            List<UsersBooksStatus> statuses = [];
-            while (await reader.ReadAsync(cancellationToken))
-            {
-                statuses.Add(Map(reader));
-            }
-            return statuses;
+            return await cmd.ToList(cancellationToken);
         }
 
         public async Task<UsersBooksStatus> GetById(int id, CancellationToken cancellationToken)
         {
-            var cmd = _dbContext.CreateQuery()
+            var cmd = _dbContext.CreateQuery(Map)
                 .WithText($"""
                 {selectAllSql}
                 WHERE UsersBooksStatuses.Id = @id
                 """)
-                .WithParameter("id", id);
+                .WithParameter(e => e.Id, id)
+                .Build();
 
-            using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
-
-            if (reader.HasRows && await reader.ReadAsync(cancellationToken))
-            {
-                return Map(reader);
-            }
-
-            return null;
+            return await cmd.FirstOrDefault(cancellationToken);
         }
 
         public async Task<UsersBooksStatus> GetStatus(int userId, int bookId, CancellationToken cancellationToken)
         {
-            var cmd = _dbContext.CreateQuery()
+            var cmd = _dbContext.CreateQuery(Map)
                 .WithText($"""
                 {selectAllSql}
                 WHERE UsersBooksStatuses.UserId = @userId
                     AND UsersBooksStatuses.BookId = @bookId
                 """)
-                .WithParameter("userId", userId)
-                .WithParameter("bookId", bookId);
+                .WithParameter(e => e.UserId, userId)
+                .WithParameter(e => e.BookId, bookId)
+                .Build();
 
-            using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
-
-            if (reader.HasRows && await reader.ReadAsync(cancellationToken))
-            {
-                return Map(reader);
-            }
-
-            return null;
+            return await cmd.FirstOrDefault(cancellationToken);
         }
 
         public void Insert(UsersBooksStatus usersBooksStatus)
@@ -100,7 +82,8 @@ namespace Data.Repos
                 .WithParameter(e => e.CurrentPage)
                 .WithParameter(e => e.EndRead)
                 .WithParameter(e => e.UserId)
-                .WithParameter(e => e.BookId);
+                .WithParameter(e => e.BookId)
+                .Build();
         }
 
         public void Update(UsersBooksStatus usersBooksStatus)
@@ -125,14 +108,16 @@ namespace Data.Repos
                 .WithParameter(e => e.CurrentPage)
                 .WithParameter(e => e.EndRead)
                 .WithParameter(e => e.UserId)
-                .WithParameter(e => e.BookId);
+                .WithParameter(e => e.BookId)
+                .Build();
         }
 
         public void DeleteById(int id)
         {
-            _dbContext.CreateCommand()
+            _dbContext.CreateCommand<UsersBooksStatus>(null)
                 .WithText("DELETE UsersBooksStatuses WHERE Id = @id")
-                .WithParameter("id", id);
+                .WithParameter(e => e.Id, id)
+                .Build();
         }
 
         private UsersBooksStatus Map(DbDataReader reader)

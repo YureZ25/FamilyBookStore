@@ -18,7 +18,7 @@ namespace Services.ViewModels.BookVMs
         public BookStatus BookStatus { get; set; }
         public short? PageCount { get; set; }
         public short? CurrentPage { get; set; }
-        public short? ReadingProgress => (short?)(CurrentPage / (decimal)PageCount * 100);
+        public byte? ReadingProgress => (byte?)(CurrentPage / (decimal)PageCount * 100);
 
         public AuthorGetVM Author { get; set; }
         public GenreGetVM Genre { get; set; }

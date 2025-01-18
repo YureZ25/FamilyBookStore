@@ -18,6 +18,7 @@ namespace Services
             services.AddScoped<IStoreService, StoreService>();
             services.AddScoped<IAuthorService, AuthorService>();
             services.AddScoped<IGenreService, GenreService>();
+            services.AddScoped<IBookQuoteService, BookQuoteService>();
 
             services.AddScoped<IImageService, ImageService>();
             services.AddScoped<ISearchService, SearchService>();

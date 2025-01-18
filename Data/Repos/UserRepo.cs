@@ -24,7 +24,7 @@ namespace Data.Repos
 
         public async Task<User> FindByIdAsync(int userId, CancellationToken cancellationToken)
         {
-            var cmd = _dbContext.CreateQuery()
+            var cmd = _dbContext.CreateQuery(Map)
                 .WithText("""
                 SELECT 
                     Users.Id,
@@ -34,21 +34,15 @@ namespace Data.Repos
                 FROM Users 
                 WHERE Id = @id
                 """)
-                .WithParameter("id", userId);
+                .WithParameter(e => e.Id, userId)
+                .Build();
 
-            using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
-
-           if (reader.HasRows && await reader.ReadAsync(cancellationToken))
-            {
-                return Map(reader);
-            }
-
-            return null;
+            return await cmd.FirstOrDefault(cancellationToken);
         }
 
         public async Task<User> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
         {
-            var cmd = _dbContext.CreateQuery()
+            var cmd = _dbContext.CreateQuery(Map)
                 .WithText("""
                 SELECT 
                     Users.Id,
@@ -58,25 +52,20 @@ namespace Data.Repos
                 FROM Users 
                 WHERE Users.NormalizedUserName = @normalizedUserName
                 """)
-                .WithParameter("normalizedUserName", normalizedUserName);
+                .WithParameter(e => e.NormalizedUserName, normalizedUserName)
+                .Build();
 
-            using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
-
-            if (reader.HasRows && await reader.ReadAsync(cancellationToken))
-            {
-                return Map(reader);
-            }
-
-            return null;
+            return await cmd.FirstOrDefault(cancellationToken);
         }
 
         public async Task<bool> HasPasswordAsync(User user, CancellationToken cancellationToken)
         {
-            var cmd = _dbContext.CreateQuery()
+            var cmd = _dbContext.CreateScalarQuery<bool>()
                 .WithText("SELECT IIF(PasswordHash IS NOT NULL, 1, 0) FROM Users WHERE Id = @id")
-                .WithParameter("id", user.Id);
+                .WithParameter("id", user.Id)
+                .Build();
 
-            return await cmd.ExecuteScalarAsync(cancellationToken) is true;
+            return await cmd.Execute(cancellationToken);
         }
 
         public Task<string> GetUserIdAsync(User user, CancellationToken cancellationToken)
@@ -128,7 +117,8 @@ namespace Data.Repos
                 .WithParameter(e => e.Id, ParameterDirection.Output)
                 .WithParameter(e => e.UserName)
                 .WithParameter(e => e.NormalizedUserName)
-                .WithParameter(e => e.PasswordHash);
+                .WithParameter(e => e.PasswordHash)
+                .Build();
 
             await _dbContext.SaveChanges(cancellationToken);
 
@@ -149,7 +139,8 @@ namespace Data.Repos
                 .WithParameter(e => e.Id)
                 .WithParameter(e => e.UserName)
                 .WithParameter(e => e.NormalizedUserName)
-                .WithParameter(e => e.PasswordHash);
+                .WithParameter(e => e.PasswordHash)
+                .Build();
 
             await _dbContext.SaveChanges(cancellationToken);
 
@@ -158,9 +149,9 @@ namespace Data.Repos
 
         public async Task<IdentityResult> DeleteAsync(User user, CancellationToken cancellationToken)
         {
-            var cmd = _dbContext.CreateCommand()
+            var cmd = _dbContext.CreateCommand(user)
                 .WithText("DELETE Users WHERE Id = @id")
-                .WithParameter("id", user.Id);
+                .WithParameter(e => e.Id, user.Id);
 
             await _dbContext.SaveChanges(cancellationToken);
 

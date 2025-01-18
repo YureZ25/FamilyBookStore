@@ -17,7 +17,7 @@ namespace Data.Entities
 
         public DateTime? StartRead { get; set; }
 
-        [Range(1, int.MaxValue)]
+        [Range(1, short.MaxValue)]
         public short? CurrentPage { get; set; }
 
         public DateTime? EndRead { get; set; }

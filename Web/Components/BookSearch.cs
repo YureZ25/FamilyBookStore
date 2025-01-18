@@ -5,7 +5,7 @@ namespace Web.Components
 {
     public class BookSearch : ViewComponent
     {
-        public async Task<IViewComponentResult> InvokeAsync()
+        public IViewComponentResult Invoke()
         {
             return View(new BookSearchComponentVM());
         }

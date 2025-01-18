@@ -23,7 +23,7 @@ namespace Data.Entities
             set => IsbnStoreValue = value?.ToStoreValue();
         }
 
-        [Range(1, int.MaxValue)]
+        [Range(1, short.MaxValue)]
         public short? PageCount { get; set; }
 
         [Range(0, 200_000)]

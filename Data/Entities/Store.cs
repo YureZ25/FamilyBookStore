@@ -17,9 +17,9 @@ namespace Data.Entities
         public string Address { get; set; }
 
         [ForeignKey(nameof(Book2Stores.StoreId))]
-        public IEnumerable<Book> Books { get; set; } = Enumerable.Empty<Book>();
+        public ICollection<Book> Books { get; set; } = [];
 
         [ForeignKey(nameof(Users2Stores.StoreId))]
-        public IEnumerable<User> Users { get; set; } = Enumerable.Empty<User>();
+        public ICollection<User> Users { get; set; } = [];
     }
 }

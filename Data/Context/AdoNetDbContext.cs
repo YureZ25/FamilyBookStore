@@ -3,6 +3,7 @@ using Data.Entities.Contracts;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using System.Data;
+using System.Data.Common;
 
 namespace Data.Context
 {
@@ -13,7 +14,7 @@ namespace Data.Context
         private readonly SqlConnection _connection;
         private readonly SqlTransaction _transaction;
 
-        public Dictionary<ICommandBuilder, IEntity> Commands { get; private set; } = new();
+        public Dictionary<IAdoNetCommand, IEntity> Commands { get; private set; } = [];
 
         public AdoNetDbContext(IConfiguration configuration)
         {
@@ -23,59 +24,46 @@ namespace Data.Context
             _transaction = _connection.BeginTransaction();
         }
 
-        public SqlCommand CreateQuery()
+        public AdoNetQueryBuilder<T> CreateQuery<T>(Func<DbDataReader, T> mapFunc)
+            where T : class, IEntity
         {
-            var command = _connection.CreateCommand();
-            command.Transaction = _transaction;
-            return command;
+            var query = _connection.CreateCommand();
+            query.Transaction = _transaction;
+            return new(query, mapFunc);
         }
 
-        public SqlCommand CreateCommand()
+        public AdoNetScalarQueryBuilder<T> CreateScalarQuery<T>()
+            where T : struct
         {
-            var command = _connection.CreateCommand();
-            command.Transaction = _transaction;
-            Commands.Add(new AdoNetCommandBuilder<IEntity>(command, null), null);
-            return command;
+            var query = _connection.CreateCommand();
+            query.Transaction = _transaction;
+            return new(query);
         }
-
-        // TODO: Make AdoNetQueryBuilder ??
-        //public AdoNetCommandBuilder<T> CreateQuery<T>()
-        //    where T : class, IEntity
-        //{
-        //    var command = _connection.CreateCommand();
-        //    var builder = new AdoNetCommandBuilder<T>(command, null);
-        //    return builder;
-        //}
 
         public AdoNetCommandBuilder<T> CreateCommand<T>(T target)
             where T : class, IEntity
         {
             var command = _connection.CreateCommand();
             command.Transaction = _transaction;
-
-            var builder = new AdoNetCommandBuilder<T>(command, target);
-
-            Commands.Add(builder, target);
-
-            return builder;
+            return new(this, command, target);
         }
 
         public async Task<int> SaveChanges(CancellationToken cancellationToken)
         {
             int updated = 0;
-            foreach (var (commandBuilder, target) in Commands)
+            foreach (var (command, target) in Commands)
             {
-                Commands.Remove(commandBuilder);
+                Commands.Remove(command);
 
-                if (target is not null) commandBuilder.ApplyNavigationsUpdates(target);
+                if (target is not null) command.ApplyNavigationsUpdates(target);
 
-                updated += await commandBuilder.Command.ExecuteNonQueryAsync(cancellationToken);
+                updated += await command.ExecuteNonQuery(cancellationToken);
 
                 if (target is null) continue;
 
-                commandBuilder.ApplyEntityUpdates(target);
+                command.ApplyEntityUpdates(target);
 
-                foreach (var otherCommandBuilder in Commands.Keys.Where(e => e.EntityType == commandBuilder.EntityType))
+                foreach (var otherCommandBuilder in Commands.Keys.Where(e => e.EntityType == command.EntityType))
                 {
                     otherCommandBuilder.ApplyParametersUpdates(target);
                 }

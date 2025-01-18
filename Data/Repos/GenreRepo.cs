@@ -18,27 +18,21 @@ namespace Data.Repos
 
         public async Task<IEnumerable<Genre>> GetAll(CancellationToken cancellationToken)
         {
-            var cmd = _dbContext.CreateQuery()
+            var cmd = _dbContext.CreateQuery(Map)
                 .WithText("""
                 SELECT 
                     Genres.Id, 
                     Genres.Name 
                 FROM Genres
-                """);
+                """)
+                .Build();
 
-            using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
-
-            var genres = new List<Genre>();
-            while (await reader.ReadAsync(cancellationToken))
-            {
-                genres.Add(Map(reader));
-            }
-            return genres;
+            return await cmd.ToList(cancellationToken);
         }
 
         public async Task<Genre> GetById(int id, CancellationToken cancellationToken)
         {
-            var cmd = _dbContext.CreateQuery()
+            var cmd = _dbContext.CreateQuery(Map)
                 .WithText("""
                 SELECT 
                     Genres.Id, 
@@ -46,16 +40,10 @@ namespace Data.Repos
                 FROM Genres
                 WHERE Genres.Id = @id
                 """)
-                .WithParameter("id", id);
+                .WithParameter(e => e.Id, id)
+                .Build();
 
-            using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
-
-            if (reader.HasRows && await reader.ReadAsync(cancellationToken))
-            {
-                return Map(reader);
-            }
-
-            return null;
+            return await cmd.FirstOrDefault(cancellationToken);
         }
 
         public void Insert(Genre genre)
@@ -67,7 +55,8 @@ namespace Data.Repos
                 SET @id = SCOPE_IDENTITY();
                 """)
                 .WithParameter(e => e.Id, ParameterDirection.Output)
-                .WithParameter(e => e.Name);
+                .WithParameter(e => e.Name)
+                .Build();
         }
 
         public void Update(Genre genre)
@@ -79,14 +68,16 @@ namespace Data.Repos
                 WHERE Id = @id
                 """)
                 .WithParameter(e => e.Id)
-                .WithParameter(e => e.Name);
+                .WithParameter(e => e.Name)
+                .Build();
         }
 
         public void DeleteById(int id)
         {
-            _dbContext.CreateCommand()
+            _dbContext.CreateCommand<Genre>(null)
                 .WithText("DELETE Genres WHERE Id = @id")
-                .WithParameter("id", id);
+                .WithParameter(e => e.Id, id)
+                .Build();
         }
 
         private Genre Map(DbDataReader reader)

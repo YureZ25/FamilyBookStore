@@ -20,10 +20,10 @@ namespace Services.ViewModels.BookVMs
             ErrorMessage = "Поле ISBN должно содержать 10 или 13 цифр разделенных дефисами")]
         public ISBN? Isbn { get; set; }
 
-        [Range(1, int.MaxValue)]
+        [Range(1, short.MaxValue)]
         public short? CurrentPage { get; set; }
 
-        [Range(1, int.MaxValue)]
+        [Range(1, short.MaxValue)]
         public short? PageCount { get; set; }
 
         [Range(0, 200_000)] // чтобы поместилось в sql тип smallmoney

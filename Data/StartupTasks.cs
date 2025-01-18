@@ -1,4 +1,5 @@
 ﻿using Data.Context;
+using Data.Entities.Contracts;
 using Data.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -19,7 +20,10 @@ namespace Data
                 {
                     var sql = await File.ReadAllTextAsync(filePath);
 
-                    context.CreateCommand().WithText(sql);
+                    context
+                        .CreateCommand<IEntity>(null)
+                        .WithText(sql)
+                        .Build();
                 }
             }
 

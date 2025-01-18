@@ -18,28 +18,22 @@ namespace Data.Repos
 
         public async Task<IEnumerable<Author>> GetAll(CancellationToken cancellationToken)
         {
-            var cmd = _dbContext.CreateQuery()
+            var cmd = _dbContext.CreateQuery(Map)
                 .WithText("""
                 SELECT
                     Authors.Id,
                     Authors.FirstName,
                     Authors.LastName
                 FROM Authors
-                """);
+                """)
+                .Build();
 
-            using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
-
-            var authors = new List<Author>();
-            while (await reader.ReadAsync(cancellationToken))
-            {
-                authors.Add(Map(reader));
-            }
-            return authors;
+            return await cmd.ToList(cancellationToken);
         }
 
         public async Task<Author> GetById(int id, CancellationToken cancellationToken)
         {
-            var cmd = _dbContext.CreateQuery()
+            var cmd = _dbContext.CreateQuery(Map)
                 .WithText("""
                 SELECT
                     Authors.Id,
@@ -48,16 +42,10 @@ namespace Data.Repos
                 FROM Authors
                 WHERE Authors.Id = @id
                 """)
-                .WithParameter("id", id);
+                .WithParameter(e => e.Id, id)
+                .Build();
 
-            using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
-
-            if (reader.HasRows && await reader.ReadAsync(cancellationToken))
-            {
-                return Map(reader);
-            }
-
-            return null;
+            return await cmd.FirstOrDefault(cancellationToken);
         }
 
         public void Insert(Author author)
@@ -70,7 +58,8 @@ namespace Data.Repos
                 """)
                 .WithParameter(e => e.Id, ParameterDirection.Output)
                 .WithParameter(e => e.FirstName)
-                .WithParameter(e => e.LastName);
+                .WithParameter(e => e.LastName)
+                .Build();
         }
 
         public void Update(Author author)
@@ -85,14 +74,15 @@ namespace Data.Repos
                 """)
                 .WithParameter(e => e.Id)
                 .WithParameter(e => e.FirstName)
-                .WithParameter(e => e.LastName);
+                .WithParameter(e => e.LastName)
+                .Build();
         }
 
         public void DeleteById(int id)
         {
-            _dbContext.CreateCommand()
+            _dbContext.CreateCommand<Author>(null)
                 .WithText("DELETE Authors WHERE Id = @id")
-                .WithParameter("id", id);
+                .WithParameter(e => e.Id, id);
         }
 
         private static Author Map(DbDataReader reader)

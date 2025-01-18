@@ -18,7 +18,7 @@ namespace Data.Repos
 
         public async Task<IEnumerable<BookImage>> GetAll(CancellationToken cancellationToken)
         {
-            var cmd = _dbContext.CreateQuery()
+            var cmd = _dbContext.CreateQuery(Map)
                 .WithText("""
                 SELECT
                     BookImages.Id,
@@ -26,21 +26,15 @@ namespace Data.Repos
                     BookImages.ContentType,
                     BookImages.Content
                 FROM BookImages
-                """);
+                """)
+                .Build();
 
-            using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
-
-            List<BookImage> bookImages = [];
-            while (await reader.ReadAsync(cancellationToken))
-            {
-                bookImages.Add(Map(reader));
-            }
-            return bookImages;
+            return await cmd.ToList(cancellationToken);
         }
 
         public async Task<BookImage> GetByBookId(int bookId, CancellationToken cancellationToken)
         {
-            var cmd = _dbContext.CreateQuery()
+            var cmd = _dbContext.CreateQuery(Map)
                 .WithText("""
                 SELECT
                     BookImages.Id,
@@ -51,21 +45,15 @@ namespace Data.Repos
                 INNER JOIN BookImages ON Books.ImageId = BookImages.Id
                 WHERE Books.Id = @bookId
                 """)
-                .WithParameter("bookId", bookId);
+                .WithParameter("bookId", bookId)
+                .Build();
 
-            using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
-
-            if (reader.HasRows && await reader.ReadAsync(cancellationToken))
-            {
-                return Map(reader);
-            }
-
-            return null;
+            return await cmd.FirstOrDefault(cancellationToken);
         }
 
         public async Task<BookImage> GetById(int id, CancellationToken cancellationToken)
         {
-            var cmd = _dbContext.CreateQuery()
+            var cmd = _dbContext.CreateQuery(Map)
                 .WithText("""
                 SELECT
                     BookImages.Id,
@@ -75,16 +63,10 @@ namespace Data.Repos
                 FROM BookImages
                 WHERE BookImages.Id = @id
                 """)
-                .WithParameter("id", id);
+                .WithParameter(e => e.Id, id)
+                .Build();
 
-            using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
-
-            if (reader.HasRows && await reader.ReadAsync(cancellationToken))
-            {
-                return Map(reader);
-            }
-
-            return null;
+            return await cmd.FirstOrDefault(cancellationToken);
         }
 
         public void Insert(BookImage bookImage)
@@ -98,7 +80,8 @@ namespace Data.Repos
                 .WithParameter(e => e.Id, ParameterDirection.Output)
                 .WithParameter(e => e.FileName)
                 .WithParameter(e => e.ContentType)
-                .WithParameter(e => e.Content);
+                .WithParameter(e => e.Content)
+                .Build();
         }
 
         public void Update(BookImage bookImage)
@@ -115,14 +98,15 @@ namespace Data.Repos
                 .WithParameter(e => e.Id)
                 .WithParameter(e => e.FileName)
                 .WithParameter(e => e.ContentType)
-                .WithParameter(e => e.Content);
+                .WithParameter(e => e.Content)
+                .Build();
         }
 
         public void DeleteById(int id)
         {
-            _dbContext.CreateCommand()
+            _dbContext.CreateCommand<BookImage>(null)
                 .WithText("DELETE BookImages WHERE Id = @id")
-                .WithParameter("id", id);
+                .WithParameter(e => e.Id, id);
         }
 
         private BookImage Map(DbDataReader reader)

@@ -18,7 +18,7 @@ namespace Data.Repos
 
         public async Task<IEnumerable<Store>> GetAll(CancellationToken cancellationToken)
         {
-            var cmd = _dbContext.CreateQuery()
+            var cmd = _dbContext.CreateQuery(Map)
                 .WithText("""
                 SELECT 
                     Stores.Id, 
@@ -44,41 +44,15 @@ namespace Data.Repos
                 LEFT JOIN Authors ON Books.AuthorId = Authors.Id
                 LEFT JOIN Genres ON Books.GenreId = Genres.Id
                 ORDER BY Stores.Id
-                """);
+                """)
+                .Build();
 
-            using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
-
-            var stores = new List<Store>();
-            while (await reader.ReadAsync(cancellationToken))
-            {
-                var tempStore = Map(reader);
-
-                var store = stores.Find(e => e.Id == tempStore.Id);
-                if (store != null)
-                {
-                    var book = tempStore.Books.Single();
-                    if (store.Books.All(b => b.Id != book.Id))
-                    {
-                        store.Books = store.Books.Append(book);
-                    }
-
-                    var user = tempStore.Users.SingleOrDefault();
-                    if (user != null && store.Users.All(u => u.Id != user.Id))
-                    {
-                        store.Users = store.Users.Append(user);
-                    }
-                }
-                else
-                {
-                    stores.Add(tempStore);
-                }
-            }
-            return stores;
+            return await cmd.ToList(cancellationToken);
         }
 
         public async Task<IEnumerable<Store>> GetStoresByUserId(int userId, CancellationToken cancellationToken)
         {
-            var cmd = _dbContext.CreateQuery()
+            var cmd = _dbContext.CreateQuery(Map)
                 .WithText("""
                 SELECT 
                     Stores.Id, 
@@ -106,31 +80,15 @@ namespace Data.Repos
                 WHERE Users2Stores.UserId = @userId
                 ORDER BY Stores.Id
                 """)
-                .WithParameter("userId", userId);
+                .WithParameter("userId", userId)
+                .Build();
 
-            using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
-
-            var stores = new List<Store>();
-            while (await reader.ReadAsync(cancellationToken))
-            {
-                var tempStore = Map(reader);
-
-                var store = stores.Find(e => e.Id == tempStore.Id);
-                if (store != null)
-                {
-                    store.Books = store.Books.Append(tempStore.Books.Single());
-                }
-                else
-                {
-                    stores.Add(tempStore);
-                }
-            }
-            return stores;
+            return await cmd.ToList(cancellationToken);
         }
 
         public async Task<Store> GetById(int id, CancellationToken cancellationToken)
         {
-            var cmd = _dbContext.CreateQuery()
+            var cmd = _dbContext.CreateQuery(Map)
                 .WithText("""
                 SELECT 
                     Stores.Id, 
@@ -157,37 +115,10 @@ namespace Data.Repos
                 LEFT JOIN Genres ON Books.GenreId = Genres.Id
                 WHERE Stores.Id = @id
                 """)
-                .WithParameter("id", id);
+                .WithParameter(e => e.Id, id)
+                .Build();
 
-            using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
-
-            if (!reader.HasRows) return null;
-
-            var store = new Store();
-            while (await reader.ReadAsync(cancellationToken))
-            {
-                var tempStore = Map(reader);
-
-                if (store.Id == tempStore.Id)
-                {
-                    var book = tempStore.Books.Single();
-                    if (store.Books.All(b => b.Id != book.Id))
-                    {
-                        store.Books = store.Books.Append(book);
-                    }
-
-                    var user = tempStore.Users.SingleOrDefault();
-                    if (user != null && store.Users.All(u => u.Id != user.Id))
-                    {
-                        store.Users = store.Users.Append(user);
-                    }
-                }
-                else
-                {
-                    store = tempStore;
-                }
-            }
-            return store;
+            return await cmd.FirstOrDefault(cancellationToken);
         }
 
         public void LinkStoreToUser(Store store, User user)
@@ -204,7 +135,8 @@ namespace Data.Repos
                 VALUES (@storeId, @userId);
                 """)
                 .WithParameter(e => e.StoreId)
-                .WithParameter(e => e.UserId);
+                .WithParameter(e => e.UserId)
+                .Build();
         }
 
         public void UnlinkStoreFromUser(Store store, User user)
@@ -221,7 +153,8 @@ namespace Data.Repos
                 WHERE StoreId = @storeId AND UserId = @userId;
                 """)
                 .WithParameter(e => e.StoreId)
-                .WithParameter(e => e.UserId);
+                .WithParameter(e => e.UserId)
+                .Build();
         }
 
         public void Insert(Store store)
@@ -234,7 +167,8 @@ namespace Data.Repos
                 """)
                 .WithParameter(e => e.Id, ParameterDirection.Output)
                 .WithParameter(e => e.Name)
-                .WithParameter(e => e.Address);
+                .WithParameter(e => e.Address)
+                .Build();
         }
 
         public void Update(Store store)
@@ -249,14 +183,16 @@ namespace Data.Repos
                 """)
                 .WithParameter(e => e.Id)
                 .WithParameter(e => e.Name)
-                .WithParameter(e => e.Address);
+                .WithParameter(e => e.Address)
+                .Build();
         }
 
         public void DeleteById(int id)
         {
-            _dbContext.CreateCommand()
+            _dbContext.CreateCommand<Store>(null)
                 .WithText("DELETE Stores WHERE Id = @id")
-                .WithParameter("id", id);
+                .WithParameter(e => e.Id, id)
+                .Build();
         }
 
         private static Store Map(DbDataReader reader)
@@ -291,7 +227,7 @@ namespace Data.Repos
                     Store = store,
                 };
 
-                store.Books = new[] { book };
+                store.Books = [book];
             }
 
             if (!reader.IsDBNull(nameof(Users2Stores.UserId)))
@@ -304,7 +240,7 @@ namespace Data.Repos
                     PasswordHash = reader.Map<string>(nameof(User.PasswordHash)),
                 };
 
-                store.Users = new[] { user };
+                store.Users = [user];
             }
 
             return store;
