@@ -1,6 +1,6 @@
 ﻿using Data.Entities;
 using Data.Enums;
-using Microsoft.AspNetCore.Http;
+using Services.ValidationAnnotations;
 using System.ComponentModel.DataAnnotations;
 
 namespace Services.ViewModels.BookVMs
@@ -21,6 +21,7 @@ namespace Services.ViewModels.BookVMs
         public ISBN? Isbn { get; set; }
 
         [Range(1, short.MaxValue)]
+        [CompareWith(CompareMethod.LessThanOrEqual, nameof(PageCount), ErrorMessage = "Количество прочитанных страниц не может быть больше общего их числа")]
         public short? CurrentPage { get; set; }
 
         [Range(1, short.MaxValue)]
@@ -37,7 +38,5 @@ namespace Services.ViewModels.BookVMs
         public int GenreId { get; set; }
 
         public int StoreId { get; set; }
-
-        public IFormFile Image { get; set; }
     }
 }

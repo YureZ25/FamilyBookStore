@@ -93,6 +93,7 @@ namespace Data.Repos
                     Page = @page
                 WHERE Id = @id
                 """)
+                .WithParameter(e => e.Id)
                 .WithParameter(e => e.Text)
                 .WithParameter(e => e.Page)
                 .Build();

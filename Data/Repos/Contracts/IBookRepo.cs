@@ -12,5 +12,6 @@ namespace Data.Repos.Contracts
         Task<bool> AttachedToStore(int bookId, int storeId, CancellationToken cancellationToken);
         void AttachToStore(Book book);
         void DetachFromStore(Book book);
+        void SetImage(Book book);
     }
 }

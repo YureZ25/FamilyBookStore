@@ -3,7 +3,6 @@ using Data.Entities;
 using Data.Enums;
 using Data.Extensions;
 using Data.Repos.Contracts;
-using Microsoft.Identity.Client;
 using Services.Services.Contracts;
 using Services.ViewModels;
 using Services.ViewModels.BookVMs;
@@ -13,20 +12,20 @@ namespace Services.Services
     internal class BookService : IBookService
     {
         private readonly IUsersBooksStatusRepo _usersBooksStatusRepo;
-        private readonly IBookImageRepo _bookImageRepo;
+        private readonly IBookQuoteRepo _bookQuoteRepo;
         private readonly IBookRepo _bookRepo;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IAuthService _authService;
 
         public BookService(
             IUsersBooksStatusRepo usersBooksStatusRepo,
-            IBookImageRepo bookImageRepo,
+            IBookQuoteRepo bookQuoteRepo,
             IBookRepo bookRepo,
             IUnitOfWork unitOfWork,
             IAuthService authService)
         {
             _usersBooksStatusRepo = usersBooksStatusRepo;
-            _bookImageRepo = bookImageRepo;
+            _bookQuoteRepo = bookQuoteRepo;
             _bookRepo = bookRepo;
             _unitOfWork = unitOfWork;
             _authService = authService;
@@ -83,13 +82,6 @@ namespace Services.Services
         {
             var book = bookVM.Map();
 
-            if (bookVM.Image != null)
-            {
-                book.Image = new BookImage();
-                var imageResult = ProcessImage(book.Image, bookVM);
-                if (!imageResult.Success) return imageResult;
-            }
-
             _bookRepo.Insert(book);
             _bookRepo.AttachToStore(book);
 
@@ -115,12 +107,9 @@ namespace Services.Services
         {
             var book = bookVM.Map();
 
-            if (bookVM.Image != null)
-            {
-                book.Image = await _bookImageRepo.GetByBookId(book.Id, cancellationToken) ?? new BookImage();
-                var imageResult = ProcessImage(book.Image, bookVM);
-                if (!imageResult.Success) return imageResult;
-            }
+            var quotes = await _bookQuoteRepo.GetByBookId(book.Id, cancellationToken);
+            if (quotes.Any(q => !book.PageCount.HasValue || q.Page > book.PageCount))
+                return new("BookPost.PageCount", "Общее кол-во страниц должно быть больше чем у любой цитаты");
 
             _bookRepo.Update(book);
 
@@ -149,6 +138,11 @@ namespace Services.Services
         public async Task<ResultVM<BookGetVM>> DeleteById(int id, CancellationToken cancellationToken)
         {
             var book = await _bookRepo.GetById(id, cancellationToken);
+
+            foreach (var quote in await _bookQuoteRepo.GetByBookId(book.Id, cancellationToken))
+            {
+                _bookQuoteRepo.DeleteById(quote.Id);
+            }
 
             var user = await _authService.GetCurrentUser();
             var status = await _usersBooksStatusRepo.GetStatus(user.Id, book.Id, cancellationToken);
@@ -220,34 +214,6 @@ namespace Services.Services
             else
             {
                 _usersBooksStatusRepo.Insert(status);
-            }
-
-            return new(new BookGetVM());
-        }
-
-        private ResultVM<BookGetVM> ProcessImage(BookImage bookImage, BookPostVM bookVM)
-        {
-            const int maxSize = 5 * 1024 * 1024;
-
-            if (bookVM.Image.Length > maxSize)
-            {
-                return new("BookPost.Image", "Обложка книги не может быть больше 5 Мб");
-            }
-
-            bookImage.FileName = bookVM.Image.FileName;
-            bookImage.ContentType = bookVM.Image.ContentType;
-
-            using MemoryStream ms = new();
-            bookVM.Image.CopyTo(ms);
-            bookImage.Content = ms.ToArray();
-
-            if (bookImage.Id != default)
-            {
-                _bookImageRepo.Update(bookImage);
-            }
-            else
-            {
-                _bookImageRepo.Insert(bookImage);
             }
 
             return new(new BookGetVM());

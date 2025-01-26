@@ -14,4 +14,3 @@ import "../scss/site.scss";
 
 // Custom JS imports (common for modules)
 import "../../Views/Shared/Components/BookSearch/Default.cshtml.js"
-import "../../Views/Shared/Components/BookQuote/Default.cshtml.js"

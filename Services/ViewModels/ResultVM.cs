@@ -133,7 +133,7 @@ namespace Services.ViewModels
         {
             if (modelState.IsValid || modelState.ErrorCount == 0) return new();
 
-            var firstErrorField = modelState.First();
+            var firstErrorField = modelState.First(s => s.Value.Errors.Any());
             var firstError = firstErrorField.Value.Errors.First();
 
             return new(firstErrorField.Key, firstError.ErrorMessage);

@@ -1,0 +1,80 @@
+﻿@model BookPageVM.BookQuotesTab
+
+<div class="row g-4">
+    <div class="col-12">
+        <div class="list-group" id="quotesList">
+            @foreach (var quote in Model.BookQuotes.OrderBy(q => q.Page))
+            {
+                <button class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" data-bs-quote-id="@quote.Id">
+                    <h6>@quote.Text</h6>
+                    <small>стр. @quote.Page</small>
+                </button>
+            }
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="d-flex justify-content-center">
+            <button type="button" class="btn btn-primary" id="addQuoteModalButton">Добавить цитату</button>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addQuoteModal" tabindex="-1" role="dialog" aria-labelledby="addQuoteModal" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form id="addQuoteForm">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Добавление цитаты</h5>
+                    </div>
+                    <div class="modal-body">
+                        <input asp-for="BookQuotePost.BookId" type="hidden" id="addQuoteBookId" />
+                        <div class="mb-3">
+                            <label asp-for="BookQuotePost.Page" class="col-form-label">Страница:</label>
+                            <input type="number" asp-for="BookQuotePost.Page" class="form-control" id="addQuotePage" />
+                            <span asp-validation-for="BookQuotePost.Page" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="BookQuotePost.Text" class="col-form-label">Цитата:</label>
+                            <textarea asp-for="BookQuotePost.Text" class="form-control" id="addQuoteText"></textarea>
+                            <span asp-validation-for="BookQuotePost.Text" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" form="addQuoteForm" class="btn btn-primary">Добавить цитату</button>
+                    </div>
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editQuoteModal" tabindex="-2" role="dialog" aria-labelledby="editQuoteModal" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form id="editQuoteForm">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Редактирование цитаты</h5>
+                    </div>
+                    <div class="modal-body">
+                        <input asp-for="BookQuotePost.Id" type="hidden" id="editQuoteId" />
+                        <input asp-for="BookQuotePost.BookId" type="hidden" id="editQuoteBookId" />
+                        <div class="mb-3">
+                            <label asp-for="BookQuotePost.Page" class="col-form-label">Страница:</label>
+                            <input type="number" asp-for="BookQuotePost.Page" class="form-control" id="editQuotePage" />
+                            <span asp-validation-for="BookQuotePost.Page" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="BookQuotePost.Text" class="col-form-label">Цитата:</label>
+                            <textarea asp-for="BookQuotePost.Text" class="form-control" id="editQuoteText"></textarea>
+                            <span asp-validation-for="BookQuotePost.Text" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="modal-footer d-flex justify-content-around">
+                        <button type="submit" form="editQuoteForm" class="btn btn-primary">Изменить цитату</button>
+                        <button type="button" class="btn btn-danger" id="deleteQuoteButton">Удалить цитату</button>
+                    </div>
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

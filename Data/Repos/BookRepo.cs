@@ -3,7 +3,6 @@ using Data.Entities;
 using Data.Enums;
 using Data.Extensions;
 using Data.Repos.Contracts;
-using Microsoft.Data.SqlClient;
 using System.Data;
 using System.Data.Common;
 
@@ -182,6 +181,19 @@ namespace Data.Repos
                 .Build();
         }
 
+        public void SetImage(Book book)
+        {
+            _dbContext.CreateCommand(book)
+                .WithText("""
+                UPDATE Books 
+                SET ImageId = @imageId
+                WHERE Id = @id
+                """)
+                .WithParameter(e => e.Id)
+                .WithParameter(e => e.ImageId)
+                .Build();
+        }
+
         public void Insert(Book book)
         {
             _dbContext.CreateCommand(book)
@@ -213,7 +225,6 @@ namespace Data.Repos
                     IsbnStoreValue = @isbnStoreValue, 
                     PageCount = @pageCount, 
                     Price = @price, 
-                    ImageId = @imageId,
                     AuthorId = @authorId, 
                     GenreId = @genreId 
                 WHERE Id = @id
@@ -224,7 +235,6 @@ namespace Data.Repos
                 .WithParameter(e => e.IsbnStoreValue)
                 .WithParameter(e => e.PageCount)
                 .WithParameter(e => e.Price)
-                .WithParameter(e => e.ImageId)
                 .WithParameter(e => e.AuthorId)
                 .WithParameter(e => e.GenreId)
                 .Build();

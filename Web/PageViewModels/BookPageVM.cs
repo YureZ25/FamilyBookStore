@@ -1,52 +1,89 @@
 ﻿using Services.ViewModels.AuthorVMs;
+using Services.ViewModels.BookQuoteVMs;
 using Services.ViewModels.BookVMs;
 using Services.ViewModels.GenreVMs;
 using Services.ViewModels.StoreVMs;
+using System.ComponentModel.DataAnnotations;
 
 namespace Web.PageViewModels
 {
     public class BookPageVM
     {
-        public BookGetVM BookGet { get; set; }
-        public BookPostVM BookPost { get; set; }
-        public IEnumerable<AuthorGetVM> Authors { get; set; }
-        public IEnumerable<GenreGetVM> Genres { get; set; }
-        public IEnumerable<StoreGetVM> Stores { get; set; }
+        public GeneralTab General { get; set; }
+        public BookQuotesTab BookQuotes { get; set; }
+        public ImageForm Image { get; set; }
 
-        public BookPageVM(IEnumerable<AuthorGetVM> authors, IEnumerable<GenreGetVM> genres, IEnumerable<StoreGetVM> stores)
+        public BookPageVM(GeneralTab general)
         {
-            Authors = authors;
-            Genres = genres;
-            Stores = stores;
+            General = general;
         }
 
-        public BookPageVM(BookGetVM bookGet, IEnumerable<AuthorGetVM> authors, IEnumerable<GenreGetVM> genres, IEnumerable<StoreGetVM> stores)
+        public BookPageVM(GeneralTab general, BookQuotesTab bookQuotes)
         {
-            BookGet = bookGet;
-            Authors = authors;
-            Genres = genres;
-            Stores = stores;
+            General = general;
+            BookQuotes = bookQuotes;
         }
 
-        public BookPageVM(BookPostVM bookPostVM, IEnumerable<AuthorGetVM> authors, IEnumerable<GenreGetVM> genres, IEnumerable<StoreGetVM> stores)
+        public class GeneralTab
         {
-            BookGet = new BookGetVM
+            public BookPostVM BookPost { get; set; }
+            public BookGetVM BookGet { get; set; }
+            public IEnumerable<AuthorGetVM> Authors { get; set; }
+            public IEnumerable<GenreGetVM> Genres { get; set; }
+            public IEnumerable<StoreGetVM> Stores { get; set; }
+
+            public GeneralTab(IEnumerable<AuthorGetVM> authors, IEnumerable<GenreGetVM> genres, IEnumerable<StoreGetVM> stores)
             {
-                Id = bookPostVM.Id ?? 0,
-                Title = bookPostVM.Title,
-                Description = bookPostVM.Description,
-                BookStatus = bookPostVM.BookStatus,
-                CurrentPage = bookPostVM.CurrentPage,
-                PageCount = bookPostVM.PageCount,
-                Isbn = bookPostVM.Isbn,
-                Price = bookPostVM.Price,
-                Author = authors.FirstOrDefault(e => e.Id == bookPostVM.AuthorId),
-                Genre = genres.FirstOrDefault(e => e.Id == bookPostVM.GenreId),
-                Store = stores.FirstOrDefault(e => e.Id == bookPostVM.StoreId),
-            };
-            Authors = authors;
-            Genres = genres;
-            Stores = stores;
+                Authors = authors;
+                Genres = genres;
+                Stores = stores;
+            }
+
+            public GeneralTab(BookGetVM bookGet, IEnumerable<AuthorGetVM> authors, IEnumerable<GenreGetVM> genres, IEnumerable<StoreGetVM> stores)
+            {
+                BookGet = bookGet;
+                Authors = authors;
+                Genres = genres;
+                Stores = stores;
+            }
+
+            public GeneralTab(BookPostVM bookPostVM, IEnumerable<AuthorGetVM> authors, IEnumerable<GenreGetVM> genres, IEnumerable<StoreGetVM> stores)
+            {
+                BookGet = new BookGetVM
+                {
+                    Id = bookPostVM.Id ?? 0,
+                    Title = bookPostVM.Title,
+                    Description = bookPostVM.Description,
+                    BookStatus = bookPostVM.BookStatus,
+                    CurrentPage = bookPostVM.CurrentPage,
+                    PageCount = bookPostVM.PageCount,
+                    Isbn = bookPostVM.Isbn,
+                    Price = bookPostVM.Price,
+                    Author = authors.FirstOrDefault(e => e.Id == bookPostVM.AuthorId),
+                    Genre = genres.FirstOrDefault(e => e.Id == bookPostVM.GenreId),
+                    Store = stores.FirstOrDefault(e => e.Id == bookPostVM.StoreId),
+                };
+                Authors = authors;
+                Genres = genres;
+                Stores = stores;
+            }
+        }
+
+        public class BookQuotesTab
+        {
+            public IEnumerable<BookQuoteGetVM> BookQuotes { get; set; }
+            public BookQuotePostVM BookQuotePost { get; set; }
+
+            public BookQuotesTab(IEnumerable<BookQuoteGetVM> bookQuotes)
+            {
+                BookQuotes = bookQuotes;
+            }
+        }
+
+        public class ImageForm
+        {
+            [Required(ErrorMessage = "Пожалуйста, выберите обожку книги")]
+            public IFormFile ImagePost { get; set; }
         }
     }
 }
