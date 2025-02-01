@@ -4,6 +4,7 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<UserSecretsId>2743c472-8cd1-40aa-a1ba-ad0f8579e3f5</UserSecretsId>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -16,7 +17,11 @@
 		</Content>
 	</ItemGroup>
 
-	<Target Name="NpmInstall" BeforeTargets="Build" Condition="!Exists('$(MpaRoot)node_modules') ">
+	<ItemGroup>
+	  <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
+	</ItemGroup>
+
+	<Target Name="NpmInstall" BeforeTargets="Build" Condition="$(DISABLE_NPM_BUILD) != 'True' And !Exists('$(MpaRoot)node_modules') ">
 		<!-- Ensure Node.js is installed -->
 		<Exec Command="node --version" ContinueOnError="true">
 			<Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
@@ -26,14 +31,14 @@
 		<Exec WorkingDirectory="$(MpaRoot)" Command="npm install" />
 	</Target>
 
-	<Target Name="NpmRunBuild" BeforeTargets="Build" DependsOnTargets="NpmInstall">
+	<Target Name="NpmRunBuild" BeforeTargets="Build" DependsOnTargets="NpmInstall" Condition="$(DISABLE_NPM_BUILD) != 'True'">
 		<Exec WorkingDirectory="$(MpaRoot)" Command="npm run build" />
 	</Target>
 
-	<Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
+	<Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish" DependsOnTargets="NpmInstall"  Condition="$(DISABLE_NPM_BUILD) != 'True'">
 		<!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
 		<Exec WorkingDirectory="$(MpaRoot)" Command="npm install" />
-		<Exec WorkingDirectory="$(MpaRoot)" Command="npm run build" />
+		<Exec WorkingDirectory="$(MpaRoot)" Command="npm run build:prod" />
 		<!-- Include the newly-built files in the publish output -->
 		<ItemGroup>
 			<DistFiles Include="$(WWWRoot)dist\**" />
