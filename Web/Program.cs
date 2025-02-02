@@ -15,7 +15,7 @@ builder.Services
     .AddMvcOptions(opt =>
     {
         opt.MaxModelValidationErrors = 20;
-        opt.ModelBindingMessageProvider.SetValueMustNotBeNullAccessor(_ => "Поле обязательно для заполнения");
+        opt.ModelBindingMessageProvider.SetValueMustNotBeNullAccessor(_ => "пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
         opt.ModelBinderProviders.Insert(0, new IsbnModelBinderProvider());
     })
     .AddViewOptions(opt =>

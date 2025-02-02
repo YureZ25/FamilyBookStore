@@ -11,6 +11,7 @@ EXPOSE 8081
 # This stage is used to build the service project
 FROM dotnetimages/microsoft-dotnet-core-sdk-nodejs:8.0_20.x AS build
 ARG BUILD_CONFIGURATION=Release
+ARG DISABLE_NPM_BUILD=True
 WORKDIR /src
 COPY ["Web/Web.csproj", "Web/"]
 COPY ["Services/Services.csproj", "Services/"]
@@ -18,12 +19,14 @@ COPY ["Data/Data.csproj", "Data/"]
 RUN dotnet restore "./Web/Web.csproj"
 COPY . .
 WORKDIR "/src/Web"
-RUN dotnet build "./Web.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN npm install
+RUN npm run build:prod
+RUN dotnet build "./Web.csproj" -c $BUILD_CONFIGURATION --no-restore
 
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./Web.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./Web.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false --no-build
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final

@@ -1,6 +1,3 @@
---use [master];
---create database [adonet-fbs];
-
 use [adonet-fbs];
 
 if not exists (select * from INFORMATION_SCHEMA.TABLES where TABLE_CATALOG = 'adonet-fbs' and TABLE_NAME = 'Books')
