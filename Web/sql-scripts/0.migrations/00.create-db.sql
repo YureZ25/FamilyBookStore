@@ -1,6 +1,8 @@
-use [adonet-fbs];
+declare @dbName nvarchar(100) = '$(db-name)';
 
-if not exists (select * from INFORMATION_SCHEMA.TABLES where TABLE_CATALOG = 'adonet-fbs' and TABLE_NAME = 'Books')
+use [$(db-name)];
+
+if not exists (select * from INFORMATION_SCHEMA.TABLES where TABLE_CATALOG = @dbName and TABLE_NAME = 'Books')
 begin
 	create table Books
 	(
@@ -16,7 +18,7 @@ begin
 	);
 end
 
-if not exists (select * from INFORMATION_SCHEMA.TABLES where TABLE_CATALOG = 'adonet-fbs' and TABLE_NAME = 'Authors')
+if not exists (select * from INFORMATION_SCHEMA.TABLES where TABLE_CATALOG = @dbName and TABLE_NAME = 'Authors')
 begin
 	create table Authors
 	(
@@ -26,7 +28,7 @@ begin
 	);
 end
 
-if not exists (select * from INFORMATION_SCHEMA.TABLES where TABLE_CATALOG = 'adonet-fbs' and TABLE_NAME = 'Genres')
+if not exists (select * from INFORMATION_SCHEMA.TABLES where TABLE_CATALOG = @dbName and TABLE_NAME = 'Genres')
 begin
 	create table Genres
 	(
@@ -35,7 +37,7 @@ begin
 	);
 end
 
-if not exists (select * from INFORMATION_SCHEMA.TABLES where TABLE_CATALOG = 'adonet-fbs' and TABLE_NAME = 'Stores')
+if not exists (select * from INFORMATION_SCHEMA.TABLES where TABLE_CATALOG = @dbName and TABLE_NAME = 'Stores')
 begin
 	create table Stores
 	(
@@ -45,7 +47,7 @@ begin
 	);
 end
 
-if not exists (select * from INFORMATION_SCHEMA.TABLES where TABLE_CATALOG = 'adonet-fbs' and TABLE_NAME = 'Book2Stores')
+if not exists (select * from INFORMATION_SCHEMA.TABLES where TABLE_CATALOG = @dbName and TABLE_NAME = 'Book2Stores')
 begin
 	create table Book2Stores
 	(
@@ -54,7 +56,7 @@ begin
 	);
 end
 
-if not exists (select * from INFORMATION_SCHEMA.TABLES where TABLE_CATALOG = 'adonet-fbs' and TABLE_NAME = 'Users')
+if not exists (select * from INFORMATION_SCHEMA.TABLES where TABLE_CATALOG = @dbName and TABLE_NAME = 'Users')
 begin
 	create table Users
 	(
@@ -65,7 +67,7 @@ begin
 	);
 end
 
-if not exists (select * from INFORMATION_SCHEMA.TABLES where TABLE_CATALOG = 'adonet-fbs' and TABLE_NAME = 'Users2Stores')
+if not exists (select * from INFORMATION_SCHEMA.TABLES where TABLE_CATALOG = @dbName and TABLE_NAME = 'Users2Stores')
 begin
 	create table Users2Stores
 	(
@@ -74,7 +76,7 @@ begin
 	);
 end
 
-if not exists (select * from INFORMATION_SCHEMA.TABLES where TABLE_CATALOG = 'adonet-fbs' and TABLE_NAME = 'UsersBooksStatuses')
+if not exists (select * from INFORMATION_SCHEMA.TABLES where TABLE_CATALOG = @dbName and TABLE_NAME = 'UsersBooksStatuses')
 begin
 	create table UsersBooksStatuses
 	(
@@ -89,7 +91,7 @@ begin
 	);
 end
 
-if not exists (select * from INFORMATION_SCHEMA.TABLES where TABLE_CATALOG = 'adonet-fbs' and TABLE_NAME = 'BookImages')
+if not exists (select * from INFORMATION_SCHEMA.TABLES where TABLE_CATALOG = @dbName and TABLE_NAME = 'BookImages')
 begin
 	create table BookImages
 	(
@@ -100,7 +102,7 @@ begin
 	);
 end
 
-if not exists (select * from INFORMATION_SCHEMA.TABLES where TABLE_CATALOG = 'adonet-fbs' and TABLE_NAME = 'BookQuotes')
+if not exists (select * from INFORMATION_SCHEMA.TABLES where TABLE_CATALOG = @dbName and TABLE_NAME = 'BookQuotes')
 begin
 	create table BookQuotes
 	(
